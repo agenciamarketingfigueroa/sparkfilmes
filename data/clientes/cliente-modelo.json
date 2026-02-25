@@ -1,0 +1,78 @@
+{
+  "cliente": {
+    "nome": "Cliente Modelo",
+    "slug": "cliente-modelo",
+    "segmento": "Clinica especializada em saude integrativa",
+    "status": "Ativo",
+    "ultimaAtualizacao": "2026-02-25",
+    "observacoes": "Projeto recorrente com foco em posicionamento local, educacao do publico e prova social.",
+    "tipoServico": "Captacao recorrente mensal",
+    "contato": "Canal principal: WhatsApp comercial"
+  },
+  "entregas": [
+    {
+      "id": "ent-001",
+      "titulo": "Diaria de gravacao - Podcast Episodio 01",
+      "data": "2026-02-10",
+      "capa": "../assets/img/placeholders/entrega-01.svg",
+      "descricao": "Captacao de episodio completo com cortes para pilulas de conteudo e aberturas curtas.",
+      "tipo": "Podcast",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOpodcast01",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload01/view",
+      "tags": ["Brutos", "Podcast", "Cortes", "Final"]
+    },
+    {
+      "id": "ent-002",
+      "titulo": "Captacao de Reels - Sessao Clinica",
+      "data": "2026-02-05",
+      "capa": "../assets/img/placeholders/entrega-02.svg",
+      "descricao": "Sessao de videos curtos para rotina da clinica, autoridade tecnica e abordagem comercial.",
+      "tipo": "Reels",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOreels02",
+      "tags": ["Reels", "Shorts", "Social", "Brutos"]
+    },
+    {
+      "id": "ent-003",
+      "titulo": "Cobertura de Evento - Bastidores",
+      "data": "2026-01-29",
+      "capa": "../assets/img/placeholders/entrega-03.svg",
+      "descricao": "Registro de bastidores, entrevistas curtas e material de apoio para pos-evento.",
+      "tipo": "Evento",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOevento03",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload03/view",
+      "tags": ["Evento", "Bastidores", "Fotos", "Highlights"]
+    },
+    {
+      "id": "ent-004",
+      "titulo": "Entrega Final - Videos Editados",
+      "data": "2026-01-23",
+      "capa": "../assets/img/placeholders/entrega-04.svg",
+      "descricao": "Pacote final aprovado com versoes horizontais e verticais para distribuicao em canais digitais.",
+      "tipo": "Final",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOfinal04",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload04/view",
+      "tags": ["Final", "Instagram", "YouTube", "Anuncios"]
+    },
+    {
+      "id": "ent-005",
+      "titulo": "Captacao de Reels - Rotina da Equipe",
+      "data": "2026-01-15",
+      "capa": "../assets/img/placeholders/entrega-05.svg",
+      "descricao": "Conteudo de bastidores internos para reforco de confianca e proximidade com o publico.",
+      "tipo": "Reels",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOrotina05",
+      "tags": ["Reels", "Equipe", "Stories"]
+    },
+    {
+      "id": "ent-006",
+      "titulo": "Diaria de gravacao - FAQ Comercial",
+      "data": "2026-01-08",
+      "capa": "../assets/img/placeholders/entrega-06.svg",
+      "descricao": "Videos de respostas comerciais para diminuir objecoes recorrentes em atendimento.",
+      "tipo": "FAQ",
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOfaq06",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload06/view",
+      "tags": ["FAQ", "Comercial", "Conversao", "Final"]
+    }
+  ]
+}

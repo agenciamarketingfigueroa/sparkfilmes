@@ -1,8 +1,14 @@
-# SparkFilmes - Landing Page
+# Sparkfilmes - Site Institucional + Portal de Clientes
 
-Landing page estatica para captacao de clientes da SparkFilmes, pronta para deploy no GitHub Pages.
+Estrutura estatica em HTML, CSS e JS para:
 
-## Estrutura
+- Home institucional com foco em conversao e autoridade
+- Portfolio visual
+- Paginas de servicos e contato
+- Portal de clientes com entregas organizadas por diaria/projeto
+- Dados carregados por JSON e arquivos hospedados no Google Drive
+
+## Estrutura do projeto
 
 ```text
 .
@@ -11,19 +17,34 @@ Landing page estatica para captacao de clientes da SparkFilmes, pronta para depl
 |-- robots.txt
 |-- sitemap.xml
 |-- .nojekyll
+|-- portfolio
+|   `-- index.html
+|-- servicos
+|   `-- index.html
+|-- contato
+|   `-- index.html
+|-- clientes
+|   |-- index.html
+|   `-- cliente-modelo.html
+|-- data
+|   `-- clientes
+|       `-- cliente-modelo.json
 `-- assets
-    |-- img
-    |   `-- og-image.svg
     |-- css
-    |   `-- styles.css
-    `-- js
-        `-- main.js
+    |   `-- style.css
+    |-- js
+    |   |-- main.js
+    |   `-- cliente.js
+    `-- img
+        |-- og-image.svg
+        `-- placeholders
+            |-- portfolio-01.svg ... portfolio-06.svg
+            `-- entrega-01.svg ... entrega-06.svg
 ```
 
 ## Como rodar localmente
 
-Como a pagina e estatica, basta abrir o `index.html` no navegador.  
-Se preferir servidor local:
+Opcao simples com servidor local:
 
 ```powershell
 python -m http.server 8080
@@ -31,17 +52,38 @@ python -m http.server 8080
 
 Depois acesse `http://localhost:8080`.
 
-## Personalizacao obrigatoria
+## Pontos de personalizacao obrigatoria
 
-Antes de publicar, ajuste:
+1. WhatsApp:
+   - Procurar por `https://wa.me/5500000000000` e substituir pelo numero oficial.
+2. Cases/portfolio:
+   - Trocar imagens em `assets/img/placeholders`.
+   - Atualizar textos das paginas `index.html` e `portfolio/index.html`.
+3. Portal de clientes:
+   - Editar `data/clientes/cliente-modelo.json`.
+   - Trocar links `linkPasta` e `linkDownload` para URLs reais do Google Drive.
+4. Dados institucionais:
+   - Revisar email, Instagram e descricoes em `contato/index.html`.
+5. URL oficial:
+   - Ajustar `canonical`, `og:url` e `sitemap.xml`.
 
-1. Numero de WhatsApp em `assets/js/main.js` (`whatsappNumber`).
-2. Links e dados da empresa em `index.html` (Instagram, email, endereco, nome legal).
-3. URL oficial da pagina em:
-   - tag `canonical` no `index.html`
-   - metatags Open Graph no `index.html`
-   - `sitemap.xml`
-4. Conteudo do portfolio, depoimentos e metricas com dados reais.
+## Como adicionar novo cliente no portal
+
+1. Duplicar `data/clientes/cliente-modelo.json` para um novo slug (ex.: `cliente-alpha.json`).
+2. Duplicar `clientes/cliente-modelo.html` para `clientes/cliente-alpha.html`.
+3. No arquivo HTML novo, alterar `data-json-path` para o JSON correto.
+4. Adicionar card do cliente em `clientes/index.html`.
+
+## Observacoes de arquitetura (MVP)
+
+- O site nao armazena arquivos de entrega.
+- O Google Drive funciona como storage.
+- O portal e a camada visual de organizacao.
+- Estrutura preparada para evoluir com:
+  - Login real (Cloudflare Access / Firebase / Supabase)
+  - Filtro por mes/ano
+  - Busca por entregas
+  - Novos status de fluxo (Em edicao / Revisao / Entregue)
 
 ## Deploy no GitHub Pages
 
@@ -49,6 +91,5 @@ Antes de publicar, ajuste:
 2. No GitHub: `Settings` -> `Pages`.
 3. Em `Build and deployment`, selecione:
    - `Source`: `Deploy from a branch`
-   - `Branch`: `main` (ou a branch desejada) / `/ (root)`
+   - `Branch`: `main` e pasta `/ (root)`
 4. Salve e aguarde a publicacao.
-5. A URL final aparece na mesma tela do GitHub Pages.

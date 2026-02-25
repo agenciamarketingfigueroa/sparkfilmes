@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entregas do Cliente | Sparkfilmes</title>
+    <meta
+      name="description"
+      content="Pagina de entregas da Sparkfilmes com diarias organizadas por cliente e links de arquivos no Google Drive."
+    />
+    <link rel="canonical" href="https://seuusuario.github.io/sparkfilmes/clientes/cliente-modelo.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+  </head>
+  <body data-client-page data-json-path="../data/clientes/cliente-modelo.json">
+    <!-- Trocar data-json-path para outro arquivo quando criar nova pagina de cliente -->
+    <a class="skip-link" href="#conteudo">Pular para o conteudo principal</a>
+
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="../index.html" aria-label="Sparkfilmes - ir para Home">
+          <span class="brand-mark">SF</span>
+          <span class="brand-text">Sparkfilmes</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">
+          Menu
+        </button>
+
+        <nav class="site-nav" id="menu-principal" aria-label="Menu principal">
+          <a href="../index.html">Home</a>
+          <a href="../portfolio/index.html">Portfolio</a>
+          <a href="../servicos/index.html">Servicos</a>
+          <a class="is-active" href="./index.html">Portal de Clientes</a>
+          <a href="../contato/index.html">Contato</a>
+          <a class="btn btn-small btn-primary" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
+            Falar no WhatsApp
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="section page-hero">
+        <div class="container">
+          <div id="cliente-header" class="client-header js-reveal">
+            <p class="loading-state">Carregando dados do cliente...</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <header class="section-head js-reveal">
+            <p class="eyebrow">Resumo</p>
+            <h2 class="section-title">Visao geral das entregas e escopo recorrente.</h2>
+          </header>
+          <div id="cliente-summary" class="summary-grid"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <header class="section-head js-reveal">
+            <p class="eyebrow">Entregas por diaria</p>
+            <h2 class="section-title">Materiais organizados para acesso rapido do cliente.</h2>
+          </header>
+          <div id="cliente-entregas" class="deliveries-grid"></div>
+
+          <p id="cliente-note" class="page-note">
+            Links hospedados no Google Drive para economizar processamento e armazenamento da hospedagem.
+          </p>
+          <!-- Futuro: adicionar filtros por mes/ano, busca por entregas e status (Em edicao/Entregue/Revisao). -->
+          <!-- Futuro: mapear outros clientes via JSON dinamico por slug e integrar login real. -->
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>&copy; <span data-current-year></span> Sparkfilmes. Todos os direitos reservados.</p>
+        <p>Arquivos hospedados externamente no Google Drive.</p>
+      </div>
+    </footer>
+
+    <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/cliente.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portal de Clientes | Sparkfilmes</title>
+    <meta
+      name="description"
+      content="Portal de clientes da Sparkfilmes com entregas organizadas por cliente e por diaria/projeto."
+    />
+    <link rel="canonical" href="https://seuusuario.github.io/sparkfilmes/clientes/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/css/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteudo principal</a>
+
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="../index.html" aria-label="Sparkfilmes - ir para Home">
+          <span class="brand-mark">SF</span>
+          <span class="brand-text">Sparkfilmes</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="menu-principal">
+          Menu
+        </button>
+
+        <nav class="site-nav" id="menu-principal" aria-label="Menu principal">
+          <a href="../index.html">Home</a>
+          <a href="../portfolio/index.html">Portfolio</a>
+          <a href="../servicos/index.html">Servicos</a>
+          <a class="is-active" href="./index.html">Portal de Clientes</a>
+          <a href="../contato/index.html">Contato</a>
+          <a
+            class="btn btn-small btn-primary"
+            href="https://wa.me/5500000000000"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Falar no WhatsApp
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="section page-hero">
+        <div class="container page-hero-shell js-reveal">
+          <p class="eyebrow">Portal de Clientes</p>
+          <h1>Entregas organizadas por cliente, diaria e projeto.</h1>
+          <p class="text-muted">
+            Esta area centraliza o acesso visual aos materiais. Os arquivos ficam hospedados no Google Drive e o portal
+            funciona como camada de organizacao.
+          </p>
+          <!-- Futuro: proteger esta pagina com login real (Cloudflare Access / Firebase / Supabase). -->
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <header class="section-head js-reveal">
+            <p class="eyebrow">Clientes ativos</p>
+            <h2 class="section-title">Selecione o cliente para visualizar as entregas.</h2>
+          </header>
+
+          <div class="client-list-grid">
+            <article class="client-card js-reveal">
+              <p class="eyebrow">Cliente 01</p>
+              <h3>Cliente Modelo</h3>
+              <p class="client-meta">
+                <span>Segmento: Clinica especializada</span>
+                <span>Ultima atualizacao: 25/02/2026</span>
+              </p>
+              <span class="status-badge" data-status="Ativo">Ativo</span>
+              <div class="btn-row">
+                <a class="btn btn-primary btn-small" href="./cliente-modelo.html">Acessar entregas</a>
+              </div>
+            </article>
+
+            <article class="client-card js-reveal">
+              <p class="eyebrow">Cliente 02</p>
+              <h3>Empresa Exemplo B</h3>
+              <p class="client-meta">
+                <span>Segmento: Educacao</span>
+                <span>Ultima atualizacao: 18/02/2026</span>
+              </p>
+              <span class="status-badge" data-status="Em andamento">Em andamento</span>
+              <div class="btn-row">
+                <a class="btn btn-primary btn-small" href="#" aria-disabled="true">Acessar entregas</a>
+              </div>
+            </article>
+
+            <article class="client-card js-reveal">
+              <p class="eyebrow">Cliente 03</p>
+              <h3>Marca Exemplo C</h3>
+              <p class="client-meta">
+                <span>Segmento: Varejo</span>
+                <span>Ultima atualizacao: 10/02/2026</span>
+              </p>
+              <span class="status-badge" data-status="Finalizado">Finalizado</span>
+              <div class="btn-row">
+                <a class="btn btn-primary btn-small" href="#" aria-disabled="true">Acessar entregas</a>
+              </div>
+            </article>
+          </div>
+
+          <p class="page-note">
+            MVP sem autenticacao. Proxima etapa: vincular permissao de acesso por cliente antes de exibir as entregas.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-wrap">
+        <p>&copy; <span data-current-year></span> Sparkfilmes. Todos os direitos reservados.</p>
+        <p>Portal visual de entregas.</p>
+      </div>
+    </footer>
+
+    <script src="../assets/js/main.js" defer></script>
+  </body>
+</html>

@@ -1,55 +1,35 @@
-const header = document.querySelector(".site-header");
-const navToggle = document.querySelector(".nav-toggle");
-const siteNav = document.querySelector(".site-nav");
-const yearEl = document.getElementById("current-year");
+const headerEl = document.querySelector(".site-header");
+const navToggleEl = document.querySelector(".nav-toggle");
+const navEl = document.querySelector(".site-nav");
+const yearEls = document.querySelectorAll("[data-current-year]");
 
-if (yearEl) {
-  yearEl.textContent = new Date().getFullYear();
-}
+yearEls.forEach((el) => {
+  el.textContent = String(new Date().getFullYear());
+});
 
 const syncHeaderOnScroll = () => {
-  if (!header) return;
-  header.classList.toggle("is-scrolled", window.scrollY > 8);
+  if (!headerEl) return;
+  headerEl.classList.toggle("is-scrolled", window.scrollY > 8);
 };
 
-window.addEventListener("scroll", syncHeaderOnScroll, { passive: true });
 syncHeaderOnScroll();
+window.addEventListener("scroll", syncHeaderOnScroll, { passive: true });
 
-if (navToggle && siteNav) {
-  navToggle.addEventListener("click", () => {
-    const isOpen = siteNav.classList.toggle("is-open");
-    navToggle.setAttribute("aria-expanded", String(isOpen));
+if (navToggleEl && navEl) {
+  navToggleEl.addEventListener("click", () => {
+    const isOpen = navEl.classList.toggle("is-open");
+    navToggleEl.setAttribute("aria-expanded", String(isOpen));
   });
 
-  siteNav.querySelectorAll("a[href^='#']").forEach((link) => {
+  navEl.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
-      siteNav.classList.remove("is-open");
-      navToggle.setAttribute("aria-expanded", "false");
+      navEl.classList.remove("is-open");
+      navToggleEl.setAttribute("aria-expanded", "false");
     });
   });
 }
 
-const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const revealEls = document.querySelectorAll(".reveal");
-
-if (prefersReducedMotion) {
-  revealEls.forEach((el) => el.classList.add("is-visible"));
-} else {
-  const observer = new IntersectionObserver(
-    (entries, currentObserver) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-visible");
-        currentObserver.unobserve(entry.target);
-      });
-    },
-    { threshold: 0.13 }
-  );
-
-  revealEls.forEach((el) => observer.observe(el));
-}
-
-const faqButtons = document.querySelectorAll(".faq-question");
+const faqButtons = document.querySelectorAll(".js-faq-button");
 
 faqButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -72,74 +52,22 @@ faqButtons.forEach((button) => {
   });
 });
 
-const planSelect = document.getElementById("plano");
-const contactSection = document.getElementById("contato");
+const revealElements = document.querySelectorAll(".js-reveal");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-document.querySelectorAll(".js-select-plan").forEach((button) => {
-  button.addEventListener("click", () => {
-    const planName = button.dataset.plan;
-    if (planSelect && planName) {
-      planSelect.value = planName;
-    }
+if (prefersReducedMotion) {
+  revealElements.forEach((el) => el.classList.add("is-visible"));
+} else if (revealElements.length > 0) {
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.12 }
+  );
 
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-});
-
-const whatsappNumber = "5511999999999";
-const directLink = document.getElementById("whatsapp-direct");
-const floatingLink = document.getElementById("floating-whatsapp");
-const leadForm = document.getElementById("lead-form");
-const formStatus = document.getElementById("form-status");
-
-const buildWhatsappUrl = (message) => {
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-};
-
-const defaultMessage = "Ola, vim pela landing page da SparkFilmes e quero receber detalhes da producao de videos.";
-
-if (directLink) {
-  directLink.href = buildWhatsappUrl(defaultMessage);
-}
-
-if (floatingLink) {
-  floatingLink.href = buildWhatsappUrl(defaultMessage);
-}
-
-if (leadForm) {
-  leadForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    if (!leadForm.checkValidity()) {
-      leadForm.reportValidity();
-      return;
-    }
-
-    const data = new FormData(leadForm);
-    const nome = data.get("nome");
-    const empresa = data.get("empresa");
-    const objetivo = data.get("objetivo");
-    const plano = data.get("plano");
-    const mensagem = data.get("mensagem");
-
-    const composedMessage = [
-      "Ola, vim pela landing page da SparkFilmes.",
-      "",
-      `Nome: ${nome}`,
-      `Empresa/profissao: ${empresa}`,
-      `Objetivo: ${objetivo}`,
-      `Plano de interesse: ${plano}`,
-      `Contexto: ${mensagem}`
-    ].join("\n");
-
-    window.open(buildWhatsappUrl(composedMessage), "_blank", "noopener,noreferrer");
-
-    if (formStatus) {
-      formStatus.textContent = "Mensagem pronta aberta no WhatsApp.";
-    }
-
-    leadForm.reset();
-  });
+  revealElements.forEach((el) => revealObserver.observe(el));
 }
