@@ -1,7 +1,7 @@
 const clientPageRoot = document.querySelector("[data-client-page]");
 
 if (clientPageRoot) {
-  // O caminho do JSON e definido em data-json-path na pagina do cliente.
+  // O caminho do JSON é definido em data-json-path na página do cliente.
   const jsonPath = clientPageRoot.dataset.jsonPath;
   const clientHeaderEl = document.getElementById("cliente-header");
   const summaryGridEl = document.getElementById("cliente-summary");
@@ -21,9 +21,9 @@ if (clientPageRoot) {
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
         <rect width="1280" height="720" fill="#0d0d0f" />
         <circle cx="1080" cy="120" r="180" fill="#ff2c58" fill-opacity="0.24" />
-        <text x="80" y="210" font-family="Manrope, Arial, sans-serif" font-size="54" fill="#f1f0f0">Sparkfilmes</text>
-        <text x="80" y="330" font-family="Bebas Neue, Arial, sans-serif" font-size="110" letter-spacing="2" fill="#ff2c58">SEM CAPA</text>
-        <text x="80" y="420" font-family="Manrope, Arial, sans-serif" font-size="34" fill="#b8b8be">${safeLabel}</text>
+        <text x="80" y="210" font-family="Montserrat, Arial, sans-serif" font-size="54" fill="#f1f0f0">Sparkfilmes</text>
+        <text x="80" y="330" font-family="Montserrat, Arial, sans-serif" font-size="94" font-weight="800" fill="#ff2c58">SEM CAPA</text>
+        <text x="80" y="420" font-family="Montserrat, Arial, sans-serif" font-size="34" fill="#b8b8be">${safeLabel}</text>
       </svg>
     `;
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
@@ -59,7 +59,7 @@ if (clientPageRoot) {
 
     const updated = document.createElement("span");
     updated.className = "text-muted";
-    updated.textContent = `Ultima atualizacao: ${formatDatePtBr(cliente.ultimaAtualizacao)}`;
+    updated.textContent = `Última atualização: ${formatDatePtBr(cliente.ultimaAtualizacao)}`;
     metaWrap.appendChild(updated);
 
     if (cliente.observacoes) {
@@ -84,12 +84,12 @@ if (clientPageRoot) {
         value: String(entregas.length)
       },
       {
-        label: "Tipo de servico",
-        value: cliente.tipoServico || "Nao informado"
+        label: "Tipo de serviço",
+        value: cliente.tipoServico || "Não informado"
       },
       {
-        label: "Contato/observacao",
-        value: cliente.contato || "Atualizacoes via WhatsApp"
+        label: "Contato/observação",
+        value: cliente.contato || "Atualizações via WhatsApp"
       }
     ];
 
@@ -142,21 +142,21 @@ if (clientPageRoot) {
     body.className = "delivery-body";
 
     const title = document.createElement("h3");
-    title.textContent = entrega.titulo || "Entrega sem titulo";
+    title.textContent = entrega.titulo || "Entrega sem título";
 
     const date = document.createElement("p");
     date.className = "delivery-date";
-    date.textContent = `Data da gravacao: ${formatDatePtBr(entrega.data)}`;
+    date.textContent = `Data da gravação: ${formatDatePtBr(entrega.data)}`;
 
     const description = document.createElement("p");
-    description.textContent = entrega.descricao || "Sem descricao.";
+    description.textContent = entrega.descricao || "Sem descrição.";
 
     const actions = document.createElement("div");
     actions.className = "delivery-actions";
 
     const folderLink = document.createElement("a");
     folderLink.className = "btn btn-ghost btn-small";
-    // linkPasta recebe a URL da pasta do Google Drive de cada diaria.
+    // linkPasta recebe a URL da pasta do Google Drive de cada diária.
     folderLink.textContent = "Abrir pasta";
     if (entrega.linkPasta) {
       folderLink.href = entrega.linkPasta;
@@ -171,7 +171,7 @@ if (clientPageRoot) {
     if (entrega.linkDownload) {
       const downloadLink = document.createElement("a");
       downloadLink.className = "btn btn-primary btn-small";
-      // linkDownload e opcional: quando existir, habilita o botao de download.
+      // linkDownload é opcional: quando existir, habilita o botão de download.
       downloadLink.href = entrega.linkDownload;
       downloadLink.target = "_blank";
       downloadLink.rel = "noreferrer";
@@ -191,7 +191,7 @@ if (clientPageRoot) {
     if (!Array.isArray(entregas) || entregas.length === 0) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "Nenhuma entrega disponivel neste momento.";
+      empty.textContent = "Nenhuma entrega disponível neste momento.";
       deliveriesGridEl.appendChild(empty);
       return;
     }
@@ -204,7 +204,7 @@ if (clientPageRoot) {
   const initClientPage = async () => {
     if (!jsonPath) {
       if (deliveriesGridEl) {
-        deliveriesGridEl.innerHTML = '<p class="empty-state">Caminho do JSON nao configurado.</p>';
+        deliveriesGridEl.innerHTML = '<p class="empty-state">Caminho do JSON não configurado.</p>';
       }
       return;
     }
@@ -227,17 +227,17 @@ if (clientPageRoot) {
 
       if (pageNoteEl) {
         pageNoteEl.textContent =
-          "Arquivos hospedados no Google Drive. Em breve: filtros por mes/ano, busca e status de entrega.";
+          "Arquivos hospedados no Google Drive. Em breve: filtros por mês/ano, busca e status de entrega.";
       }
     } catch (error) {
       if (deliveriesGridEl) {
         deliveriesGridEl.innerHTML =
-          '<p class="empty-state">Nao foi possivel carregar as entregas. Verifique o caminho do JSON.</p>';
+          '<p class="empty-state">Não foi possível carregar as entregas. Verifique o caminho do JSON.</p>';
       }
       if (pageNoteEl) {
         pageNoteEl.textContent = "Erro ao carregar dados do cliente.";
       }
-      // Mantemos no console para debug local sem quebrar a experiencia do cliente.
+      // Mantemos no console para debug local sem quebrar a experiência do cliente.
       console.error(error);
     }
   };

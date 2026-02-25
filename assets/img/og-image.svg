@@ -16,17 +16,17 @@
   <circle cx="210" cy="120" r="160" fill="#ff2c58" opacity="0.17" />
   <circle cx="1030" cy="90" r="120" fill="#ff2c58" opacity="0.11" />
   <rect x="90" y="130" width="120" height="120" rx="20" fill="url(#accent)" />
-  <text x="150" y="205" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="68" fill="#f1f0f0">SF</text>
-  <text x="250" y="205" font-family="Manrope, Arial, sans-serif" font-size="66" font-weight="700" fill="#f1f0f0">
+  <text x="150" y="205" text-anchor="middle" font-family="Montserrat, Arial, sans-serif" font-size="60" font-weight="800" fill="#f1f0f0">SF</text>
+  <text x="250" y="205" font-family="Montserrat, Arial, sans-serif" font-size="62" font-weight="700" fill="#f1f0f0">
     Sparkfilmes
   </text>
-  <text x="90" y="330" font-family="Bebas Neue, sans-serif" font-size="90" letter-spacing="2" fill="#f1f0f0">
-    VIDEOS QUE TRANSFORMAM
+  <text x="90" y="330" font-family="Montserrat, Arial, sans-serif" font-size="72" font-weight="800" fill="#f1f0f0">
+    VÍDEOS QUE TRANSFORMAM
   </text>
-  <text x="90" y="410" font-family="Bebas Neue, sans-serif" font-size="90" letter-spacing="2" fill="#ff2c58">
-    ATENCAO EM CLIENTES
+  <text x="90" y="410" font-family="Montserrat, Arial, sans-serif" font-size="72" font-weight="800" fill="#ff2c58">
+    ATENÇÃO EM CLIENTES
   </text>
-  <text x="90" y="500" font-family="Manrope, Arial, sans-serif" font-size="34" fill="#b7b7b7">
-    Producao de conteudo para empresas e profissionais liberais
+  <text x="90" y="500" font-family="Montserrat, Arial, sans-serif" font-size="34" fill="#b7b7b7">
+    Produção de conteúdo para empresas e profissionais liberais
   </text>
 </svg>
