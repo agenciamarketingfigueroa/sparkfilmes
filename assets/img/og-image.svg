@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+  <title id="t">SparkFilmes</title>
+  <desc id="d">Videos que transformam atencao em clientes</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f1f0f0" />
+      <stop offset="0.5" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#f1f0f0" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff2c58" stop-opacity="0.88" />
+      <stop offset="1" stop-color="#d61f46" stop-opacity="0.72" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="210" cy="120" r="160" fill="#ff2c58" opacity="0.17" />
+  <circle cx="1030" cy="90" r="120" fill="#ff2c58" opacity="0.11" />
+  <rect x="90" y="130" width="120" height="120" rx="20" fill="url(#accent)" />
+  <text x="150" y="205" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="68" fill="#000000">SF</text>
+  <text x="250" y="205" font-family="Manrope, Arial, sans-serif" font-size="66" font-weight="700" fill="#000000">
+    SparkFilmes
+  </text>
+  <text x="90" y="330" font-family="Bebas Neue, sans-serif" font-size="90" letter-spacing="2" fill="#000000">
+    VIDEOS QUE TRANSFORMAM
+  </text>
+  <text x="90" y="410" font-family="Bebas Neue, sans-serif" font-size="90" letter-spacing="2" fill="#ff2c58">
+    ATENCAO EM CLIENTES
+  </text>
+  <text x="90" y="500" font-family="Manrope, Arial, sans-serif" font-size="34" fill="#3f3f3f">
+    Producao de conteudo para empresas e profissionais liberais
+  </text>
+</svg>
