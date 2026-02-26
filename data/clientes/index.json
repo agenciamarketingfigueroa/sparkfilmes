@@ -1,0 +1,10 @@
+{
+  "clientes": [
+    {
+      "nome": "Cliente Modelo",
+      "slug": "cliente-modelo",
+      "segmento": "Infoprodutos e educacao digital",
+      "url": "./material.html?cliente=cliente-modelo"
+    }
+  ]
+}

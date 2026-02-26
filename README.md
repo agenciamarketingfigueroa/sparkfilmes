@@ -1,95 +1,56 @@
-# Sparkfilmes - Site Institucional + Portal de Clientes
+# Sparkfilmes - Site institucional + portfolio + area de clientes
 
-Estrutura estatica em HTML, CSS e JS para:
+Estrutura estatica em HTML, CSS e JS com foco em:
 
-- Home institucional com foco em conversao e autoridade
-- Portfolio visual
-- Paginas de servicos e contato
-- Portal de clientes com entregas organizadas por diaria/projeto
-- Dados carregados por JSON e arquivos hospedados no Google Drive
+- Landing page de venda (Home)
+- Portfolio com reels 9:16 e cursos 16:9
+- Area "Seu material" com busca de cliente
+- Template dinamico de entrega com dados em JSON
 
-## Estrutura do projeto
+## Estrutura
 
 ```text
 .
-|-- 404.html
 |-- index.html
-|-- robots.txt
-|-- sitemap.xml
-|-- .nojekyll
-|-- portfolio
-|   `-- index.html
-|-- servicos
-|   `-- index.html
-|-- contato
-|   `-- index.html
-|-- clientes
-|   |-- index.html
-|   `-- cliente-modelo.html
-|-- data
-|   `-- clientes
-|       `-- cliente-modelo.json
+|-- portfolio/index.html
+|-- clientes/index.html
+|-- clientes/material.html
+|-- data/portfolio.json
+|-- data/clientes/index.json
+|-- data/clientes/cliente-modelo.json
 `-- assets
-    |-- css
-    |   `-- style.css
-    |-- js
-    |   |-- main.js
-    |   `-- cliente.js
-    `-- img
-        |-- og-image.svg
-        `-- placeholders
-            |-- portfolio-01.svg ... portfolio-06.svg
-            `-- entrega-01.svg ... entrega-06.svg
+    |-- css/style.css
+    `-- js
+        |-- main.js
+        `-- cliente.js
 ```
 
-## Como rodar localmente
-
-Opcao simples com servidor local:
+## Rodar local
 
 ```powershell
 python -m http.server 8080
 ```
 
-Depois acesse `http://localhost:8080`.
+Acesse: `http://localhost:8080`
 
-## Pontos de personalizacao obrigatoria
+## Personalizacao rapida
 
-1. WhatsApp:
-   - Procurar por `https://wa.me/5500000000000` e substituir pelo numero oficial.
-2. Cases/portfolio:
-   - Trocar imagens em `assets/img/placeholders`.
-   - Atualizar textos das paginas `index.html` e `portfolio/index.html`.
-3. Portal de clientes:
-   - Editar `data/clientes/cliente-modelo.json`.
-   - Trocar links `linkPasta` e `linkDownload` para URLs reais do Google Drive.
-4. Dados institucionais:
-   - Revisar email, Instagram e descricoes em `contato/index.html`.
-5. URL oficial:
-   - Ajustar `canonical`, `og:url` e `sitemap.xml`.
+1. WhatsApp oficial
+- Em cada pagina, ajustar `data-whatsapp-number` no `<body>`.
 
-## Como adicionar novo cliente no portal
+2. Videos do portfolio
+- Editar `data/portfolio.json`.
+- Preencher os IDs reais do YouTube em `id`.
 
-1. Duplicar `data/clientes/cliente-modelo.json` para um novo slug (ex.: `cliente-alpha.json`).
-2. Duplicar `clientes/cliente-modelo.html` para `clientes/cliente-alpha.html`.
-3. No arquivo HTML novo, alterar `data-json-path` para o JSON correto.
-4. Adicionar card do cliente em `clientes/index.html`.
+3. Clientes e busca
+- Editar `data/clientes/index.json` para listar clientes na busca.
+- Cada cliente deve ter `slug` e `url` para `material.html?cliente=slug`.
 
-## Observacoes de arquitetura (MVP)
+4. Entregas por cliente
+- Criar arquivos como `data/clientes/<slug>.json`.
+- Seguir o formato de `cliente-modelo.json`.
 
-- O site nao armazena arquivos de entrega.
-- O Google Drive funciona como storage.
-- O portal e a camada visual de organizacao.
-- Estrutura preparada para evoluir com:
-  - Login real (Cloudflare Access / Firebase / Supabase)
-  - Filtro por mes/ano
-  - Busca por entregas
-  - Novos status de fluxo (Em edicao / Revisao / Entregue)
+## Observacao sobre o player do YouTube
 
-## Deploy no GitHub Pages
-
-1. Commit e push para o repositorio.
-2. No GitHub: `Settings` -> `Pages`.
-3. Em `Build and deployment`, selecione:
-   - `Source`: `Deploy from a branch`
-   - `Branch`: `main` e pasta `/ (root)`
-4. Salve e aguarde a publicacao.
+O site usa iframe com controles nativos ocultos e botoes proprios (`Play`, `Pause`, `Stop`).
+Isso reduz distracoes, mas a marca/infra do YouTube ainda depende das regras da plataforma.

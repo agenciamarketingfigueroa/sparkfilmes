@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Portfolio | Sparkfilmes</title>
+    <title>Material do cliente | Sparkfilmes</title>
     <meta
       name="description"
-      content="Portfolio da Sparkfilmes com 12 reels em 9:16 e 2 videos de gravacao de cursos em 16:9."
+      content="Template de entrega da Sparkfilmes com catalogo de trabalhos, status e prazo de download."
     />
-    <link rel="canonical" href="https://seuusuario.github.io/sparkfilmes/portfolio/" />
+    <link rel="canonical" href="https://seuusuario.github.io/sparkfilmes/clientes/material.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -17,7 +17,7 @@
     />
     <link rel="stylesheet" href="../assets/css/style.css" />
   </head>
-  <body data-base-path=".." data-whatsapp-number="5500000000000">
+  <body data-base-path=".." data-whatsapp-number="5500000000000" data-client-page data-default-slug="cliente-modelo">
     <a class="skip-link" href="#conteudo">Pular para o conteudo principal</a>
 
     <header class="site-header">
@@ -33,11 +33,11 @@
 
         <nav class="site-nav" id="menu-principal" aria-label="Menu principal">
           <a href="../index.html">Home</a>
-          <a class="is-active" href="./index.html">Portfolio</a>
-          <a href="../clientes/index.html">Seu material</a>
+          <a href="../portfolio/index.html">Portfolio</a>
+          <a class="is-active" href="./index.html">Seu material</a>
           <a href="../index.html#orcamento">Orcamento</a>
-          <a class="btn btn-small btn-primary js-wa-link" href="#" data-wa-message="Oi, quero um projeto de video com a Sparkfilmes.">
-            WhatsApp
+          <a class="btn btn-small btn-primary js-wa-link" href="#" data-wa-message="Oi, preciso de suporte no meu material.">
+            Suporte
           </a>
         </nav>
       </div>
@@ -45,44 +45,32 @@
 
     <main id="conteudo">
       <section class="section page-hero">
-        <div class="container hero-shell" data-reveal>
-          <p class="eyebrow">Portfolio Sparkfilmes</p>
-          <h1>Selecao de trabalhos com linguagem cinematografica e foco em resultado.</h1>
-          <p class="text-muted">
-            Players sem distracoes para seu cliente assistir no seu site, sem sair para outra plataforma.
-          </p>
+        <div class="container">
+          <article id="cliente-header" class="client-spotlight" data-reveal>
+            <p class="loading-state">Carregando dados do cliente...</p>
+          </article>
         </div>
       </section>
 
       <section class="section">
         <div class="container">
           <header class="section-head" data-reveal>
-            <p class="eyebrow">Reels 9:16</p>
-            <h2 class="section-title">12 videos verticais para redes sociais e anuncios.</h2>
+            <p class="eyebrow">Resumo do projeto</p>
+            <h2 class="section-title">Informacoes principais da sua parceria com a Sparkfilmes.</h2>
           </header>
-
-          <div class="video-grid video-grid-reels" data-portfolio-target data-portfolio-type="reels"></div>
+          <div id="cliente-metricas" class="metric-grid"></div>
         </div>
       </section>
 
       <section class="section section-soft">
         <div class="container">
           <header class="section-head" data-reveal>
-            <p class="eyebrow">Cursos online 16:9</p>
-            <h2 class="section-title">2 exemplos de gravacao de aulas para infoprodutos.</h2>
+            <p class="eyebrow">Trabalhos entregues</p>
+            <h2 class="section-title">Catalogo de materiais com status e prazo de download.</h2>
           </header>
 
-          <div class="video-grid video-grid-wide" data-portfolio-target data-portfolio-type="cursos"></div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container final-cta" data-reveal>
-          <h2>Quer esse nivel no seu proximo projeto?</h2>
-          <p>Receba proposta personalizada para sua rotina de conteudo.</p>
-          <a class="btn btn-primary js-wa-link" href="#" data-wa-message="Oi, vi o portfolio e quero um orcamento personalizado.">
-            Solicitar proposta
-          </a>
+          <div id="cliente-entregas" class="delivery-grid"></div>
+          <p id="cliente-note" class="page-note">Arquivos hospedados no Google Drive.</p>
         </div>
       </section>
     </main>
@@ -90,10 +78,11 @@
     <footer class="site-footer">
       <div class="container footer-wrap">
         <p>&copy; <span data-current-year></span> Sparkfilmes. Todos os direitos reservados.</p>
-        <p>Portfolio audiovisual premium.</p>
+        <p>Entrega premium para cada cliente.</p>
       </div>
     </footer>
 
     <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/cliente.js" defer></script>
   </body>
 </html>

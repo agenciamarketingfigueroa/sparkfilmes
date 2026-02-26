@@ -3,16 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sparkfilmes | Produção audiovisual estratégica</title>
+    <title>Sparkfilmes | Video com linguagem de cinema para vender mais</title>
     <meta
       name="description"
-      content="A Sparkfilmes cria vídeos estratégicos para empresas que querem posicionamento forte e comunicação profissional."
+      content="Landing page da Sparkfilmes para videos comerciais, cursos online e entregas premium para clientes."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Sparkfilmes | Produção audiovisual estratégica" />
+    <meta property="og:title" content="Sparkfilmes | Video com linguagem de cinema para vender mais" />
     <meta
       property="og:description"
-      content="Vídeo com direção, estratégia e foco em posicionamento de marca."
+      content="Direcao, roteiro e captacao premium para marcas que querem autoridade e conversao."
     />
     <meta property="og:url" content="https://seuusuario.github.io/sparkfilmes/" />
     <meta property="og:image" content="https://seuusuario.github.io/sparkfilmes/assets/img/og-image.svg" />
@@ -21,17 +21,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/style.css" />
   </head>
-  <body>
-    <a class="skip-link" href="#conteudo">Pular para o conteúdo principal</a>
+  <body data-base-path="." data-whatsapp-number="5500000000000">
+    <!-- Trocar data-whatsapp-number pelo numero oficial no formato internacional, ex: 5511999999999 -->
+    <a class="skip-link" href="#conteudo">Pular para o conteudo principal</a>
 
     <header class="site-header" id="topo">
       <div class="container nav-wrap">
-        <a class="brand" href="index.html" aria-label="Sparkfilmes - ir para Home">
+        <a class="brand" href="index.html" aria-label="Sparkfilmes - voltar para Home">
           <span class="brand-mark">SF</span>
           <span class="brand-text">Sparkfilmes</span>
         </a>
@@ -42,19 +43,12 @@
 
         <nav class="site-nav" id="menu-principal" aria-label="Menu principal">
           <a class="is-active" href="index.html">Home</a>
-          <a href="portfolio/index.html">Portfólio</a>
-          <a href="servicos/index.html">Serviços</a>
-          <a href="clientes/index.html">Portal de Clientes</a>
-          <a href="contato/index.html">Contato</a>
-          <a
-            class="btn btn-small btn-primary"
-            href="https://wa.me/5500000000000"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Falar no WhatsApp
+          <a href="portfolio/index.html">Portfolio</a>
+          <a href="clientes/index.html">Seu material</a>
+          <a href="#orcamento">Orcamento</a>
+          <a class="btn btn-small btn-primary js-wa-link" href="#" data-wa-message="Oi, quero um orcamento da Sparkfilmes.">
+            WhatsApp
           </a>
-          <!-- Trocar o link acima pelo WhatsApp oficial da Sparkfilmes -->
         </nav>
       </div>
     </header>
@@ -62,211 +56,247 @@
     <main id="conteudo">
       <section class="section hero">
         <div class="container hero-grid">
-          <div class="hero-copy js-reveal">
-            <p class="eyebrow">Produção audiovisual estratégica</p>
-            <h1>Vídeo profissional para marcas que querem crescer com clareza.</h1>
+          <div class="hero-copy" data-reveal>
+            <p class="eyebrow">Cinema aplicado a marketing</p>
+            <h1>Videos elegantes, modernos e focados em conversao.</h1>
             <p class="text-muted">
-              Não é só estética. É direção de mensagem para posicionar melhor sua empresa.
+              A Sparkfilmes une estetica cinematografica, estrategia de venda e velocidade de entrega para voce publicar no timing certo.
             </p>
             <div class="hero-actions">
-              <a class="btn btn-primary" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
-                Falar no WhatsApp
+              <a
+                class="btn btn-primary js-wa-link"
+                href="#"
+                data-wa-message="Oi, quero acelerar meus resultados com videos da Sparkfilmes."
+              >
+                Quero vender mais com video
               </a>
-              <a class="btn btn-ghost" href="portfolio/index.html">Ver portfólio</a>
+              <a class="btn btn-ghost" href="portfolio/index.html">Ver portfolio completo</a>
             </div>
-            <p class="cta-microcopy">Orçamento sem compromisso.</p>
-            <!-- Trocar o link do WhatsApp acima pelo número oficial -->
+            <ul class="hero-badges">
+              <li>Entrega agil</li>
+              <li>Auxilio de roteiro</li>
+              <li>Teleprompter</li>
+              <li>Drone</li>
+            </ul>
           </div>
 
-          <aside class="hero-panel js-reveal" aria-label="Resumo da Sparkfilmes">
-            <p class="eyebrow">Resumo</p>
-            <h2>Captação, direção e edição em um fluxo simples.</h2>
-            <div class="kpi-grid">
+          <aside class="hero-panel" data-reveal>
+            <p class="eyebrow">Performance criativa</p>
+            <h2>Do briefing ao material final com processo simples e premium.</h2>
+            <div class="stat-grid">
               <article>
-                <strong>+120</strong>
-                <span>projetos realizados</span>
+                <strong>72h</strong>
+                <span>para os primeiros cortes</span>
               </article>
               <article>
-                <strong>Foco</strong>
-                <span>posicionamento de marca</span>
+                <strong>100%</strong>
+                <span>foco em conversao e autoridade</span>
               </article>
               <article>
-                <strong>Entrega</strong>
-                <span>organizada por cliente</span>
+                <strong>9:16 e 16:9</strong>
+                <span>conteudos prontos para cada canal</span>
               </article>
               <article>
-                <strong>Canal</strong>
-                <span>suporte direto via WhatsApp</span>
+                <strong>Suporte direto</strong>
+                <span>ajustes e direcao via WhatsApp</span>
               </article>
             </div>
           </aside>
         </div>
       </section>
 
-      <section class="section" id="quem-somos">
+      <section class="section" id="reels-destaque">
         <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">Quem somos</p>
-            <h2 class="section-title">Uma produtora para marcas que precisam de comunicação consistente.</h2>
+          <header class="section-head" data-reveal>
+            <p class="eyebrow">Portfolio em destaque</p>
+            <h2 class="section-title">Reels 9:16 para chamar atencao e converter.</h2>
+            <p class="text-muted">
+              Player direto no site com controles proprios para manter seu cliente focado na sua apresentacao.
+            </p>
           </header>
-          <div class="grid-2">
-            <article class="card js-reveal">
-              <h3>Estratégia antes da câmera</h3>
-              <p>Definimos objetivo, mensagem e formato antes de gravar.</p>
+
+          <div class="video-grid video-grid-reels" data-portfolio-target data-portfolio-type="reels" data-portfolio-limit="3"></div>
+
+          <div class="section-actions" data-reveal>
+            <a class="btn btn-ghost" href="portfolio/index.html">Ver os 12 reels + 2 videos de curso</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-soft" id="sobre">
+        <div class="container split-grid">
+          <article class="info-card" data-reveal>
+            <p class="eyebrow">Quem sou eu</p>
+            <h2 class="section-title">Minha trajetoria nasceu da necessidade de fazer conteudo com nivel profissional.</h2>
+            <p>
+              Minha historia no video comecou quando eu, como musico, precisei gravar cursos online com qualidade e comprei minha primeira camera.
+              Para evoluir rapido em tecnica e linguagem, busquei formacao com fotografos de casamento e ganhei experiencia real em ritmo, emocao e captacao em cenarios desafiadores.
+            </p>
+            <p>
+              Hoje sou especializado em infoprodutos, conteudo para redes sociais, criativos para anuncios e storymaker em casamentos.
+              Em cada projeto, uno estetica e estrategia com cuidado total no conteudo, do planejamento a finalizacao.
+            </p>
+          </article>
+
+          <article class="info-card" data-reveal>
+            <p class="eyebrow">Proposta Sparkfilmes</p>
+            <h3>Cada producao e pensada para posicionamento, autoridade e conversao.</h3>
+            <p>
+              Criamos videos e fotos com padrao premium, materiais prontos para redes sociais, campanhas e lancamentos, sem complicar sua rotina.
+            </p>
+            <ul class="feature-list">
+              <li>Planejamento de pauta e direcionamento de cenas.</li>
+              <li>Captacao e edicao com linguagem comercial.</li>
+              <li>Entregas organizadas para facilitar uso imediato.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="cursos-online">
+        <div class="container">
+          <header class="section-head" data-reveal>
+            <p class="eyebrow">Gravacao de cursos online</p>
+            <h2 class="section-title">Aulas em 16:9 com audio limpo, direcao e ritmo de aula premium.</h2>
+            <p class="text-muted">
+              Setup completo com luz, enquadramento profissional e teleprompter para manter fluidez, clareza e autoridade na gravacao.
+            </p>
+          </header>
+
+          <div class="video-grid video-grid-wide" data-portfolio-target data-portfolio-type="cursos" data-portfolio-limit="2"></div>
+        </div>
+      </section>
+
+      <section class="section section-soft" id="servicos">
+        <div class="container">
+          <header class="section-head" data-reveal>
+            <p class="eyebrow">Servicos Sparkfilmes</p>
+            <h2 class="section-title">Solucoes sob medida para marca, campanha e produto digital.</h2>
+          </header>
+
+          <div class="service-grid">
+            <article class="service-card" data-reveal>
+              <h3>Conteudos para redes e campanhas</h3>
+              <p>Reels e criativos para anuncios com estetica cinematografica para atrair, comunicar valor e converter.</p>
             </article>
-            <article class="card js-reveal">
-              <h3>Execução com direção</h3>
-              <p>Produção orientada para manter qualidade e clareza comercial.</p>
+            <article class="service-card" data-reveal>
+              <h3>Eventos corporativos e sociais</h3>
+              <p>Cobertura completa com making of e aftermovie para gerar materiais de alto impacto para divulgacao.</p>
+            </article>
+            <article class="service-card" data-reveal>
+              <h3>Infoprodutos e cursos online</h3>
+              <p>Captacao profissional com entrega agil para pagina de vendas, anuncios e redes sociais.</p>
+            </article>
+            <article class="service-card" data-reveal>
+              <h3>Casamentos | Storymaker</h3>
+              <p>Registro elegante do grande dia com conteudo em tempo real para manter o evento vivo nas redes.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section section-light" id="servicos-home">
+      <section class="section" id="beneficios">
         <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">Serviços</p>
-            <h2 class="section-title">Produção sob medida para rotina de conteúdo e campanhas.</h2>
+          <header class="section-head" data-reveal>
+            <p class="eyebrow">Por que a Spark vende mais</p>
+            <h2 class="section-title">Beneficios que aumentam seu valor percebido.</h2>
           </header>
-          <div class="card-grid">
-            <article class="card js-reveal">
-              <h3>Captação recorrente</h3>
-              <p>Diárias planejadas para produção contínua.</p>
+
+          <div class="benefit-grid">
+            <article class="benefit-card" data-reveal>
+              <span class="icon-dot" aria-hidden="true"></span>
+              <h3>Velocidade de entrega</h3>
+              <p>Fluxo otimizado para publicar rapido e aproveitar o melhor timing de venda.</p>
             </article>
-            <article class="card js-reveal">
-              <h3>Vídeos institucionais</h3>
-              <p>Conteúdo para apresentar marca, serviço e diferencial.</p>
+            <article class="benefit-card" data-reveal>
+              <span class="icon-dot" aria-hidden="true"></span>
+              <h3>Auxilio de roteiro</h3>
+              <p>Direcionamento de fala para comunicar valor e guiar a audiencia ate a acao.</p>
             </article>
-            <article class="card js-reveal">
-              <h3>Conteúdo para redes</h3>
-              <p>Reels, cortes e formatos rápidos com padrão profissional.</p>
+            <article class="benefit-card" data-reveal>
+              <span class="icon-dot" aria-hidden="true"></span>
+              <h3>Teleprompter profissional</h3>
+              <p>Mais seguranca na gravacao, menos retrabalho e mais consistencia na mensagem.</p>
             </article>
-            <article class="card js-reveal">
-              <h3>Cobertura de evento</h3>
-              <p>Registro estratégico para uso comercial no pós-evento.</p>
+            <article class="benefit-card" data-reveal>
+              <span class="icon-dot" aria-hidden="true"></span>
+              <h3>Captacao com drone</h3>
+              <p>Planos aereos estrategicos para elevar o nivel visual e diferenciar sua marca.</p>
             </article>
           </div>
         </div>
       </section>
 
-      <section class="section" id="como-funciona">
-        <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">Como funciona</p>
-            <h2 class="section-title">Quatro passos, do briefing à entrega.</h2>
-          </header>
-          <ol class="steps">
-            <li class="js-reveal">
-              <h3>1. Briefing</h3>
-              <p>Objetivo e mensagem do projeto.</p>
-            </li>
-            <li class="js-reveal">
-              <h3>2. Planejamento</h3>
-              <p>Pauta e cronograma de gravação.</p>
-            </li>
-            <li class="js-reveal">
-              <h3>3. Produção</h3>
-              <p>Captação com direção de cena.</p>
-            </li>
-            <li class="js-reveal">
-              <h3>4. Entrega</h3>
-              <p>Arquivos prontos e organizados.</p>
-            </li>
-          </ol>
-        </div>
-      </section>
+      <section class="section section-soft" id="orcamento">
+        <div class="container quote-grid">
+          <article class="info-card" data-reveal>
+            <p class="eyebrow">Orcamento estrategico</p>
+            <h2 class="section-title">Preencha em 1 minuto e receba resposta direto no WhatsApp.</h2>
+            <p>
+              Vamos montar um plano de captacao de acordo com objetivo, prazo e verba. Quanto melhor o briefing, mais rapido fechamos e colocamos seu projeto em producao.
+            </p>
+            <ul class="feature-list">
+              <li>Diagnostico rapido do melhor formato para seu objetivo.</li>
+              <li>Sugestao de roteiro e estrutura de gravacao.</li>
+              <li>Plano de entrega pronto para usar em redes e anuncios.</li>
+            </ul>
+          </article>
 
-      <section class="section" id="por-que-escolher">
-        <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">Por que Sparkfilmes</p>
-            <h2 class="section-title">Direção estratégica e operação enxuta.</h2>
-          </header>
-          <ul class="why-list">
-            <li class="js-reveal">Menos improviso, mais consistência.</li>
-            <li class="js-reveal">Entregas organizadas no portal do cliente.</li>
-            <li class="js-reveal">Arquivos via Google Drive, sem complicação.</li>
-          </ul>
-        </div>
-      </section>
+          <article class="form-card" data-reveal>
+            <form class="quote-form" data-wa-form>
+              <label for="nome">Nome</label>
+              <input id="nome" name="nome" class="field" type="text" required />
 
-      <section class="section section-light" id="portfolio-home">
-        <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">Portfólio</p>
-            <h2 class="section-title">Alguns formatos de entrega.</h2>
-          </header>
-          <div class="portfolio-preview">
-            <!-- Trocar as imagens abaixo por thumbs reais do portfólio -->
-            <article class="portfolio-preview-item js-reveal">
-              <img src="assets/img/placeholders/portfolio-01.svg" alt="Projeto institucional" loading="lazy" />
-              <div><h3>Institucional</h3></div>
-            </article>
-            <article class="portfolio-preview-item js-reveal">
-              <img src="assets/img/placeholders/portfolio-02.svg" alt="Série de Reels" loading="lazy" />
-              <div><h3>Reels em lote</h3></div>
-            </article>
-            <article class="portfolio-preview-item js-reveal">
-              <img src="assets/img/placeholders/portfolio-03.svg" alt="Cobertura de evento" loading="lazy" />
-              <div><h3>Evento</h3></div>
-            </article>
-          </div>
-        </div>
-      </section>
+              <label for="marca">Empresa / Nicho</label>
+              <input id="marca" name="marca" class="field" type="text" required />
 
-      <section class="section" id="faq">
-        <div class="container">
-          <header class="section-head js-reveal">
-            <p class="eyebrow">FAQ</p>
-            <h2 class="section-title">Dúvidas comuns.</h2>
-          </header>
-          <div class="faq-list">
-            <article class="faq-item js-reveal">
-              <h3>
-                <button class="faq-question js-faq-button" type="button" aria-expanded="false">
-                  Vocês atendem empresas pequenas?
-                </button>
-              </h3>
-              <div class="faq-answer"><p>Sim. Atendemos negócios em diferentes estágios.</p></div>
-            </article>
-            <article class="faq-item js-reveal">
-              <h3>
-                <button class="faq-question js-faq-button" type="button" aria-expanded="false">
-                  Vocês criam roteiro?
-                </button>
-              </h3>
-              <div class="faq-answer"><p>Sim. O roteiro é parte do processo.</p></div>
-            </article>
-            <article class="faq-item js-reveal">
-              <h3>
-                <button class="faq-question js-faq-button" type="button" aria-expanded="false">
-                  Onde ficam os arquivos?
-                </button>
-              </h3>
-              <div class="faq-answer"><p>No Google Drive, com acesso organizado por cliente.</p></div>
-            </article>
-            <article class="faq-item js-reveal">
-              <h3>
-                <button class="faq-question js-faq-button" type="button" aria-expanded="false">
-                  Quanto tempo para entregar?
-                </button>
-              </h3>
-              <div class="faq-answer"><p>Depende do escopo, definido no briefing.</p></div>
-            </article>
-          </div>
+              <label for="objetivo">Objetivo principal</label>
+              <select id="objetivo" name="objetivo" class="field" required>
+                <option value="">Selecione</option>
+                <option>Autoridade de marca</option>
+                <option>Conversao em vendas</option>
+                <option>Lancamento de curso</option>
+                <option>Cobertura de evento</option>
+              </select>
+
+              <label for="servico">Servico desejado</label>
+              <select id="servico" name="servico" class="field" required>
+                <option value="">Selecione</option>
+                <option>Reels e criativos</option>
+                <option>Curso online 16:9</option>
+                <option>Captacao recorrente</option>
+                <option>Cobertura de evento</option>
+              </select>
+
+              <label for="prazo">Prazo ideal para publicar</label>
+              <input id="prazo" name="prazo" class="field" type="text" placeholder="Ex: em 15 dias" required />
+
+              <label for="investimento">Faixa de investimento</label>
+              <select id="investimento" name="investimento" class="field" required>
+                <option value="">Selecione</option>
+                <option>Ate R$ 2.500</option>
+                <option>R$ 2.500 a R$ 5.000</option>
+                <option>R$ 5.000 a R$ 10.000</option>
+                <option>Acima de R$ 10.000</option>
+              </select>
+
+              <label for="detalhes">Detalhes do projeto</label>
+              <textarea id="detalhes" name="detalhes" class="field" rows="4" required></textarea>
+
+              <button type="submit" class="btn btn-primary">Enviar briefing no WhatsApp</button>
+              <p class="form-feedback" data-form-feedback></p>
+            </form>
+          </article>
         </div>
       </section>
 
       <section class="section">
-        <div class="container final-cta js-reveal">
-          <h2>Quer elevar o nível da comunicação da sua marca?</h2>
-          <div class="cta-actions">
-            <a class="btn btn-primary" href="https://wa.me/5500000000000" target="_blank" rel="noreferrer">
-              Falar no WhatsApp
-            </a>
-            <p class="cta-microcopy">Atendimento rápido.</p>
-            <!-- Trocar o link do WhatsApp acima pelo número oficial -->
-          </div>
+        <div class="container final-cta" data-reveal>
+          <h2>Seu conteudo pode ter cara de cinema e resultado de campanha.</h2>
+          <p>Fale comigo agora e receba direcionamento para o seu projeto.</p>
+          <a class="btn btn-primary js-wa-link" href="#" data-wa-message="Oi, quero fechar uma captacao com a Sparkfilmes.">
+            Falar com a Sparkfilmes
+          </a>
         </div>
       </section>
     </main>
@@ -274,7 +304,7 @@
     <footer class="site-footer">
       <div class="container footer-wrap">
         <p>&copy; <span data-current-year></span> Sparkfilmes. Todos os direitos reservados.</p>
-        <p>Produção audiovisual estratégica.</p>
+        <p>Video comercial com linguagem cinematografica.</p>
       </div>
     </footer>
 

@@ -2,77 +2,105 @@
   "cliente": {
     "nome": "Cliente Modelo",
     "slug": "cliente-modelo",
-    "segmento": "Clínica especializada em saúde integrativa",
+    "nicho": "Infoprodutos e educacao digital",
     "status": "Ativo",
+    "inicioParceria": "2025-08-12",
     "ultimaAtualizacao": "2026-02-25",
-    "observacoes": "Projeto recorrente com foco em posicionamento local, educação do público e prova social.",
-    "tipoServico": "Captação recorrente mensal",
-    "contato": "Canal principal: WhatsApp comercial"
+    "resumo": "Projeto recorrente com foco em autoridade, venda de cursos e escala de conteudo para anuncios e redes sociais.",
+    "formatoPrincipal": "Reels 9:16 + Cursos 16:9",
+    "metricas": [
+      {
+        "label": "Trabalhos feitos",
+        "value": "24"
+      },
+      {
+        "label": "Videos entregues",
+        "value": "116"
+      },
+      {
+        "label": "Tempo medio de entrega",
+        "value": "72h"
+      }
+    ]
   },
-  "entregas": [
+  "trabalhos": [
     {
-      "id": "ent-001",
-      "titulo": "Diária de gravação - Podcast Episódio 01",
-      "data": "2026-02-10",
+      "id": "job-001",
+      "titulo": "Capta de curso online | Modulo 01",
+      "dataTrabalho": "2026-02-20",
+      "statusEntrega": "Entregue",
+      "formato": "Curso 16:9",
+      "volume": "12 aulas + 18 cortes",
+      "observacao": "Material otimizado para pagina de vendas e anuncios.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-01.svg",
-      "descricao": "Episódio completo com cortes para conteúdos curtos.",
-      "tipo": "Podcast",
-      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOpodcast01",
-      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload01/view",
-      "tags": ["Brutos", "Podcast", "Cortes", "Final"]
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOmodulo01",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload01/view"
     },
     {
-      "id": "ent-002",
-      "titulo": "Captação de Reels - Sessão Clínica",
-      "data": "2026-02-05",
+      "id": "job-002",
+      "titulo": "Reels de campanha | Oferta de lancamento",
+      "dataTrabalho": "2026-02-12",
+      "statusEntrega": "Entregue",
+      "formato": "Reels 9:16",
+      "volume": "10 reels",
+      "observacao": "Variacoes de criativo para teste de anuncios.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-02.svg",
-      "descricao": "Reels da rotina clínica com foco comercial.",
-      "tipo": "Reels",
       "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOreels02",
-      "tags": ["Reels", "Shorts", "Social", "Brutos"]
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload02/view"
     },
     {
-      "id": "ent-003",
-      "titulo": "Cobertura de Evento - Bastidores",
-      "data": "2026-01-29",
+      "id": "job-003",
+      "titulo": "Aula ao vivo gravada | Turma premium",
+      "dataTrabalho": "2026-02-02",
+      "statusEntrega": "Aguardando aprovacao",
+      "formato": "Curso 16:9",
+      "volume": "1 aula longa + cortes",
+      "observacao": "Aguardando validacao final do cliente.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-03.svg",
-      "descricao": "Bastidores e highlights para o pós-evento.",
-      "tipo": "Evento",
-      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOevento03",
-      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload03/view",
-      "tags": ["Evento", "Bastidores", "Fotos", "Highlights"]
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOaovivo03",
+      "linkDownload": ""
     },
     {
-      "id": "ent-004",
-      "titulo": "Entrega Final - Vídeos Editados",
-      "data": "2026-01-23",
+      "id": "job-004",
+      "titulo": "Reels de autoridade | Serie semanal",
+      "dataTrabalho": "2026-01-21",
+      "statusEntrega": "Entregue",
+      "formato": "Reels 9:16",
+      "volume": "8 reels",
+      "observacao": "Conteudo de educacao para fortalecer posicionamento.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-04.svg",
-      "descricao": "Pacote final com versões horizontal e vertical.",
-      "tipo": "Final",
-      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOfinal04",
-      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload04/view",
-      "tags": ["Final", "Instagram", "YouTube", "Anúncios"]
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOserie04",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload04/view"
     },
     {
-      "id": "ent-005",
-      "titulo": "Captação de Reels - Rotina da Equipe",
-      "data": "2026-01-15",
+      "id": "job-005",
+      "titulo": "Capta em estudio | Modulo 02",
+      "dataTrabalho": "2026-01-11",
+      "statusEntrega": "Em edicao",
+      "formato": "Curso 16:9",
+      "volume": "9 aulas em bloco",
+      "observacao": "Etapa de finalizacao e colorizacao.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-05.svg",
-      "descricao": "Bastidores da equipe para fortalecer confiança.",
-      "tipo": "Reels",
-      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOrotina05",
-      "tags": ["Reels", "Equipe", "Stories"]
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOestudio05",
+      "linkDownload": ""
     },
     {
-      "id": "ent-006",
-      "titulo": "Diária de gravação - FAQ Comercial",
-      "data": "2026-01-08",
+      "id": "job-006",
+      "titulo": "Reels com drone | Bastidores do evento",
+      "dataTrabalho": "2025-12-18",
+      "statusEntrega": "Entregue",
+      "formato": "Reels 9:16",
+      "volume": "6 reels + 1 video manifesto",
+      "observacao": "Planos aereos para elevar percepcao premium da marca.",
+      "prazoAnos": 1,
       "capa": "../assets/img/placeholders/entrega-06.svg",
-      "descricao": "Respostas comerciais para dúvidas frequentes.",
-      "tipo": "FAQ",
-      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOfaq06",
-      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload06/view",
-      "tags": ["FAQ", "Comercial", "Conversão", "Final"]
+      "linkPasta": "https://drive.google.com/drive/folders/1EXEMPLOdrone06",
+      "linkDownload": "https://drive.google.com/file/d/1EXEMPLOdownload06/view"
     }
   ]
 }

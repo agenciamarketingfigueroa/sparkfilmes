@@ -1,0 +1,104 @@
+{
+  "reels": [
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Comercial | Clinica Premium",
+      "descricao": "Capta com foco em autoridade, prova social e conversao.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Criativo | Produto em Destaque",
+      "descricao": "Narrativa curta para captar atencao e gerar clique.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Storytelling | Bastidores",
+      "descricao": "Contexto real para fortalecer confianca na marca.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Oferta | Campanha de Vendas",
+      "descricao": "Conteudo objetivo para acelerar decisoes de compra.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Posicionamento | Marca Pessoal",
+      "descricao": "Direcao de fala e imagem para escalar autoridade.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Educativo | Conteudo de Valor",
+      "descricao": "Explicacoes claras com visual premium para retenao.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Testemunho | Prova Social",
+      "descricao": "Depoimentos com ritmo dinamico e direcao de cena.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Evento | Highlights",
+      "descricao": "Cobertura cinematografica para pos evento.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Nichado | Saude",
+      "descricao": "Comunicacao clara para nichos tecnicos.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Nichado | Educacao",
+      "descricao": "Aberturas e ganchos para aumentar watch time.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Reel Nichado | Imobiliario",
+      "descricao": "Apresentacao de servicos com recorte comercial.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Reel Performance | Anuncios",
+      "descricao": "Criativo pronto para campanhas com variacoes.",
+      "categoria": "Reels 9:16",
+      "ratio": "9:16"
+    }
+  ],
+  "cursos": [
+    {
+      "id": "M7lc1UVf-VE",
+      "titulo": "Gravacao de Curso | Aula Master",
+      "descricao": "Setup completo de luz, audio, teleprompter e direcao.",
+      "categoria": "Curso Online 16:9",
+      "ratio": "16:9"
+    },
+    {
+      "id": "ysz5S6PUM-U",
+      "titulo": "Gravacao de Curso | Modulo Pratico",
+      "descricao": "Capta em bloco com agilidade para paginas e lancamentos.",
+      "categoria": "Curso Online 16:9",
+      "ratio": "16:9"
+    }
+  ]
+}
