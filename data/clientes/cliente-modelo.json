@@ -1,4 +1,4 @@
-{
+﻿{
   "cliente": {
     "nome": "Cliente Modelo",
     "slug": "cliente-modelo",
@@ -7,7 +7,7 @@
     "inicioParceria": "2025-08-12",
     "ultimaAtualizacao": "2026-02-25",
     "resumo": "Projeto recorrente com foco em autoridade, venda de cursos e escala de conteudo para anuncios e redes sociais.",
-    "formatoPrincipal": "Reels 9:16 + Cursos 16:9",
+    "formatoPrincipal": "Reels + Cursos online",
     "metricas": [
       {
         "label": "Trabalhos feitos",
@@ -29,7 +29,7 @@
       "titulo": "Capta de curso online | Modulo 01",
       "dataTrabalho": "2026-02-20",
       "statusEntrega": "Entregue",
-      "formato": "Curso 16:9",
+      "formato": "Curso",
       "volume": "12 aulas + 18 cortes",
       "observacao": "Material otimizado para pagina de vendas e anuncios.",
       "prazoAnos": 1,
@@ -42,7 +42,7 @@
       "titulo": "Reels de campanha | Oferta de lancamento",
       "dataTrabalho": "2026-02-12",
       "statusEntrega": "Entregue",
-      "formato": "Reels 9:16",
+      "formato": "Reels",
       "volume": "10 reels",
       "observacao": "Variacoes de criativo para teste de anuncios.",
       "prazoAnos": 1,
@@ -55,7 +55,7 @@
       "titulo": "Aula ao vivo gravada | Turma premium",
       "dataTrabalho": "2026-02-02",
       "statusEntrega": "Aguardando aprovacao",
-      "formato": "Curso 16:9",
+      "formato": "Curso",
       "volume": "1 aula longa + cortes",
       "observacao": "Aguardando validacao final do cliente.",
       "prazoAnos": 1,
@@ -68,7 +68,7 @@
       "titulo": "Reels de autoridade | Serie semanal",
       "dataTrabalho": "2026-01-21",
       "statusEntrega": "Entregue",
-      "formato": "Reels 9:16",
+      "formato": "Reels",
       "volume": "8 reels",
       "observacao": "Conteudo de educacao para fortalecer posicionamento.",
       "prazoAnos": 1,
@@ -81,7 +81,7 @@
       "titulo": "Capta em estudio | Modulo 02",
       "dataTrabalho": "2026-01-11",
       "statusEntrega": "Em edicao",
-      "formato": "Curso 16:9",
+      "formato": "Curso",
       "volume": "9 aulas em bloco",
       "observacao": "Etapa de finalizacao e colorizacao.",
       "prazoAnos": 1,
@@ -94,7 +94,7 @@
       "titulo": "Reels com drone | Bastidores do evento",
       "dataTrabalho": "2025-12-18",
       "statusEntrega": "Entregue",
-      "formato": "Reels 9:16",
+      "formato": "Reels",
       "volume": "6 reels + 1 video manifesto",
       "observacao": "Planos aereos para elevar percepcao premium da marca.",
       "prazoAnos": 1,
@@ -104,3 +104,5 @@
     }
   ]
 }
+
+

@@ -1,4 +1,4 @@
-const headerEl = document.querySelector(".site-header");
+﻿const headerEl = document.querySelector(".site-header");
 const navToggleEl = document.querySelector(".nav-toggle");
 const navEl = document.querySelector(".site-nav");
 const yearEls = document.querySelectorAll("[data-current-year]");
@@ -504,3 +504,5 @@ const init = async () => {
 };
 
 init();
+
+

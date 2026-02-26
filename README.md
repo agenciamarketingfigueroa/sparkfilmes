@@ -1,9 +1,9 @@
-# Sparkfilmes - Site institucional + portfolio + area de clientes
+﻿# Sparkfilmes - Site institucional + portfolio + area de clientes
 
 Estrutura estatica em HTML, CSS e JS com foco em:
 
 - Landing page de venda (Home)
-- Portfolio com reels 9:16 e cursos 16:9
+- Portfolio com reels e cursos online
 - Area "Seu material" com busca de cliente
 - Template dinamico de entrega com dados em JSON
 
@@ -54,3 +54,4 @@ Acesse: `http://localhost:8080`
 
 O site usa iframe com controles nativos ocultos e botoes proprios (`Play`, `Pause`, `Stop`).
 Isso reduz distracoes, mas a marca/infra do YouTube ainda depende das regras da plataforma.
+
