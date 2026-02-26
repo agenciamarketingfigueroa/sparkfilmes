@@ -89,7 +89,7 @@ if (clientRoot) {
 
     const subtitle = document.createElement("p");
     subtitle.className = "client-subtitle";
-    subtitle.textContent = `Nicho: ${cliente.nicho || cliente.segmento || "Nao informado"}`;
+    subtitle.textContent = `Nicho: ${cliente.nicho || cliente.segmento || "Não informado"}`;
 
     const description = document.createElement("p");
     description.className = "client-description";
@@ -101,7 +101,7 @@ if (clientRoot) {
 
     const updateInfo = document.createElement("span");
     updateInfo.className = "text-muted";
-    updateInfo.textContent = `Ultima atualizacao: ${formatDatePtBr(cliente.ultimaAtualizacao)}`;
+    updateInfo.textContent = `Última atualização: ${formatDatePtBr(cliente.ultimaAtualizacao)}`;
     meta.appendChild(updateInfo);
 
     headerEl.append(eyebrow, title, subtitle, description, meta);
@@ -127,7 +127,7 @@ if (clientRoot) {
       value.textContent = metric.value || "--";
 
       const label = document.createElement("span");
-      label.textContent = metric.label || "Metrica";
+      label.textContent = metric.label || "Métrica";
 
       card.append(value, label);
       metricsEl.appendChild(card);
@@ -166,11 +166,11 @@ if (clientRoot) {
     metaList.appendChild(dateItem);
 
     const formatItem = document.createElement("li");
-    formatItem.innerHTML = `<strong>Formato:</strong> ${work.formato || "Nao informado"}`;
+    formatItem.innerHTML = `<strong>Formato:</strong> ${work.formato || "Não informado"}`;
     metaList.appendChild(formatItem);
 
     const quantityItem = document.createElement("li");
-    quantityItem.innerHTML = `<strong>Volume:</strong> ${work.volume || "Nao informado"}`;
+    quantityItem.innerHTML = `<strong>Volume:</strong> ${work.volume || "Não informado"}`;
     metaList.appendChild(quantityItem);
 
     if (work.observacao) {
@@ -185,11 +185,11 @@ if (clientRoot) {
     countdown.className = "countdown";
 
     if (!deadline || remainingDays === null) {
-      countdown.textContent = "Prazo de download: nao informado.";
+      countdown.textContent = "Prazo de download: não informado.";
     } else if (remainingDays < 0) {
       countdown.textContent = `Prazo expirado em ${formatDatePtBr(deadline.toISOString().slice(0, 10))}.`;
     } else {
-      countdown.textContent = `Prazo de download: ${remainingDays} dias restantes (ate ${formatDatePtBr(
+      countdown.textContent = `Prazo de download: ${remainingDays} dias restantes (até ${formatDatePtBr(
         deadline.toISOString().slice(0, 10)
       )}).`;
     }
@@ -234,7 +234,7 @@ if (clientRoot) {
     if (!Array.isArray(trabalhos) || trabalhos.length === 0) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "Nenhum trabalho registrado ate o momento.";
+      empty.textContent = "Nenhum trabalho registrado até o momento.";
       deliveriesEl.appendChild(empty);
       return;
     }
@@ -248,7 +248,7 @@ if (clientRoot) {
     const dataPath = getDataPath();
     if (!dataPath) {
       if (deliveriesEl) {
-        deliveriesEl.innerHTML = '<p class="empty-state">Cliente nao informado na URL.</p>';
+        deliveriesEl.innerHTML = '<p class="empty-state">Cliente não informado na URL.</p>';
       }
       return;
     }
@@ -276,7 +276,7 @@ if (clientRoot) {
       console.error(error);
       if (deliveriesEl) {
         deliveriesEl.innerHTML =
-          '<p class="empty-state">Nao foi possivel carregar os dados. Verifique se o arquivo JSON do cliente existe.</p>';
+          '<p class="empty-state">Não foi possível carregar os dados. Verifique se o arquivo JSON do cliente existe.</p>';
       }
       if (noteEl) {
         noteEl.textContent = "Erro ao carregar dados do cliente.";

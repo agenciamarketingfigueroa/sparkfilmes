@@ -143,7 +143,7 @@ const initWhatsAppForm = () => {
       `Nome: ${data.get("nome") || "-"}`,
       `Empresa/Nicho: ${data.get("marca") || "-"}`,
       `Objetivo: ${data.get("objetivo") || "-"}`,
-      `Servico: ${data.get("servico") || "-"}`,
+      `Serviço: ${data.get("servico") || "-"}`,
       `Prazo: ${data.get("prazo") || "-"}`,
       `Investimento: ${data.get("investimento") || "-"}`,
       "",
@@ -169,6 +169,9 @@ const extractYouTubeId = (input) => {
 
   const shortMatch = raw.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
   if (shortMatch?.[1]) return shortMatch[1];
+
+  const shortsMatch = raw.match(/shorts\/([a-zA-Z0-9_-]{11})/);
+  if (shortsMatch?.[1]) return shortsMatch[1];
 
   const embedMatch = raw.match(/embed\/([a-zA-Z0-9_-]{11})/);
   if (embedMatch?.[1]) return embedMatch[1];
@@ -228,7 +231,7 @@ const createPlayerCard = (item, index, type) => {
   } else {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "ID do YouTube invalido. Atualize em data/portfolio.json.";
+    empty.textContent = "ID do YouTube inválido. Atualize em data/portfolio.json.";
     stage.appendChild(empty);
   }
 
@@ -352,7 +355,7 @@ const renderPortfolioFeeds = async () => {
 
   try {
     const response = await fetch(resolvePath("data/portfolio.json"), { cache: "no-store" });
-    if (!response.ok) throw new Error("Falha ao carregar portfolio.");
+    if (!response.ok) throw new Error("Falha ao carregar portfólio.");
 
     const portfolioData = await response.json();
 
@@ -367,7 +370,7 @@ const renderPortfolioFeeds = async () => {
       if (items.length === 0) {
         const empty = document.createElement("p");
         empty.className = "empty-state";
-        empty.textContent = "Nenhum video cadastrado ainda.";
+      empty.textContent = "Nenhum vídeo cadastrado ainda.";
         target.appendChild(empty);
         return;
       }
@@ -383,7 +386,7 @@ const renderPortfolioFeeds = async () => {
   } catch (error) {
     console.error(error);
     targets.forEach((target) => {
-      target.innerHTML = '<p class="empty-state">Nao foi possivel carregar o portfolio. Verifique data/portfolio.json.</p>';
+      target.innerHTML = '<p class="empty-state">Não foi possível carregar o portfólio. Verifique data/portfolio.json.</p>';
     });
   }
 };
@@ -396,7 +399,7 @@ const buildMaterialClientCard = (client) => {
   title.textContent = client.nome || "Cliente";
 
   const segment = document.createElement("p");
-  segment.textContent = client.segmento || client.nicho || "Segmento nao informado";
+  segment.textContent = client.segmento || client.nicho || "Segmento não informado";
 
   const link = document.createElement("a");
   link.className = "btn btn-small btn-ghost";
@@ -434,7 +437,7 @@ const initMaterialSearch = async () => {
     clients = Array.isArray(data.clientes) ? data.clientes : [];
   } catch (error) {
     console.error(error);
-    setFeedback("Nao foi possivel carregar a lista de clientes.");
+    setFeedback("Não foi possível carregar a lista de clientes.");
   }
 
   const renderList = (items) => {

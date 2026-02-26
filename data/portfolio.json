@@ -1,86 +1,86 @@
 {
   "reels": [
     {
-      "id": "M7lc1UVf-VE",
-      "titulo": "Reel Comercial | Clinica Premium",
-      "descricao": "Capta com foco em autoridade, prova social e conversao.",
+      "id": "https://youtube.com/shorts/pZapjfbj2bs?feature=share",
+      "titulo": "Reels Comercial | Clínica Estética",
+      "descricao": "Captação com foco em mostrar a experiência do cliente e detalhes do serviço.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
-      "id": "ysz5S6PUM-U",
-      "titulo": "Reel Criativo | Produto em Destaque",
-      "descricao": "Narrativa curta para captar atencao e gerar clique.",
+      "id": "https://youtube.com/shorts/qKN-CfPNeHk?feature=share",
+      "titulo": "Reels Criativo | Produto em Destaque",
+      "descricao": "Captação com foco em mostrar as peças em detalhes e gerar desejo nos clientes.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
-      "id": "M7lc1UVf-VE",
-      "titulo": "Reel Storytelling | Bastidores",
-      "descricao": "Contexto real para fortalecer confianca na marca.",
+      "id": "https://youtube.com/shorts/kLQzESMyGYM?feature=share",
+      "titulo": "Reels Criativo | Anúncios",
+      "descricao": "Grave criativos com dinâmica, qualidade e que convertam de verdade.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "ysz5S6PUM-U",
       "titulo": "Reel Oferta | Campanha de Vendas",
-      "descricao": "Conteudo objetivo para acelerar decisoes de compra.",
+      "descricao": "Conteúdo objetivo para acelerar decisões de compra.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "M7lc1UVf-VE",
       "titulo": "Reel Posicionamento | Marca Pessoal",
-      "descricao": "Direcao de fala e imagem para escalar autoridade.",
+      "descricao": "Direção de fala e imagem para escalar autoridade.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "ysz5S6PUM-U",
-      "titulo": "Reel Educativo | Conteudo de Valor",
-      "descricao": "Explicacoes claras com visual premium para retenao.",
+      "titulo": "Reel Educativo | Conteúdo de Valor",
+      "descricao": "Explicações claras com visual premium para retenção.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "M7lc1UVf-VE",
       "titulo": "Reel Testemunho | Prova Social",
-      "descricao": "Depoimentos com ritmo dinamico e direcao de cena.",
+      "descricao": "Depoimentos com ritmo dinâmico e direção de cena.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "ysz5S6PUM-U",
       "titulo": "Reel Evento | Highlights",
-      "descricao": "Cobertura cinematografica para pos evento.",
+      "descricao": "Cobertura cinematográfica para pós-evento.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "M7lc1UVf-VE",
-      "titulo": "Reel Nichado | Saude",
-      "descricao": "Comunicacao clara para nichos tecnicos.",
+      "titulo": "Reel Nichado | Saúde",
+      "descricao": "Comunicação clara para nichos técnicos.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "ysz5S6PUM-U",
-      "titulo": "Reel Nichado | Educacao",
+      "titulo": "Reel Nichado | Educação",
       "descricao": "Aberturas e ganchos para aumentar watch time.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "M7lc1UVf-VE",
-      "titulo": "Reel Nichado | Imobiliario",
-      "descricao": "Apresentacao de servicos com recorte comercial.",
+      "titulo": "Reel Nichado | Imobiliário",
+      "descricao": "Apresentação de serviços com recorte comercial.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     },
     {
       "id": "ysz5S6PUM-U",
-      "titulo": "Reel Performance | Anuncios",
-      "descricao": "Criativo pronto para campanhas com variacoes.",
+      "titulo": "Reel Performance | Anúncios",
+      "descricao": "Criativo pronto para campanhas com variações.",
       "categoria": "Reels 9:16",
       "ratio": "9:16"
     }
@@ -88,15 +88,15 @@
   "cursos": [
     {
       "id": "M7lc1UVf-VE",
-      "titulo": "Gravacao de Curso | Aula Master",
-      "descricao": "Setup completo de luz, audio, teleprompter e direcao.",
+      "titulo": "Gravação de Curso | Aula Master",
+      "descricao": "Setup completo de luz, áudio, teleprompter e direção.",
       "categoria": "Curso Online 16:9",
       "ratio": "16:9"
     },
     {
       "id": "ysz5S6PUM-U",
-      "titulo": "Gravacao de Curso | Modulo Pratico",
-      "descricao": "Capta em bloco com agilidade para paginas e lancamentos.",
+      "titulo": "Gravação de Curso | Módulo Prático",
+      "descricao": "Captação em bloco com agilidade para páginas e lançamentos.",
       "categoria": "Curso Online 16:9",
       "ratio": "16:9"
     }
