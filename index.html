@@ -53,7 +53,7 @@
     </header>
 
     <main id="conteudo">
-      <section class="section hero">
+      <section class="section hero section-hero-bg">
         <div class="container hero-grid">
           <div class="hero-copy" data-reveal>
             <p class="eyebrow">Cinema aplicado a marketing</p>
@@ -121,11 +121,20 @@
         </div>
       </section>
 
-      <section class="section section-soft" id="sobre">
-        <div class="container split-grid">
-          <article class="info-card" data-reveal>
+      <section class="section section-hero-bg about-section" id="sobre">
+        <div class="container about-wrap">
+          <article class="info-card about-card" data-reveal>
             <p class="eyebrow">Quem sou eu</p>
             <h2 class="section-title">Minha trajetória nasceu da necessidade de fazer conteúdo com nível profissional.</h2>
+            <figure class="about-photo">
+              <img
+                src="assets/img/placeholders/quem-sou-eu-4x5.svg"
+                alt="Placeholder para foto de perfil 4 por 5 do fundador da Sparkfilmes"
+                loading="lazy"
+                width="800"
+                height="1000"
+              />
+            </figure>
             <p>
               Minha história no vídeo começou quando eu, como músico, precisei gravar cursos online com qualidade e comprei minha primeira câmera.
               Para evoluir rápido em técnica e linguagem, busquei formação com fotógrafos de casamento e ganhei experiência real em ritmo, emoção e captação em cenários desafiadores.
@@ -136,18 +145,30 @@
             </p>
           </article>
 
-          <article class="info-card" data-reveal>
-            <p class="eyebrow">Proposta Sparkfilmes</p>
-            <h3>Cada produção é pensada para posicionamento, autoridade e conversão.</h3>
-            <p>
-              Criamos vídeos e fotos com padrão premium, materiais prontos para redes sociais, campanhas e lançamentos, sem complicar sua rotina.
-            </p>
-            <ul class="feature-list">
-              <li>Planejamento de pauta e direcionamento de cenas.</li>
-              <li>Captação e edição com linguagem comercial.</li>
-              <li>Entregas organizadas para facilitar uso imediato.</li>
-            </ul>
-          </article>
+          <div class="about-proposal-block">
+            <header class="section-head about-head" data-reveal>
+              <p class="eyebrow">Proposta Sparkfilmes</p>
+              <h2 class="section-title">Cada produção é pensada para posicionamento, autoridade e conversão.</h2>
+              <p class="text-muted">
+                Criamos vídeos e fotos com padrão premium, materiais prontos para redes sociais, campanhas e lançamentos, sem complicar sua rotina.
+              </p>
+            </header>
+
+            <div class="about-proposal-grid">
+              <article class="service-card about-proposal-card" data-reveal>
+                <h3>Planejamento</h3>
+                <p>Planejamento de pauta e direcionamento de cenas para gravar com foco e clareza.</p>
+              </article>
+              <article class="service-card about-proposal-card" data-reveal>
+                <h3>Captação e edição</h3>
+                <p>Captação e edição com linguagem comercial para valor percebido e conversão.</p>
+              </article>
+              <article class="service-card about-proposal-card" data-reveal>
+                <h3>Entrega organizada</h3>
+                <p>Materiais organizados para uso imediato em redes sociais, campanhas e lançamentos.</p>
+              </article>
+            </div>
+          </div>
         </div>
       </section>
 

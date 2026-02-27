@@ -355,14 +355,21 @@ p {
   color: var(--color-muted);
 }
 
-.hero {
-  padding-top: 5.3rem;
+.section-hero-bg {
   border-top: 1px solid rgba(241, 240, 240, 0.08);
   border-bottom: 1px solid rgba(241, 240, 240, 0.08);
   background:
     radial-gradient(circle at 15% 14%, rgba(255, 44, 88, 0.24), transparent 35%),
     radial-gradient(circle at 92% 8%, rgba(255, 44, 88, 0.1), transparent 32%),
     linear-gradient(160deg, rgba(11, 11, 14, 0.9), rgba(6, 6, 8, 0.98));
+}
+
+.section-hero-bg + .section-hero-bg {
+  border-top: 0;
+}
+
+.hero {
+  padding-top: 5.3rem;
 }
 
 .hero-grid {
@@ -558,12 +565,65 @@ p {
   margin-top: 1.2rem;
 }
 
+.about-wrap,
+.about-proposal-grid,
 .split-grid,
 .service-grid,
 .benefit-grid,
 .quote-grid {
   display: grid;
   gap: 1rem;
+}
+
+.about-section {
+  text-align: center;
+}
+
+.about-wrap {
+  justify-items: center;
+}
+
+.about-card {
+  width: min(900px, 100%);
+}
+
+.about-photo {
+  margin: 1rem auto 0;
+  width: min(360px, 100%);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: linear-gradient(155deg, rgba(255, 44, 88, 0.22), rgba(10, 10, 14, 0.95));
+  box-shadow: var(--shadow-soft);
+}
+
+.about-photo img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.about-card.info-card p {
+  max-width: 74ch;
+  margin: 0.82rem auto 0;
+}
+
+.about-proposal-block {
+  width: min(1100px, 100%);
+}
+
+.about-head {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.about-proposal-grid {
+  width: min(1100px, 100%);
+  margin: 1.2rem auto 0;
+}
+
+.about-proposal-card {
+  text-align: center;
 }
 
 .info-card,
@@ -994,6 +1054,7 @@ textarea.field {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .about-proposal-grid,
   .split-grid,
   .service-grid,
   .benefit-grid,
@@ -1044,6 +1105,10 @@ textarea.field {
 
   .benefit-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .about-proposal-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .client-chip-list {
