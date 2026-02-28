@@ -5,6 +5,13 @@
       "slug": "cliente-modelo",
       "segmento": "Infoprodutos e educacao digital",
       "url": "./material.html?cliente=cliente-modelo"
+    },
+    {
+      "nome": "Victor Lopes",
+      "slug": "victor-lopes",
+      "segmento": "Gerenciamento de Alta Performance",
+      "senha": "Vl@1234",
+      "url": "./victor-lopes.html"
     }
   ]
 }

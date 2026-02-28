@@ -34,12 +34,71 @@ if (clientRoot) {
     return `../data/clientes/${slug}.json`;
   };
 
+  const getIndexPath = () => {
+    const basePath = String(clientRoot.dataset.basePath || ".").replace(/\/$/, "");
+    return `${basePath}/data/clientes/index.json`;
+  };
+
+  const getAccessKey = (slug) => `client-access:${slug}`;
+
+  const hasClientAccess = (slug) => {
+    if (!slug) return true;
+
+    try {
+      return sessionStorage.getItem(getAccessKey(slug)) === "ok";
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const setClientAccess = (slug) => {
+    if (!slug) return;
+
+    try {
+      sessionStorage.setItem(getAccessKey(slug), "ok");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getClientAccessConfig = async () => {
+    const slug = getClientSlug();
+    if (!slug) return null;
+
+    try {
+      const response = await fetch(getIndexPath(), { cache: "no-store" });
+      if (!response.ok) return null;
+
+      const data = await response.json();
+      const clients = Array.isArray(data.clientes) ? data.clientes : [];
+      return clients.find((client) => client.slug === slug) || null;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
   const createStatusBadge = (statusText) => {
     const badge = document.createElement("span");
     badge.className = "status-badge";
     badge.dataset.status = statusText || "Em andamento";
     badge.textContent = statusText || "Em andamento";
     return badge;
+  };
+
+  const resolveClientAsset = (assetPath) => {
+    const basePath = String(clientRoot.dataset.basePath || ".").replace(/\/$/, "");
+
+    if (!assetPath) return `${basePath}/assets/img/perfil-spark.svg`;
+
+    const raw = String(assetPath).trim();
+    if (!raw) return `${basePath}/assets/img/perfil-spark.svg`;
+
+    if (/^(https?:)?\/\//.test(raw) || raw.startsWith("data:")) return raw;
+    if (/^(?:\.\.\/|\.\/|\/)/.test(raw)) return raw;
+
+    return `${basePath}/${raw.replace(/^\.?\//, "")}`;
   };
 
   const buildFallbackImage = (label) => {
@@ -65,6 +124,14 @@ if (clientRoot) {
     return deadline;
   };
 
+  const getExplicitDeadline = (isoDate) => {
+    if (!isoDate) return null;
+
+    const explicit = new Date(`${isoDate}T00:00:00`);
+    if (Number.isNaN(explicit.getTime())) return null;
+    return explicit;
+  };
+
   const getRemainingDays = (deadlineDate) => {
     if (!deadlineDate) return null;
 
@@ -73,6 +140,81 @@ if (clientRoot) {
 
     const diffMs = deadlineDate.getTime() - today.getTime();
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  };
+
+  const renderAccessGate = (clientConfig) => {
+    if (metricsEl) {
+      metricsEl.innerHTML = '<p class="empty-state">Acesso protegido. Digite a senha acima.</p>';
+    }
+
+    if (deliveriesEl) {
+      deliveriesEl.innerHTML = '<p class="empty-state">Acesso protegido. Digite a senha acima.</p>';
+    }
+
+    if (noteEl) {
+      noteEl.textContent = "Acesso protegido por senha visual.";
+    }
+
+    if (!headerEl) return;
+
+    headerEl.innerHTML = "";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = "Area protegida";
+
+    const title = document.createElement("h1");
+    title.textContent = clientConfig?.nome || "Material protegido";
+
+    const description = document.createElement("p");
+    description.className = "client-description";
+    description.textContent = "Digite a senha deste cliente para visualizar os materiais.";
+
+    const form = document.createElement("form");
+    form.className = "material-form";
+
+    const label = document.createElement("label");
+    label.htmlFor = "cliente-access-password";
+    label.textContent = "Senha de acesso";
+
+    const row = document.createElement("div");
+    row.className = "search-row";
+
+    const input = document.createElement("input");
+    input.id = "cliente-access-password";
+    input.className = "field";
+    input.name = "senha";
+    input.type = "password";
+    input.placeholder = "Digite sua senha";
+    input.autocomplete = "current-password";
+    input.required = true;
+
+    const button = document.createElement("button");
+    button.type = "submit";
+    button.className = "btn btn-primary";
+    button.textContent = "Entrar";
+
+    const feedback = document.createElement("p");
+    feedback.className = "form-feedback";
+
+    row.append(input, button);
+    form.append(label, row, feedback);
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      if (input.value !== String(clientConfig?.senha || "")) {
+        feedback.textContent = "Senha incorreta. Verifique e tente novamente.";
+        input.select();
+        return;
+      }
+
+      setClientAccess(clientConfig?.slug || "");
+      initClientPage();
+    });
+
+    headerEl.append(eyebrow, title, description, form);
+    input.focus();
   };
 
   const renderHeader = (cliente) => {
@@ -104,20 +246,79 @@ if (clientRoot) {
     updateInfo.textContent = `Última atualização: ${formatDatePtBr(cliente.ultimaAtualizacao)}`;
     meta.appendChild(updateInfo);
 
-    headerEl.append(eyebrow, title, subtitle, description, meta);
+    const copy = document.createElement("div");
+    copy.className = "client-spotlight-copy";
+    copy.append(eyebrow, title, subtitle, description, meta);
+
+    const photo = document.createElement("figure");
+    photo.className = "client-spotlight-photo";
+
+    const image = document.createElement("img");
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.src = resolveClientAsset(cliente.fotoPerfil);
+    image.alt = cliente.nome ? `Foto de perfil de ${cliente.nome}` : "Foto de perfil do cliente";
+    image.width = 1080;
+    image.height = 1080;
+    image.addEventListener("error", () => {
+      image.src = resolveClientAsset("");
+    });
+    photo.appendChild(image);
+
+    const layout = document.createElement("div");
+    layout.className = "client-spotlight-layout";
+    layout.append(copy, photo);
+
+    headerEl.appendChild(layout);
   };
 
-  const renderMetrics = (cliente, trabalhos) => {
+  const renderMetrics = (_cliente, trabalhos) => {
     if (!metricsEl) return;
     metricsEl.innerHTML = "";
 
-    const fallbackMetrics = [
-      { label: "Trabalhos feitos", value: String(trabalhos.length) },
-      { label: "Formato principal", value: cliente.formatoPrincipal || "Reels e cursos" },
-      { label: "Inicio da parceria", value: formatDatePtBr(cliente.inicioParceria) }
-    ];
+    const workItems = Array.isArray(trabalhos) ? trabalhos : [];
 
-    const metricSource = Array.isArray(cliente.metricas) && cliente.metricas.length > 0 ? cliente.metricas : fallbackMetrics;
+    const latestWork = workItems.reduce((currentLatest, work) => {
+      const workDate = new Date(`${work?.dataTrabalho || ""}T00:00:00`);
+      if (Number.isNaN(workDate.getTime())) return currentLatest;
+
+      if (!currentLatest || workDate > currentLatest.date) {
+        return { work, date: workDate };
+      }
+
+      return currentLatest;
+    }, null);
+
+    const nearestActiveDeadline = workItems.reduce((currentClosest, work) => {
+      const deadline =
+        getExplicitDeadline(work?.prazoDownloadAte) || getDownloadDeadline(work?.dataTrabalho, Number(work?.prazoAnos || 1));
+      const remainingDays = getRemainingDays(deadline);
+
+      if (!deadline || remainingDays === null || remainingDays < 0) return currentClosest;
+
+      if (!currentClosest || deadline < currentClosest.deadline) {
+        return { work, deadline, remainingDays };
+      }
+
+      return currentClosest;
+    }, null);
+
+    const metricSource = [
+      { label: "Trabalhos feitos", value: String(workItems.length) },
+      {
+        label: "Data do ultimo trabalho",
+        value: latestWork ? formatDatePtBr(latestWork.work.dataTrabalho) : "--"
+      },
+      nearestActiveDeadline
+        ? {
+            label: `Menor prazo para download: ${nearestActiveDeadline.remainingDays} dias`,
+            value: nearestActiveDeadline.work.titulo || "Trabalho sem titulo"
+          }
+        : {
+            label: "Trabalho com menor prazo para download",
+            value: "Sem prazo ativo"
+          }
+    ];
 
     metricSource.forEach((metric) => {
       const card = document.createElement("article");
@@ -179,7 +380,7 @@ if (clientRoot) {
       metaList.appendChild(noteItem);
     }
 
-    const deadline = getDownloadDeadline(work.dataTrabalho, Number(work.prazoAnos || 1));
+    const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work.dataTrabalho, Number(work.prazoAnos || 1));
     const remainingDays = getRemainingDays(deadline);
     const countdown = document.createElement("p");
     countdown.className = "countdown";
@@ -209,19 +410,7 @@ if (clientRoot) {
       folderButton.setAttribute("aria-disabled", "true");
     }
 
-    const downloadButton = document.createElement("a");
-    downloadButton.className = "btn btn-primary btn-small";
-    downloadButton.textContent = "Download";
-    if (work.linkDownload) {
-      downloadButton.href = work.linkDownload;
-      downloadButton.target = "_blank";
-      downloadButton.rel = "noreferrer";
-    } else {
-      downloadButton.href = "#";
-      downloadButton.setAttribute("aria-disabled", "true");
-    }
-
-    actions.append(folderButton, downloadButton);
+    actions.appendChild(folderButton);
     content.append(title, status, metaList, countdown, actions);
     card.append(cover, content);
     return card;
@@ -250,6 +439,12 @@ if (clientRoot) {
       if (deliveriesEl) {
         deliveriesEl.innerHTML = '<p class="empty-state">Cliente não informado na URL.</p>';
       }
+      return;
+    }
+
+    const accessConfig = await getClientAccessConfig();
+    if (String(accessConfig?.senha || "").trim() && !hasClientAccess(accessConfig?.slug || "")) {
+      renderAccessGate(accessConfig);
       return;
     }
 

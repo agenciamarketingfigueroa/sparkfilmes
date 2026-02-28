@@ -29,14 +29,14 @@
       "ratio": "9:16"
     },
     {
-      "id": "M7lc1UVf-VE",
+      "id": "-KusjNjzfNs",
       "titulo": "Reel Posicionamento | Marca Pessoal",
       "descricao": "Direção de fala e imagem para escalar autoridade.",
       "categoria": "Reels",
       "ratio": "9:16"
     },
     {
-      "id": "ysz5S6PUM-U",
+      "id": "5DexiSJQ2Zk",
       "titulo": "Reel Educativo | Conteúdo de Valor",
       "descricao": "Explicações claras com visual premium para retenção.",
       "categoria": "Reels",
@@ -87,17 +87,17 @@
   ],
   "cursos": [
     {
-      "id": "M7lc1UVf-VE",
-      "titulo": "Gravação de Curso | Aula Master",
+      "id": "https://youtu.be/-KusjNjzfNs",
+      "titulo": "Gravação de Curso | Compilado",
       "descricao": "Setup completo de luz, áudio, teleprompter e direção.",
       "categoria": "Curso Online",
       "ratio": "16:9"
     },
     {
-      "id": "ysz5S6PUM-U",
-      "titulo": "Gravação de Curso | Módulo Prático",
+      "id": "https://youtu.be/4Js0fAPQjlQ",
+      "titulo": "Eventos Presenciais | Making Of e Entrevistas",
       "descricao": "Captação em bloco com agilidade para páginas e lançamentos.",
-      "categoria": "Curso Online",
+      "categoria": "Evento Presencial",
       "ratio": "16:9"
     }
   ]

@@ -70,10 +70,21 @@
                 />
                 <button type="submit" class="btn btn-primary">Acessar material</button>
               </div>
+              <div class="material-password-wrap" data-material-password-wrap hidden>
+                <label for="senhaCliente">Senha de acesso</label>
+                <input
+                  id="senhaCliente"
+                  class="field"
+                  name="senha"
+                  type="password"
+                  placeholder="Digite sua senha"
+                  autocomplete="current-password"
+                />
+              </div>
               <p class="form-feedback" data-material-feedback></p>
             </form>
 
-            <div class="client-chip-list" data-material-client-list></div>
+            <div class="client-chip-list" data-material-client-list hidden></div>
           </article>
         </div>
       </section>

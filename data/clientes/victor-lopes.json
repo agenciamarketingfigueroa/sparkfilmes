@@ -1,0 +1,67 @@
+{
+  "cliente": {
+    "nome": "Victor Lopes",
+    "slug": "victor-lopes",
+    "nicho": "Gerenciamento de Alta Performance",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Victor Lopes/victor-lopes-perfil.svg",
+    "ultimaAtualizacao": "2026-02-28",
+    "resumo": "Projeto recorrente com foco em autoridade, venda de cursos e escala de conteudo para anuncios e redes sociais e YouTube.",
+    "formatoPrincipal": "YouTube + Conteudo para anuncios",
+    "metricas": [
+      {
+        "label": "Trabalhos feitos",
+        "value": "3"
+      },
+      {
+        "label": "Entrega atual",
+        "value": "3 videos + 1 foto"
+      },
+      {
+        "label": "Prazo atual",
+        "value": "365 dias"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "Entrevista Robert Renan",
+      "dataTrabalho": "2026-12-06",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "volume": "3 videos e 1 foto",
+      "observacao": "Material para Edicao do Documentario",
+      "prazoDownloadAte": "2027-02-28",
+      "capa": "../assets/img/Clientes/Victor Lopes/vl-robert-(06-12-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/18rtSP-ITQDNDrhZ6Ow1OnTYgdWg3fRgq?usp=drive_link",
+      "linkDownload": ""
+    },
+    {
+      "id": "job-002",
+      "titulo": "Primeiros Conteudos para o Instagram",
+      "dataTrabalho": "2026-12-10",
+      "statusEntrega": "Entregue",
+      "formato": "Instagram",
+      "volume": "5 videos",
+      "observacao": "Material para Reels",
+      "prazoDownloadAte": "2027-02-28",
+      "capa": "../assets/img/Clientes/Victor Lopes/vl-conteudos-(10-12-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1gCQIFfsuGDkX8kb-FkMzmpPQCXTDw5NZ?usp=drive_link",
+      "linkDownload": ""
+    },
+    {
+      "id": "job-003",
+      "titulo": "Entrevista Renato Marques",
+      "dataTrabalho": "2026-12-10",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "volume": "32 videos e 2 fotos",
+      "observacao": "Videos para YouTube e documentario",
+      "prazoDownloadAte": "2027-02-28",
+      "capa": "../assets/img/Clientes/Victor Lopes/vl-renato-(10-12-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1J07YGyY6FZN3HEZPApe7qCE8-edHUpnF?usp=drive_link",
+      "linkDownload": ""
+    }
+  ]
+}

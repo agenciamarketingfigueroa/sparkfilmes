@@ -391,25 +391,6 @@ const renderPortfolioFeeds = async () => {
   }
 };
 
-const buildMaterialClientCard = (client) => {
-  const chip = document.createElement("article");
-  chip.className = "client-chip";
-
-  const title = document.createElement("h3");
-  title.textContent = client.nome || "Cliente";
-
-  const segment = document.createElement("p");
-  segment.textContent = client.segmento || client.nicho || "Segmento não informado";
-
-  const link = document.createElement("a");
-  link.className = "btn btn-small btn-ghost";
-  link.textContent = "Abrir material";
-  link.href = client.url || `./material.html?cliente=${encodeURIComponent(client.slug || "")}`;
-
-  chip.append(title, segment, link);
-  return chip;
-};
-
 const initMaterialSearch = async () => {
   const searchRoot = document.querySelector("[data-material-search]");
   if (!searchRoot) return;
@@ -418,13 +399,37 @@ const initMaterialSearch = async () => {
   const feedback = searchRoot.querySelector("[data-material-feedback]");
   const list = searchRoot.querySelector("[data-material-client-list]");
   const input = form?.querySelector("input[name='cliente']");
+  const passwordWrap = form?.querySelector("[data-material-password-wrap]");
+  const passwordInput = form?.querySelector("input[name='senha']");
 
   const setFeedback = (text) => {
     if (!feedback) return;
     feedback.textContent = text;
   };
 
-  if (!form || !input || !list) return;
+  if (!form || !input) return;
+
+  if (list) {
+    list.innerHTML = "";
+    list.hidden = true;
+  }
+
+  let pendingProtectedSlug = "";
+  const getAccessKey = (slug) => `client-access:${slug}`;
+
+  const resetPasswordPrompt = () => {
+    pendingProtectedSlug = "";
+
+    if (!passwordWrap || !passwordInput) return;
+    passwordWrap.hidden = true;
+    passwordInput.value = "";
+  };
+
+  input.addEventListener("input", () => {
+    if (!pendingProtectedSlug) return;
+    resetPasswordPrompt();
+    setFeedback("");
+  });
 
   const indexPath = searchRoot.dataset.materialIndexPath || resolvePath("data/clientes/index.json");
   let clients = [];
@@ -440,23 +445,6 @@ const initMaterialSearch = async () => {
     setFeedback("Não foi possível carregar a lista de clientes.");
   }
 
-  const renderList = (items) => {
-    list.innerHTML = "";
-
-    if (!Array.isArray(items) || items.length === 0) {
-      const empty = document.createElement("p");
-      empty.className = "empty-state";
-      empty.textContent = "Nenhum cliente encontrado.";
-      list.appendChild(empty);
-      return;
-    }
-
-    items.forEach((client) => {
-      list.appendChild(buildMaterialClientCard(client));
-    });
-  };
-
-  renderList(clients);
   refreshReveal(searchRoot);
 
   form.addEventListener("submit", (event) => {
@@ -475,20 +463,59 @@ const initMaterialSearch = async () => {
       return name.includes(query) || slug.includes(query) || segment.includes(query);
     });
 
-    if (matches.length === 1) {
-      const targetUrl = matches[0].url || `./material.html?cliente=${encodeURIComponent(matches[0].slug || "")}`;
+    const exactMatch = clients.find((client) => {
+      const name = normalizeText(client.nome);
+      const slug = normalizeText(client.slug);
+      return name === query || slug === query;
+    });
+
+    const selectedClient = exactMatch || matches[0];
+
+    if (selectedClient) {
+      const protectedPassword = String(selectedClient.senha || "").trim();
+
+      if (protectedPassword) {
+        if (passwordWrap && passwordInput) {
+          passwordWrap.hidden = false;
+        }
+
+        if (pendingProtectedSlug && pendingProtectedSlug !== selectedClient.slug && passwordInput) {
+          passwordInput.value = "";
+        }
+
+        pendingProtectedSlug = selectedClient.slug || "";
+
+        if (!passwordInput || passwordInput.value !== protectedPassword) {
+          setFeedback("Digite a senha do cliente para acessar o material.");
+
+          if (passwordInput) {
+            if (passwordInput.value) {
+              setFeedback("Senha incorreta. Verifique e tente novamente.");
+              passwordInput.select();
+            } else {
+              passwordInput.focus();
+            }
+          }
+          return;
+        }
+
+        try {
+          sessionStorage.setItem(getAccessKey(selectedClient.slug || ""), "ok");
+        } catch (error) {
+          console.error(error);
+        }
+      } else {
+        resetPasswordPrompt();
+      }
+
+      const targetUrl =
+        selectedClient.url || `./material.html?cliente=${encodeURIComponent(selectedClient.slug || "")}`;
       window.location.href = targetUrl;
       return;
     }
 
-    if (matches.length > 1) {
-      setFeedback(`Encontrei ${matches.length} resultados. Escolha abaixo.`);
-      renderList(matches);
-      return;
-    }
-
+    resetPasswordPrompt();
     setFeedback("Nenhum resultado encontrado. Fale com o suporte para liberar acesso.");
-    renderList([]);
   });
 };
 
