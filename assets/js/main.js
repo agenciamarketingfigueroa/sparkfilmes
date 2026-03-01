@@ -145,7 +145,6 @@ const initWhatsAppForm = () => {
       `Objetivo: ${data.get("objetivo") || "-"}`,
       `Serviço: ${data.get("servico") || "-"}`,
       `Prazo: ${data.get("prazo") || "-"}`,
-      `Investimento: ${data.get("investimento") || "-"}`,
       "",
       `Detalhes: ${data.get("detalhes") || "-"}`,
       "",
