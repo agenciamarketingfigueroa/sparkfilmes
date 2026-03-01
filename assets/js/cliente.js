@@ -102,12 +102,12 @@ if (clientRoot) {
   };
 
   const buildFallbackImage = (label) => {
-    const safeLabel = label || "Entrega Sparkfilmes";
+    const safeLabel = label || "Entrega SparkFilmes";
     const svg = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000">
         <rect width="800" height="1000" fill="#0f1014" />
         <circle cx="690" cy="120" r="160" fill="#ff2c58" fill-opacity="0.23" />
-        <text x="72" y="170" font-family="Manrope, Arial, sans-serif" font-size="42" fill="#f1f0f0">Sparkfilmes</text>
+        <text x="72" y="170" font-family="Manrope, Arial, sans-serif" font-size="42" fill="#f1f0f0">SparkFilmes</text>
         <text x="72" y="300" font-family="Sora, Arial, sans-serif" font-size="78" font-weight="700" fill="#ff2c58">ENTREGA</text>
         <text x="72" y="380" font-family="Manrope, Arial, sans-serif" font-size="30" fill="#b8b8c2">${safeLabel}</text>
       </svg>
@@ -227,7 +227,7 @@ if (clientRoot) {
     eyebrow.textContent = "Painel exclusivo do cliente";
 
     const title = document.createElement("h1");
-    title.textContent = cliente.nome || "Cliente Sparkfilmes";
+    title.textContent = cliente.nome || "Cliente SparkFilmes";
 
     const subtitle = document.createElement("p");
     subtitle.className = "client-subtitle";
@@ -235,7 +235,7 @@ if (clientRoot) {
 
     const description = document.createElement("p");
     description.className = "client-description";
-    description.textContent = cliente.resumo || "Catalogo de trabalhos e entregas organizadas pela Sparkfilmes.";
+    description.textContent = cliente.resumo || "Catalogo de trabalhos e entregas organizadas pela SparkFilmes.";
 
     const meta = document.createElement("div");
     meta.className = "spotlight-meta";

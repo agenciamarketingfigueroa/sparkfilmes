@@ -137,7 +137,7 @@ const initWhatsAppForm = () => {
     const now = new Date().toLocaleDateString("pt-BR");
 
     const lines = [
-      "*Novo briefing Sparkfilmes*",
+      "*Novo briefing SparkFilmes*",
       `Data: ${now}`,
       "",
       `Nome: ${data.get("nome") || "-"}`,
@@ -262,7 +262,7 @@ const createPlayerCard = (item, index, type) => {
   meta.className = "video-meta";
 
   const title = document.createElement("h3");
-  title.textContent = item.titulo || "Video Sparkfilmes";
+  title.textContent = item.titulo || "Video SparkFilmes";
 
   const description = document.createElement("p");
   description.textContent = item.descricao || "Conteudo em destaque.";

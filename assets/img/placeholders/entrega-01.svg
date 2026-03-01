@@ -4,7 +4,7 @@
   <rect width="1280" height="720" fill="#0d0d10" />
   <circle cx="180" cy="150" r="170" fill="#ff2c58" fill-opacity="0.23" />
   <rect x="74" y="74" width="1132" height="572" rx="28" fill="#17171b" stroke="#f1f0f0" stroke-opacity="0.2" />
-  <text x="130" y="210" font-family="Montserrat, Arial, sans-serif" font-size="50" fill="#f1f0f0">Sparkfilmes</text>
+  <text x="130" y="210" font-family="Montserrat, Arial, sans-serif" font-size="50" fill="#f1f0f0">SparkFilmes</text>
   <text x="130" y="330" font-family="Montserrat, Arial, sans-serif" font-size="120" fill="#ff2c58">ENTREGA 01</text>
   <text x="130" y="410" font-family="Montserrat, Arial, sans-serif" font-size="33" fill="#b8b8be">Podcast Episodio 01</text>
 </svg>
