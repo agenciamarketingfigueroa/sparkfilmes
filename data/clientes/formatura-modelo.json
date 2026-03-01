@@ -1,0 +1,86 @@
+{
+  "cliente": {
+    "nome": "Formatura Nome da Escola YYYY",
+    "slug": "formatura-modelo",
+    "nicho": "Colegio | Formatura",
+    "ocultarSubtitulo": true,
+    "eyebrow": "Material",
+    "status": "Acesso por senha",
+    "fotoPerfil": "assets/img/perfil-spark.svg",
+    "fotoPerfilAlt": "Foto da turma",
+    "fotoPerfilRatio": "16 / 9",
+    "fotoPerfilWidth": "min(100%, 520px)",
+    "inicioParceria": "2026-03-01",
+    "ultimaAtualizacao": "2026-03-01",
+    "prazoDownloadGeralAte": "2027-11-30",
+    "metricasEyebrow": "Resumo da formatura",
+    "metricasTitulo": "Informações da turma",
+    "entregasEyebrow": "Alunos YYYY",
+    "entregasTitulo": "Acesse seu material abaixo",
+    "entregasFundoEscuro": true,
+    "usarThumbsAluno": true,
+    "senhaVisualPadrao": "00000000",
+    "textoBotaoEntrega": "Acessar fotos",
+    "acoesComuns": [
+      {
+        "label": "Vídeos",
+        "link": "",
+        "variant": "ghost"
+      },
+      {
+        "label": "Foto da turma",
+        "link": "",
+        "variant": "ghost",
+        "novaAba": true
+      },
+      {
+        "label": "Festa de Formatura",
+        "link": "",
+        "variant": "ghost"
+      }
+    ],
+    "ocultarTituloCardsEntrega": true,
+    "ocultarStatusCardsEntrega": true,
+    "resumo": "Encontre o material do seu filho, clique em \"Acessar fotos\", digite a senha e depois acesse o Google Drive para baixar os arquivos. Os pais terao 1 ano para baixar o material.",
+    "notaRodape": "Os arquivos ficam disponiveis por 1 ano. Ajuste a senha padrao ou as senhas individuais antes da entrega.",
+    "formatoPrincipal": "Fotos de formatura",
+    "metricas": [
+      {
+        "label": "Professora",
+        "value": "NOME DA PROFESSORA"
+      },
+      {
+        "label": "Data da formatura",
+        "value": "30/11/YYYY"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "aluno-01",
+      "titulo": "Nome do aluno 01",
+      "dataTrabalho": "2026-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Nome do aluno 01"
+        }
+      ],
+      "prazoDownloadAte": "2027-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/placeholders/entrega-01.svg",
+      "linkPasta": "",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar fotos",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a senha para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Digite a senha",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Verifique e tente novamente."
+    }
+  ]
+}

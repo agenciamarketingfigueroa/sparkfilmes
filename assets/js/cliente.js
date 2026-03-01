@@ -3,7 +3,12 @@ const clientRoot = document.querySelector("[data-client-page]");
 if (clientRoot) {
   const headerEl = document.getElementById("cliente-header");
   const metricsEl = document.getElementById("cliente-metricas");
+  const metricsHeadEl = metricsEl ? metricsEl.previousElementSibling : null;
+  const metricsSectionEl = metricsEl ? metricsEl.closest(".section") : null;
   const deliveriesEl = document.getElementById("cliente-entregas");
+  const deliveriesHeadEl = deliveriesEl ? deliveriesEl.previousElementSibling : null;
+  const deliveriesSectionEl = deliveriesEl ? deliveriesEl.closest(".section") : null;
+  const deliveriesContainerEl = deliveriesEl ? deliveriesEl.parentElement : null;
   const noteEl = document.getElementById("cliente-note");
 
   const formatDatePtBr = (isoDate) => {
@@ -115,6 +120,22 @@ if (clientRoot) {
     return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
   };
 
+  const applyDeliveryCoverConfig = (coverEl, work) => {
+    if (!coverEl || !work) return;
+
+    if (work.coverRatio) {
+      coverEl.style.setProperty("--delivery-cover-ratio", String(work.coverRatio));
+    }
+
+    if (work.coverInset) {
+      coverEl.style.setProperty("--delivery-cover-inset", String(work.coverInset));
+    }
+
+    if (work.coverFlush) {
+      coverEl.classList.add("delivery-cover-flush");
+    }
+  };
+
   const getDownloadDeadline = (isoDate, years = 1) => {
     const start = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(start.getTime())) return null;
@@ -152,7 +173,7 @@ if (clientRoot) {
     }
 
     if (noteEl) {
-      noteEl.textContent = "Acesso protegido por senha visual.";
+      noteEl.textContent = "Acesso protegido por senha.";
     }
 
     if (!headerEl) return;
@@ -225,6 +246,9 @@ if (clientRoot) {
     const eyebrow = document.createElement("p");
     eyebrow.className = "eyebrow";
     eyebrow.textContent = "Painel exclusivo do cliente";
+    if (cliente.eyebrow) {
+      eyebrow.textContent = cliente.eyebrow;
+    }
 
     const title = document.createElement("h1");
     title.textContent = cliente.nome || "Cliente SparkFilmes";
@@ -236,6 +260,14 @@ if (clientRoot) {
     const description = document.createElement("p");
     description.className = "client-description";
     description.textContent = cliente.resumo || "Catalogo de trabalhos e entregas organizadas pela SparkFilmes.";
+    if (cliente.ocultarSubtitulo) {
+      subtitle.textContent = "";
+      subtitle.hidden = true;
+    }
+    if (cliente.subtitulo) {
+      subtitle.textContent = cliente.subtitulo;
+      subtitle.hidden = false;
+    }
 
     const meta = document.createElement("div");
     meta.className = "spotlight-meta";
@@ -252,12 +284,18 @@ if (clientRoot) {
 
     const photo = document.createElement("figure");
     photo.className = "client-spotlight-photo";
+    if (cliente.fotoPerfilRatio) {
+      photo.style.setProperty("--client-spotlight-photo-ratio", String(cliente.fotoPerfilRatio));
+    }
+    if (cliente.fotoPerfilWidth) {
+      photo.style.setProperty("--client-spotlight-photo-width", String(cliente.fotoPerfilWidth));
+    }
 
     const image = document.createElement("img");
     image.loading = "lazy";
     image.decoding = "async";
     image.src = resolveClientAsset(cliente.fotoPerfil);
-    image.alt = cliente.nome ? `Foto de perfil de ${cliente.nome}` : "Foto de perfil do cliente";
+    image.alt = cliente.fotoPerfilAlt || (cliente.nome ? `Foto de perfil de ${cliente.nome}` : "Foto de perfil do cliente");
     image.width = 1080;
     image.height = 1080;
     image.addEventListener("error", () => {
@@ -274,9 +312,34 @@ if (clientRoot) {
 
   const renderMetrics = (_cliente, trabalhos) => {
     if (!metricsEl) return;
+
+    if (metricsSectionEl) {
+      metricsSectionEl.hidden = Boolean(_cliente?.ocultarMetricas);
+    }
+
+    if (_cliente?.ocultarMetricas) {
+      metricsEl.innerHTML = "";
+      return;
+    }
+
     metricsEl.innerHTML = "";
 
+    if (metricsHeadEl && _cliente?.metricasEyebrow) {
+      const eyebrowEl = metricsHeadEl.querySelector(".eyebrow");
+      if (eyebrowEl) {
+        eyebrowEl.textContent = _cliente.metricasEyebrow;
+      }
+    }
+
+    if (metricsHeadEl && _cliente?.metricasTitulo) {
+      const titleEl = metricsHeadEl.querySelector(".section-title");
+      if (titleEl) {
+        titleEl.textContent = _cliente.metricasTitulo;
+      }
+    }
+
     const workItems = Array.isArray(trabalhos) ? trabalhos : [];
+    const customMetrics = Array.isArray(_cliente?.metricas) ? _cliente.metricas : null;
 
     const latestWork = workItems.reduce((currentLatest, work) => {
       const workDate = new Date(`${work?.dataTrabalho || ""}T00:00:00`);
@@ -303,13 +366,24 @@ if (clientRoot) {
       return currentClosest;
     }, null);
 
-    const metricSource = [
+    const sharedDeadline = getExplicitDeadline(_cliente?.prazoDownloadGeralAte);
+    const sharedRemainingDays = getRemainingDays(sharedDeadline);
+
+    const defaultMetrics = [
       { label: "Trabalhos feitos", value: String(workItems.length) },
       {
         label: "Data do ultimo trabalho",
         value: latestWork ? formatDatePtBr(latestWork.work.dataTrabalho) : "--"
       },
-      nearestActiveDeadline
+      sharedDeadline && sharedRemainingDays !== null
+        ? {
+            label:
+              sharedRemainingDays < 0
+                ? "Prazo para download encerrado"
+                : `Prazo para download: ${sharedRemainingDays} dias`,
+            value: formatDatePtBr(_cliente.prazoDownloadGeralAte)
+          }
+        : nearestActiveDeadline
         ? {
             label: `Menor prazo para download: ${nearestActiveDeadline.remainingDays} dias`,
             value: nearestActiveDeadline.work.titulo || "Trabalho sem titulo"
@@ -319,6 +393,11 @@ if (clientRoot) {
             value: "Sem prazo ativo"
           }
     ];
+
+    const metricSource =
+      customMetrics && customMetrics.length > 0
+        ? [...customMetrics, ...defaultMetrics.slice(customMetrics.length)]
+        : defaultMetrics;
 
     metricSource.forEach((metric) => {
       const card = document.createElement("article");
@@ -335,21 +414,63 @@ if (clientRoot) {
     });
   };
 
+  const normalizeVisualPassword = (value, mode) => {
+    const raw = String(value || "").trim();
+
+    if (mode === "digits") {
+      return raw.replace(/\D/g, "");
+    }
+
+    return raw;
+  };
+
+  const openWorkLink = (link) => {
+    if (!link) return;
+
+    if (/^(https?:)?\/\//.test(link)) {
+      window.open(link, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    window.location.href = link;
+  };
+
   const buildDeliveryCard = (work) => {
     const card = document.createElement("article");
     card.className = "delivery-card";
+    if (work.cardWide) {
+      card.classList.add("delivery-card-wide");
+    }
 
     const cover = document.createElement("figure");
     cover.className = "delivery-cover";
+    applyDeliveryCoverConfig(cover, work);
 
-    const image = document.createElement("img");
-    image.loading = "lazy";
-    image.alt = work.titulo || "Capa do trabalho";
-    image.src = work.capa || buildFallbackImage(work.titulo);
-    image.addEventListener("error", () => {
-      image.src = buildFallbackImage(work.titulo);
-    });
-    cover.appendChild(image);
+    if (work.coverText) {
+      const coverBadge = document.createElement("div");
+      coverBadge.className = "delivery-cover-badge";
+      coverBadge.textContent = String(work.coverText);
+      cover.appendChild(coverBadge);
+    } else {
+      const image = document.createElement("img");
+      image.loading = "lazy";
+      image.alt = work.titulo || "Capa do trabalho";
+      let coverSrc = work.capa || buildFallbackImage(work.titulo);
+      if (
+        clientData.usarThumbsAluno &&
+        typeof work.capa === "string" &&
+        work.capa.includes("/Clientes/") &&
+        !work.capa.includes("/thumbs/") &&
+        /\.svg$/i.test(work.capa)
+      ) {
+        coverSrc = work.capa.replace(/\/([^\/]+)\.svg$/i, "/thumbs/$1.jpg");
+      }
+      image.src = resolveClientAsset(coverSrc);
+      image.addEventListener("error", () => {
+        image.src = buildFallbackImage(work.titulo);
+      });
+      cover.appendChild(image);
+    }
 
     const content = document.createElement("div");
     content.className = "delivery-content";
@@ -416,9 +537,264 @@ if (clientRoot) {
     return card;
   };
 
+  const buildFlexibleDeliveryCard = (work) => {
+    const clientData = window.__sparkClientData || {};
+    const card = document.createElement("article");
+    card.className = "delivery-card";
+    if (work.cardWide) {
+      card.classList.add("delivery-card-wide");
+    }
+    const cover = document.createElement("figure");
+    cover.className = "delivery-cover";
+    applyDeliveryCoverConfig(cover, work);
+
+    if (work.coverText) {
+      const coverBadge = document.createElement("div");
+      coverBadge.className = "delivery-cover-badge";
+      coverBadge.textContent = String(work.coverText);
+      cover.appendChild(coverBadge);
+    } else {
+      const image = document.createElement("img");
+      image.loading = "lazy";
+      image.alt = work.titulo || "Capa do trabalho";
+      image.src = resolveClientAsset(work.capa || buildFallbackImage(work.titulo));
+      image.addEventListener("error", () => {
+        image.src = buildFallbackImage(work.titulo);
+      });
+      cover.appendChild(image);
+    }
+    card.appendChild(cover);
+
+    const content = document.createElement("div");
+    content.className = "delivery-content";
+
+    const title = document.createElement("h3");
+    title.textContent = work.titulo || "Trabalho sem titulo";
+
+    const status = createStatusBadge(work.statusEntrega || "Em andamento");
+
+    const metaList = document.createElement("ul");
+    metaList.className = "delivery-meta";
+
+    const appendMetaItem = (labelText, valueText) => {
+      const item = document.createElement("li");
+      item.innerHTML = `<strong>${labelText}:</strong> ${valueText}`;
+      metaList.appendChild(item);
+    };
+
+    if (Array.isArray(work.meta) && work.meta.length > 0) {
+      work.meta.forEach((entry) => {
+        if (!entry) return;
+        appendMetaItem(entry.label || "Informacao", entry.value || "--");
+      });
+    } else {
+      appendMetaItem("Data do trabalho", formatDatePtBr(work.dataTrabalho));
+      appendMetaItem("Formato", work.formato || "Nao informado");
+      appendMetaItem("Volume", work.volume || "Nao informado");
+
+      if (work.observacao) {
+        appendMetaItem("Nota", work.observacao);
+      }
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "delivery-actions";
+
+    const actionLabel = clientData.textoBotaoEntrega || work.linkPastaTexto || "Abrir pasta";
+    let accessFormEl = null;
+
+    if (work.senhaVisual) {
+      const toggleButton = document.createElement("button");
+      toggleButton.type = "button";
+      toggleButton.className = "btn btn-ghost btn-small";
+      toggleButton.textContent = actionLabel;
+
+      const accessForm = document.createElement("form");
+      accessForm.className = "material-form delivery-access-form";
+      accessForm.hidden = true;
+
+      const fieldId = `work-visual-password-${String(work.id || "item").replace(/[^a-zA-Z0-9_-]/g, "")}`;
+
+      const label = document.createElement("label");
+      label.htmlFor = fieldId;
+      label.textContent = work.senhaVisualLabel || "Senha";
+
+      const helpText = document.createElement("p");
+      helpText.className = "delivery-access-note";
+      helpText.textContent = clientData.senhaVisualPadrao
+        ? "Digite a senha de teste para liberar o material."
+        : work.senhaVisualAjuda || "Digite a senha para liberar o material.";
+
+      const row = document.createElement("div");
+      row.className = "search-row";
+
+      const input = document.createElement("input");
+      input.id = fieldId;
+      input.className = "field";
+      input.name = "senha-visual";
+      input.type = "password";
+      input.placeholder = clientData.senhaVisualPadrao ? "Digite a senha" : work.senhaVisualPlaceholder || "Digite a senha";
+      input.autocomplete = "off";
+      input.required = true;
+
+      const submitButton = document.createElement("button");
+      submitButton.type = "submit";
+      submitButton.className = "btn btn-primary btn-small";
+      submitButton.textContent = work.senhaVisualBotao || "Liberar acesso";
+
+      const feedback = document.createElement("p");
+      feedback.className = "form-feedback";
+
+      row.append(input, submitButton);
+      accessForm.append(label, helpText, row, feedback);
+
+      toggleButton.addEventListener("click", () => {
+        const shouldOpen = accessForm.hidden;
+        accessForm.hidden = !shouldOpen;
+        feedback.textContent = "";
+
+        if (shouldOpen) {
+          input.focus();
+        }
+      });
+
+      accessForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const inputValue = normalizeVisualPassword(input.value, work.senhaVisualModo);
+        const expectedRawValue = clientData.senhaVisualPadrao || work.senhaVisual;
+        const expectedValue = normalizeVisualPassword(expectedRawValue, work.senhaVisualModo);
+
+        if (inputValue !== expectedValue) {
+          feedback.textContent = clientData.senhaVisualPadrao
+            ? "Senha incorreta. Use a senha de teste informada."
+            : work.senhaVisualErro || "Senha incorreta. Verifique e tente novamente.";
+          input.select();
+          return;
+        }
+
+        if (!work.linkPasta) {
+          feedback.textContent = "O link do Google Drive ainda nao foi configurado.";
+          return;
+        }
+
+        feedback.textContent = "";
+        openWorkLink(work.linkPasta);
+      });
+
+      actions.appendChild(toggleButton);
+      accessFormEl = accessForm;
+    } else {
+      const folderButton = document.createElement("a");
+      folderButton.className = "btn btn-ghost btn-small";
+      folderButton.textContent = actionLabel;
+      if (work.linkPasta) {
+        folderButton.href = work.linkPasta;
+
+        if (/^(https?:)?\/\//.test(work.linkPasta)) {
+          folderButton.target = "_blank";
+          folderButton.rel = "noreferrer";
+        }
+      } else {
+        folderButton.href = "#";
+        folderButton.setAttribute("aria-disabled", "true");
+      }
+
+      actions.appendChild(folderButton);
+    }
+
+    if (Array.isArray(clientData.acoesComuns) && clientData.acoesComuns.length > 0) {
+      clientData.acoesComuns.forEach((action) => {
+        const button = document.createElement("a");
+        button.className = `btn btn-small ${action?.variant === "primary" ? "btn-primary" : "btn-ghost"}`;
+        button.textContent = action?.label || "Abrir";
+
+        if (action?.link) {
+          button.href = action.link;
+
+          if (action?.novaAba || /^(https?:)?\/\//.test(action.link)) {
+            button.target = "_blank";
+            button.rel = "noreferrer";
+          }
+        } else {
+          button.href = "#";
+          button.setAttribute("aria-disabled", "true");
+        }
+
+        actions.appendChild(button);
+      });
+    }
+
+    if (accessFormEl) {
+      actions.appendChild(accessFormEl);
+    }
+
+    if (!clientData.ocultarTituloCardsEntrega && !work.hideTitle) {
+      content.appendChild(title);
+    }
+
+    if (!clientData.ocultarStatusCardsEntrega && !work.hideStatus) {
+      content.appendChild(status);
+    }
+
+    content.appendChild(metaList);
+
+    if (!work.hideCountdown) {
+      const deadline =
+        getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work.dataTrabalho, Number(work.prazoAnos || 1));
+      const remainingDays = getRemainingDays(deadline);
+      const countdown = document.createElement("p");
+      countdown.className = "countdown";
+
+      if (!deadline || remainingDays === null) {
+        countdown.textContent = "Prazo de download: nao informado.";
+      } else if (remainingDays < 0) {
+        countdown.textContent = `Prazo expirado em ${formatDatePtBr(deadline.toISOString().slice(0, 10))}.`;
+      } else {
+        countdown.textContent = `Prazo de download: ${remainingDays} dias restantes (ate ${formatDatePtBr(
+          deadline.toISOString().slice(0, 10)
+        )}).`;
+      }
+
+      content.appendChild(countdown);
+    }
+
+    content.appendChild(actions);
+    card.appendChild(content);
+    return card;
+  };
+
   const renderDeliveries = (trabalhos) => {
     if (!deliveriesEl) return;
     deliveriesEl.innerHTML = "";
+
+    const clientData = window.__sparkClientData || {};
+
+    if (deliveriesHeadEl && clientData?.entregasEyebrow) {
+      const eyebrowEl = deliveriesHeadEl.querySelector(".eyebrow");
+      if (eyebrowEl) {
+        eyebrowEl.textContent = clientData.entregasEyebrow;
+      }
+    }
+
+    if (deliveriesHeadEl && clientData?.entregasTitulo) {
+      const titleEl = deliveriesHeadEl.querySelector(".section-title");
+      if (titleEl) {
+        titleEl.textContent = clientData.entregasTitulo;
+      }
+    }
+
+    if (deliveriesSectionEl) {
+      deliveriesSectionEl.classList.toggle("section-flat-dark", Boolean(clientData?.entregasFundoEscuro));
+    }
+
+    if (deliveriesContainerEl) {
+      let commonActionsEl = deliveriesContainerEl.querySelector("[data-client-common-actions]");
+
+      if (commonActionsEl) {
+        commonActionsEl.remove();
+      }
+    }
 
     if (!Array.isArray(trabalhos) || trabalhos.length === 0) {
       const empty = document.createElement("p");
@@ -429,7 +805,7 @@ if (clientRoot) {
     }
 
     trabalhos.forEach((work) => {
-      deliveriesEl.appendChild(buildDeliveryCard(work));
+      deliveriesEl.appendChild(buildFlexibleDeliveryCard(work));
     });
   };
 
@@ -460,12 +836,15 @@ if (clientRoot) {
       const cliente = data.cliente || {};
       const trabalhos = Array.isArray(data.trabalhos) ? data.trabalhos : [];
 
+      window.__sparkClientData = cliente;
+
       renderHeader(cliente);
       renderMetrics(cliente, trabalhos);
       renderDeliveries(trabalhos);
 
       if (noteEl) {
-        noteEl.textContent = "Arquivos hospedados no Google Drive. Prazo padrao de download: 1 ano por trabalho.";
+        noteEl.textContent =
+          cliente.notaRodape || "Arquivos hospedados no Google Drive. Prazo padrao de download: 1 ano por trabalho.";
       }
     } catch (error) {
       console.error(error);

@@ -1,0 +1,59 @@
+{
+  "cliente": {
+    "nome": "Formatura IEMAB",
+    "slug": "formatura-iemab",
+    "nicho": "Colegio | Formaturas",
+    "ocultarSubtitulo": true,
+    "ocultarMetricas": true,
+    "status": "Acesso por ano",
+    "fotoPerfil": "assets/img/Clientes/IEMAB/iemab-logo.svg",
+    "fotoPerfilAlt": "Logo do IEMAB",
+    "inicioParceria": "2026-03-01",
+    "ultimaAtualizacao": "2026-03-01",
+    "entregasEyebrow": "Escolha o ano da formatura",
+    "entregasTitulo": "Acesse seu material abaixo",
+    "entregasFundoEscuro": true,
+    "resumo": "Selecione o ano da formatura para acessar o material correspondente. Esta pagina foi organizada para que pais e funcionarios do IEMAB encontrem rapidamente os arquivos da formatura.",
+    "notaRodape": "Escolha o ano disponivel para abrir a pagina completa daquele material de formatura.",
+    "formatoPrincipal": "Fotos de formatura"
+  },
+  "trabalhos": [
+    {
+      "id": "formatura-iemab-2025",
+      "titulo": "Formatura IEMAB 2025",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "capa": "assets/img/Clientes/IEMAB/Formatura 2025/iemab-formatura-2025-foto-da-turma.svg",
+      "cardWide": true,
+      "coverRatio": "16 / 9",
+      "coverFlush": true,
+      "meta": [
+        {
+          "label": "Ano da formatura",
+          "value": "2025"
+        },
+        {
+          "label": "Turma",
+          "value": "infantil 5"
+        },
+        {
+          "label": "Data da formatura",
+          "value": "30/11/2025"
+        },
+        {
+          "label": "Professora",
+          "value": "MARIA EDUARDA NUNES"
+        },
+        {
+          "label": "Status do material",
+          "value": "Disponivel"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "hideTitle": true,
+      "linkPasta": "./formatura-iemab-2025.html",
+      "linkPastaTexto": "Acessar material"
+    }
+  ]
+}

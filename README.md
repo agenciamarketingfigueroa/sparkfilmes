@@ -50,6 +50,11 @@ Acesse: `http://localhost:8080`
 - Criar arquivos como `data/clientes/<slug>.json`.
 - Seguir o formato de `cliente-modelo.json`.
 
+5. Entregas de formatura
+- Para trabalhos anuais de formatura, usar `data/clientes/formatura-modelo.json` como base.
+- O redirect correspondente fica em `clientes/formatura-modelo.html`.
+- Esse modelo ja inclui: foto da turma em destaque, botoes por aluno (fotos, videos, foto da turma, festa), senha, prazo geral e estrutura de alunos.
+
 ## Observacao sobre o player do YouTube
 
 O site usa iframe com controles nativos ocultos e botoes proprios (`Play`, `Pause`, `Stop`).

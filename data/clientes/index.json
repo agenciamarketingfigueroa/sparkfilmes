@@ -12,6 +12,18 @@
       "segmento": "Gerenciamento de Alta Performance",
       "senha": "Vl@1234",
       "url": "./victor-lopes.html"
+    },
+    {
+      "nome": "IEMAB",
+      "slug": "iemab",
+      "segmento": "Colegio",
+      "url": "./iemab.html"
+    },
+    {
+      "nome": "Formatura IEMAB",
+      "slug": "formatura-iemab",
+      "segmento": "Colegio | Formaturas",
+      "url": "./formatura-iemab.html"
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "cliente": {
+    "nome": "IEMAB",
+    "slug": "iemab",
+    "nicho": "Colegio",
+    "status": "Em configuracao",
+    "fotoPerfil": "assets/img/perfil-spark.svg",
+    "inicioParceria": "2026-03-01",
+    "ultimaAtualizacao": "2026-03-01",
+    "resumo": "Pagina principal do cliente IEMAB. Estrutura criada para receber os proximos materiais e ajustes.",
+    "notaRodape": "Estrutura inicial criada. Podemos ajustar os blocos e os links desta pagina depois.",
+    "formatoPrincipal": "Fotos e materiais escolares"
+  },
+  "trabalhos": []
+}

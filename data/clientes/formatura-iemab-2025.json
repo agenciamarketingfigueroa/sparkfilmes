@@ -1,0 +1,502 @@
+{
+  "cliente": {
+    "nome": "Formatura IEMAB 2025",
+    "slug": "formatura-iemab-2025",
+    "nicho": "Colegio | Formatura 2025",
+    "ocultarSubtitulo": true,
+    "eyebrow": "Material",
+    "status": "Acesso por senha",
+    "fotoPerfil": "assets/img/Clientes/IEMAB/Formatura 2025/iemab-formatura-2025-foto-da-turma.svg",
+    "fotoPerfilAlt": "Foto da turma da Formatura IEMAB 2025",
+    "fotoPerfilRatio": "16 / 9",
+    "fotoPerfilWidth": "min(100%, 520px)",
+    "inicioParceria": "2026-03-01",
+    "ultimaAtualizacao": "2026-03-01",
+    "prazoDownloadGeralAte": "2026-11-30",
+    "metricasEyebrow": "Resumo da formatura",
+    "metricasTitulo": "Informações da turma",
+    "entregasEyebrow": "Alunos 2025",
+    "entregasTitulo": "Acesse seu material abaixo",
+    "entregasFundoEscuro": true,
+    "usarThumbsAluno": true,
+    "senhaVisualPadrao": "31218050",
+    "textoBotaoEntrega": "Acessar fotos",
+    "acoesComuns": [
+      {
+        "label": "Vídeos",
+        "link": "https://drive.google.com/drive/folders/16T1ulQoVs1eM_sSyqrJ_f3iEJA-FIpX3?usp=sharing",
+        "variant": "ghost"
+      },
+      {
+        "label": "Foto da turma",
+        "link": "https://drive.google.com/drive/folders/1PUYHrIHeCs0QbahgGRWxKlFH82WsLoyf?usp=sharing",
+        "variant": "ghost",
+        "novaAba": true
+      },
+      {
+        "label": "Festa de Formatura",
+        "link": "https://drive.google.com/drive/folders/1gGMJgJTm6irJZPeoZGj13_anc8_I8dJf?usp=sharing",
+        "variant": "ghost"
+      }
+    ],
+    "ocultarTituloCardsEntrega": true,
+    "ocultarStatusCardsEntrega": true,
+    "resumo": "Encontre o material do seu filho, clique em \"Acessar fotos\", digite a senha e depois acesse o Google Drive para baixar os arquivos. Os pais terao 1 ano para baixar o material.",
+    "notaRodape": "Os arquivos ficam disponiveis por 1 ano. Para este teste, todos os alunos usam a mesma senha.",
+    "formatoPrincipal": "Fotos de formatura",
+    "metricas": [
+      {
+        "label": "Professora",
+        "value": "MARIA EDUARDA NUNES"
+      },
+      {
+        "label": "Data da formatura",
+        "value": "30/11/2025"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "alicia-nicoli-franca",
+      "titulo": "Alícia Nicoli França",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Alícia Nicoli França"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/alícia-nicoli-frança.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1_xbhULqw9oB1AdnwGfnnq2vFtkRQ5NzS?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "ana-laura-gallote",
+      "titulo": "Ana Laura Gallote",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Ana Laura Gallote"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/ana-laura-gallote.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1kOizocPBF59lSTSkOS_2QCZKitkfaDOA?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "bernardo-dias-ribeiro",
+      "titulo": "Bernardo Dias Ribeiro",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Bernardo Dias Ribeiro"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/bernardo-dias-ribeiro.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1ETn9b8k4m6HSSWlTvZ8wayKva_DDrjXd?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "elisa-maria-silveira",
+      "titulo": "Elisa Maria Silveira",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Elisa Maria Silveira"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/elisa-maria-silveira.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1EZlG4rHnECUI5jrTYu3ZCFzZkVsKckrS?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "fernando-maia-assrauy",
+      "titulo": "Fernando Maia Assrauy",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Fernando Maia Assrauy"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/fernando-maia-assrauy.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1mahzGlBKNUF9gefyw2Xb3_HUfKQv_rkv?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "giovana-rodrigues-dolabela",
+      "titulo": "Giovana Rodrigues Dolabela",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Giovana Rodrigues Dolabela"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/giovana-rodrigues-dolabela.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1pG3_kCjS_KNx4rlfFt0arr-BsW3TyDFp?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "gustavo-gomes-de-faria",
+      "titulo": "Gustavo Gomes de Faria",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Gustavo Gomes de Faria"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/gustavo-gomes-de-faria.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1SAGQar9rNn9keQae-LJml6Cd7YDkGG0b?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "helena-soares-vieira",
+      "titulo": "Helena Soares Vieira",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Helena Soares Vieira"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/helena-soares-vieira.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1VMqE-dBBNT1t2A4o3KdmoAEgHP30hVYh?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "joao-marcos-de-souza",
+      "titulo": "João Marcos de Souza",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "João Marcos de Souza"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/joão-marcos-de-souza.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1qHAHECdb3zgJrmb9FPNAQ-whjbEaQR5V?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "lavinia-vieira-ferreira",
+      "titulo": "Lavínia Vieira Ferreira",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Lavínia Vieira Ferreira"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/lavínia-vieira-ferreira.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1Z6eUI5PPaDJg6IrIkrVxBbJDLXqf5Jq_?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "leonardo-matteo-de-oliveira",
+      "titulo": "Leonardo Matteo de Oliveira",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Leonardo Matteo de Oliveira"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/Leonardo-matteo-de-oliveira.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1h2flmi6Fx9G6104hmqQTs_IbELpC74gu?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "luiza-christina-piani",
+      "titulo": "Luiza Christina Piani",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Luiza Christina Piani"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/luiza-christina-piani.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1LUcbfUd6uHUienPeMzJkDAMOzHWSWccV?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "maisa-silvia-alves",
+      "titulo": "Maisa Silvia Alves",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Maisa Silvia Alves"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/maisa-silvia-alves.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1tIAzcLiBezpwCd1wGXTGEc9nJuHa-SM2?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "matheus-de-souza-nepomuceno",
+      "titulo": "Matheus de Souza Nepomuceno",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Matheus de Souza Nepomuceno"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/matheus-de-souza-nepomuceno.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1AhhJ_BREp6pvypJ2s8VLICbhlQ-92sld?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "matheus-von-dollinger",
+      "titulo": "Matheus von Dollinger",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Matheus von Dollinger"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/matheus-von-dollinger.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1YyhdvLurQKC549xHt4eZhi_vLkz-BOXy?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "pedro-henrique-dos-santos",
+      "titulo": "Pedro Henrique dos Santos",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Pedro Henrique dos Santos"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/pedro-henrique-dos-santos.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1krCmPVQmdZxUC7O1kqP-tdAAYeTf6hZ_?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    },
+    {
+      "id": "thiago-lucas-moraes",
+      "titulo": "Thiago Lucas Moraes",
+      "dataTrabalho": "2025-11-30",
+      "statusEntrega": "Disponivel",
+      "meta": [
+        {
+          "label": "Nome do aluno",
+          "value": "Thiago Lucas Moraes"
+        }
+      ],
+      "prazoDownloadAte": "2026-11-30",
+      "hideCountdown": false,
+      "capa": "../assets/img/Clientes/IEMAB/Formatura 2025/thiago-lucas-moraes.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1ZA_njFxZ01B7bvwfc8JOVtfiQiVeGBne?usp=sharing",
+      "hideTitle": true,
+      "hideStatus": true,
+      "linkPastaTexto": "Acessar material",
+      "senhaVisual": "01012010",
+      "senhaVisualModo": "digits",
+      "senhaVisualLabel": "Senha de acesso",
+      "senhaVisualAjuda": "Digite a data de aniversario do aluno no formato DDMMAAAA para liberar o Google Drive.",
+      "senhaVisualPlaceholder": "Ex: 01012010",
+      "senhaVisualBotao": "Entrar",
+      "senhaVisualErro": "Senha incorreta. Use a data de aniversario do aluno."
+    }
+  ]
+}
