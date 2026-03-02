@@ -21,13 +21,14 @@ if (clientRoot) {
 
   let allWorks = [];
   const activeDeliveryFilters = {
+    title: "",
     date: "",
     format: "",
   };
 
   const normalizeFilterValue = (value) => String(value || "").trim();
 
-  const hasActiveDeliveryFilters = () => Boolean(activeDeliveryFilters.date || activeDeliveryFilters.format);
+  const hasActiveDeliveryFilters = () => Boolean(activeDeliveryFilters.title || activeDeliveryFilters.date || activeDeliveryFilters.format);
 
   const getDeliveryFilterOptions = (trabalhos) => {
     if (!Array.isArray(trabalhos) || trabalhos.length === 0) {
@@ -63,9 +64,12 @@ if (clientRoot) {
     if (!Array.isArray(trabalhos) || trabalhos.length === 0) return [];
 
     return trabalhos.filter((work) => {
+      const normalizedTitleFilter = normalizeFilterValue(activeDeliveryFilters.title).toLowerCase();
+      const normalizedWorkTitle = normalizeFilterValue(work?.titulo).toLowerCase();
+      const matchesTitle = !normalizedTitleFilter || normalizedWorkTitle.includes(normalizedTitleFilter);
       const matchesDate = !activeDeliveryFilters.date || normalizeFilterValue(work?.dataTrabalho) === activeDeliveryFilters.date;
       const matchesFormat = !activeDeliveryFilters.format || normalizeFilterValue(work?.formato) === activeDeliveryFilters.format;
-      return matchesDate && matchesFormat;
+      return matchesTitle && matchesDate && matchesFormat;
     });
   };
 
@@ -216,6 +220,7 @@ if (clientRoot) {
 
   const renderAccessGate = (clientConfig) => {
     allWorks = [];
+    activeDeliveryFilters.title = "";
     activeDeliveryFilters.date = "";
     activeDeliveryFilters.format = "";
 
@@ -870,7 +875,7 @@ if (clientRoot) {
     filtersEl.innerHTML = "";
 
     const { dateValues, formatValues } = getDeliveryFilterOptions(trabalhos);
-    const shouldShowFilters = dateValues.length > 1 || formatValues.length > 1;
+    const shouldShowFilters = trabalhos.length > 1 || dateValues.length > 1 || formatValues.length > 1;
 
     if (!shouldShowFilters) {
       filtersEl.hidden = true;
@@ -897,6 +902,7 @@ if (clientRoot) {
     resetButton.disabled = !hasActiveDeliveryFilters();
 
     resetButton.addEventListener("click", () => {
+      activeDeliveryFilters.title = "";
       activeDeliveryFilters.date = "";
       activeDeliveryFilters.format = "";
       updateDeliveryResults();
@@ -906,6 +912,23 @@ if (clientRoot) {
 
     const grid = document.createElement("div");
     grid.className = "client-filter-grid";
+
+    const titleField = document.createElement("label");
+    titleField.className = "client-filter-field";
+    titleField.textContent = "Titulo";
+
+    const titleInput = document.createElement("input");
+    titleInput.className = "field";
+    titleInput.type = "search";
+    titleInput.placeholder = "Buscar por titulo";
+    titleInput.setAttribute("aria-label", "Buscar por titulo");
+    titleInput.value = activeDeliveryFilters.title;
+    titleInput.addEventListener("input", () => {
+      activeDeliveryFilters.title = titleInput.value;
+      updateDeliveryResults({ preserveFilters: true });
+    });
+
+    titleField.appendChild(titleInput);
 
     const dateField = document.createElement("label");
     dateField.className = "client-filter-field";
@@ -962,7 +985,7 @@ if (clientRoot) {
     });
 
     formatField.appendChild(formatSelect);
-    grid.append(dateField, formatField);
+    grid.append(titleField, dateField, formatField);
 
     const summary = document.createElement("p");
     summary.className = "client-filter-summary";
@@ -1023,15 +1046,39 @@ if (clientRoot) {
     });
   };
 
-  const updateDeliveryResults = () => {
-    renderDeliveryFilters(allWorks);
-    renderDeliveries(getFilteredWorks(allWorks));
+  const syncDeliveryFilterUi = (trabalhos, filteredWorks) => {
+    if (!filtersEl || filtersEl.hidden) return;
+
+    const resetButton = filtersEl.querySelector(".client-filter-top .btn");
+    if (resetButton) {
+      resetButton.disabled = !hasActiveDeliveryFilters();
+    }
+
+    const summary = filtersEl.querySelector(".client-filter-summary");
+    if (summary) {
+      summary.textContent = hasActiveDeliveryFilters()
+        ? `${filteredWorks.length} material${filteredWorks.length === 1 ? "" : "is"} encontrado${filteredWorks.length === 1 ? "" : "s"} com os filtros atuais.`
+        : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponive${trabalhos.length === 1 ? "l" : "is"}.`;
+    }
+  };
+
+  const updateDeliveryResults = (options = {}) => {
+    const filteredWorks = getFilteredWorks(allWorks);
+
+    if (options.preserveFilters) {
+      syncDeliveryFilterUi(allWorks, filteredWorks);
+    } else {
+      renderDeliveryFilters(allWorks);
+    }
+
+    renderDeliveries(filteredWorks);
   };
 
   const initClientPage = async () => {
     const dataPath = getDataPath();
     if (!dataPath) {
       allWorks = [];
+      activeDeliveryFilters.title = "";
       activeDeliveryFilters.date = "";
       activeDeliveryFilters.format = "";
 
@@ -1071,6 +1118,7 @@ if (clientRoot) {
 
       window.__sparkClientData = cliente;
       allWorks = trabalhos;
+      activeDeliveryFilters.title = "";
       activeDeliveryFilters.date = "";
       activeDeliveryFilters.format = "";
 
@@ -1085,6 +1133,7 @@ if (clientRoot) {
     } catch (error) {
       console.error(error);
       allWorks = [];
+      activeDeliveryFilters.title = "";
       activeDeliveryFilters.date = "";
       activeDeliveryFilters.format = "";
 

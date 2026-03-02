@@ -12,11 +12,11 @@
     "metricas": [
       {
         "label": "Trabalhos feitos",
-        "value": "8"
+        "value": "9"
       },
       {
         "label": "Entrega atual",
-        "value": "8 materiais"
+        "value": "9 materiais"
       },
       {
         "label": "Prazo atual",
@@ -28,7 +28,7 @@
     {
       "id": "job-001",
       "titulo": "Entrevista Robert Renan",
-      "dataTrabalho": "2026-12-06",
+      "dataTrabalho": "2025-12-06",
       "statusEntrega": "Entregue",
       "formato": "Bruto",
       "volume": "3 videos e 1 foto",
@@ -41,7 +41,7 @@
     {
       "id": "job-002",
       "titulo": "Primeiros Conteudos para o Instagram",
-      "dataTrabalho": "2026-12-10",
+      "dataTrabalho": "2025-12-10",
       "statusEntrega": "Entregue",
       "formato": "Bruto",
       "volume": "5 videos",
@@ -54,26 +54,26 @@
     {
       "id": "job-003",
       "titulo": "Entrevista Renato Marques",
-      "dataTrabalho": "2026-12-10",
+      "dataTrabalho": "2025-12-10",
       "statusEntrega": "Entregue",
       "formato": "Bruto",
       "volume": "32 videos e 2 fotos",
       "observacao": "Videos para YouTube e documentario",
       "prazoDownloadAte": "2027-02-28",
-      "capa": "../assets/img/Clientes/Victor Lopes/treino-renato-marques.svg",
+      "capa": "../assets/img/Clientes/Victor Lopes/entrevista-renato-marques-(10122025).svg",
       "linkPasta": "https://drive.google.com/drive/folders/1J07YGyY6FZN3HEZPApe7qCE8-edHUpnF?usp=drive_link",
       "linkDownload": ""
     },
     {
       "id": "job-004",
       "titulo": "YouTube | Treino Renato Marques",
-      "dataTrabalho": "2026-12-10",
+      "dataTrabalho": "2025-12-10",
       "statusEntrega": "Alteracao",
       "formato": "YouTube",
       "meta": [
         {
           "label": "Data do trabalho",
-          "value": "10/12/2026"
+          "value": "10/12/2025"
         },
         {
           "label": "Formato",
@@ -85,7 +85,7 @@
         }
       ],
       "prazoDownloadAte": "2027-02-28",
-      "capa": "../assets/img/Clientes/Victor Lopes/vl-renato-(10-12-2025).svg",
+      "capa": "../assets/img/Clientes/Victor Lopes/treino-renato-marques.svg",
       "linkPasta": "https://drive.google.com/file/d/1we0hz3jPHgtUtAj8pDNFeayK6FLS8Evt/view?usp=sharing",
       "linkDownload": "",
       "acoes": [
@@ -198,6 +198,37 @@
         {
           "label": "YouTube",
           "link": "https://youtu.be/8jcZ1Lup_AA"
+        }
+      ]
+    },
+    {
+      "id": "job-009",
+      "titulo": "YouTube | Atleta VL - Robert Renan",
+      "dataTrabalho": "2025-12-06",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "meta": [
+        {
+          "label": "Data do trabalho",
+          "value": "06/12/2025"
+        },
+        {
+          "label": "Formato",
+          "value": "YouTube"
+        },
+        {
+          "label": "Nota",
+          "value": "Documentario"
+        }
+      ],
+      "prazoDownloadAte": "2026-12-06",
+      "capa": "../assets/img/Clientes/Victor Lopes/Atleta-VL-Robert-Renan.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/10s_4bTMwu5dNLCX7Ysxt4CtAljrG06aM?usp=drive_link",
+      "linkDownload": "",
+      "acoes": [
+        {
+          "label": "YouTube",
+          "link": "https://youtu.be/3BYzs3W1-k4"
         }
       ]
     }
