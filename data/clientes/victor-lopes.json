@@ -6,16 +6,17 @@
     "status": "Ativo",
     "fotoPerfil": "assets/img/Clientes/Victor Lopes/victor-lopes-perfil.svg",
     "ultimaAtualizacao": "2026-02-28",
+    "entregasFundoEscuro": true,
     "resumo": "Projeto recorrente com foco em autoridade, venda de cursos e escala de conteudo para anuncios e redes sociais e YouTube.",
     "formatoPrincipal": "YouTube + Conteudo para anuncios",
     "metricas": [
       {
         "label": "Trabalhos feitos",
-        "value": "3"
+        "value": "8"
       },
       {
         "label": "Entrega atual",
-        "value": "3 videos + 1 foto"
+        "value": "8 materiais"
       },
       {
         "label": "Prazo atual",
@@ -29,7 +30,7 @@
       "titulo": "Entrevista Robert Renan",
       "dataTrabalho": "2026-12-06",
       "statusEntrega": "Entregue",
-      "formato": "YouTube",
+      "formato": "Bruto",
       "volume": "3 videos e 1 foto",
       "observacao": "Material para Edicao do Documentario",
       "prazoDownloadAte": "2027-02-28",
@@ -42,7 +43,7 @@
       "titulo": "Primeiros Conteudos para o Instagram",
       "dataTrabalho": "2026-12-10",
       "statusEntrega": "Entregue",
-      "formato": "Instagram",
+      "formato": "Bruto",
       "volume": "5 videos",
       "observacao": "Material para Reels",
       "prazoDownloadAte": "2027-02-28",
@@ -55,13 +56,150 @@
       "titulo": "Entrevista Renato Marques",
       "dataTrabalho": "2026-12-10",
       "statusEntrega": "Entregue",
-      "formato": "YouTube",
+      "formato": "Bruto",
       "volume": "32 videos e 2 fotos",
       "observacao": "Videos para YouTube e documentario",
       "prazoDownloadAte": "2027-02-28",
-      "capa": "../assets/img/Clientes/Victor Lopes/vl-renato-(10-12-2025).svg",
+      "capa": "../assets/img/Clientes/Victor Lopes/treino-renato-marques.svg",
       "linkPasta": "https://drive.google.com/drive/folders/1J07YGyY6FZN3HEZPApe7qCE8-edHUpnF?usp=drive_link",
       "linkDownload": ""
+    },
+    {
+      "id": "job-004",
+      "titulo": "YouTube | Treino Renato Marques",
+      "dataTrabalho": "2026-12-10",
+      "statusEntrega": "Alteracao",
+      "formato": "YouTube",
+      "meta": [
+        {
+          "label": "Data do trabalho",
+          "value": "10/12/2026"
+        },
+        {
+          "label": "Formato",
+          "value": "YouTube"
+        },
+        {
+          "label": "Nota",
+          "value": "Video para YouTube"
+        }
+      ],
+      "prazoDownloadAte": "2027-02-28",
+      "capa": "../assets/img/Clientes/Victor Lopes/vl-renato-(10-12-2025).svg",
+      "linkPasta": "https://drive.google.com/file/d/1we0hz3jPHgtUtAj8pDNFeayK6FLS8Evt/view?usp=sharing",
+      "linkDownload": "",
+      "acoes": [
+        {
+          "label": "YouTube",
+          "link": "https://youtu.be/zFzKCv3i3O8"
+        }
+      ]
+    },
+    {
+      "id": "job-005",
+      "titulo": "YouTube | Atleta VL - Renato Marques",
+      "dataTrabalho": "2025-12-10",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "meta": [
+        {
+          "label": "Data do trabalho",
+          "value": "10/12/2025"
+        },
+        {
+          "label": "Formato",
+          "value": "YouTube"
+        },
+        {
+          "label": "Nota",
+          "value": "Documentario"
+        }
+      ],
+      "prazoDownloadAte": "2026-12-10",
+      "capa": "../assets/img/Clientes/Victor Lopes/Atleta-VL-Renato-Marques.svg",
+      "linkPasta": "https://drive.google.com/file/d/1eaQQB_h5iL1xVyVqGfd9MqRSyY3y4I5P/view?usp=sharing",
+      "linkDownload": "",
+      "acoes": [
+        {
+          "label": "YouTube",
+          "link": "https://youtu.be/J1wlg25uopw"
+        }
+      ]
+    },
+    {
+      "id": "job-006",
+      "titulo": "Entrevista Arthur Augusto",
+      "dataTrabalho": "2025-12-26",
+      "statusEntrega": "Entregue",
+      "formato": "Bruto",
+      "volume": "2 videos e 2 fotos",
+      "observacao": "Falas sobre vitor e fotos da gravacao",
+      "prazoDownloadAte": "2026-12-26",
+      "capa": "../assets/img/Clientes/Victor Lopes/vl-arthur (26-12-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1qVSv7hWadhxPFsNhmt9dTa1TFwZ324CU?usp=drive_link",
+      "linkDownload": ""
+    },
+    {
+      "id": "job-007",
+      "titulo": "YouTube | Primeiro Treino Do Canal - Arthur Augusto",
+      "dataTrabalho": "2025-12-26",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "meta": [
+        {
+          "label": "Data do trabalho",
+          "value": "26/12/2025"
+        },
+        {
+          "label": "Formato",
+          "value": "YouTube"
+        },
+        {
+          "label": "Nota",
+          "value": "Video para YouTube"
+        }
+      ],
+      "prazoDownloadAte": "2026-12-26",
+      "capa": "../assets/img/Clientes/Victor Lopes/Primeiro-Treino-Do-Canal -Arthur-Augusto.svg",
+      "linkPasta": "https://drive.google.com/file/d/1HBXEZfHqd2RPA3xqz9JUEksqj_eqLyU9/view?usp=sharing",
+      "linkDownload": "",
+      "acoes": [
+        {
+          "label": "YouTube",
+          "link": "https://youtu.be/6hZnLSpEwlY"
+        }
+      ]
+    },
+    {
+      "id": "job-008",
+      "titulo": "YouTube | Atleta VL - Arthur Augusto",
+      "dataTrabalho": "2025-12-26",
+      "statusEntrega": "Entregue",
+      "formato": "YouTube",
+      "meta": [
+        {
+          "label": "Data do trabalho",
+          "value": "26/12/2025"
+        },
+        {
+          "label": "Formato",
+          "value": "YouTube"
+        },
+        {
+          "label": "Nota",
+          "value": "Documentario"
+        }
+      ],
+      "prazoDownloadAte": "2026-12-26",
+      "capa": "../assets/img/Clientes/Victor Lopes/Atleta-VL-Arthur-Augusto.svg",
+      "linkPasta": "https://drive.google.com/file/d/1QzQBTlQlp3us5l-Hy9OTOGxpJ2YQO06q/view?usp=sharing",
+      "linkDownload": "",
+      "acoes": [
+        {
+          "label": "YouTube",
+          "link": "https://youtu.be/8jcZ1Lup_AA"
+        }
+      ]
     }
   ]
 }

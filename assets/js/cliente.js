@@ -6,9 +6,10 @@ if (clientRoot) {
   const metricsHeadEl = metricsEl ? metricsEl.previousElementSibling : null;
   const metricsSectionEl = metricsEl ? metricsEl.closest(".section") : null;
   const deliveriesEl = document.getElementById("cliente-entregas");
-  const deliveriesHeadEl = deliveriesEl ? deliveriesEl.previousElementSibling : null;
   const deliveriesSectionEl = deliveriesEl ? deliveriesEl.closest(".section") : null;
   const deliveriesContainerEl = deliveriesEl ? deliveriesEl.parentElement : null;
+  const deliveriesHeadEl = deliveriesContainerEl ? deliveriesContainerEl.querySelector(".section-head") : null;
+  const filtersEl = document.getElementById("cliente-filtros");
   const noteEl = document.getElementById("cliente-note");
 
   const formatDatePtBr = (isoDate) => {
@@ -16,6 +17,56 @@ if (clientRoot) {
     const parsed = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(parsed.getTime())) return "--";
     return new Intl.DateTimeFormat("pt-BR").format(parsed);
+  };
+
+  let allWorks = [];
+  const activeDeliveryFilters = {
+    date: "",
+    format: "",
+  };
+
+  const normalizeFilterValue = (value) => String(value || "").trim();
+
+  const hasActiveDeliveryFilters = () => Boolean(activeDeliveryFilters.date || activeDeliveryFilters.format);
+
+  const getDeliveryFilterOptions = (trabalhos) => {
+    if (!Array.isArray(trabalhos) || trabalhos.length === 0) {
+      return {
+        dateValues: [],
+        formatValues: [],
+      };
+    }
+
+    const dateValues = Array.from(
+      new Set(
+        trabalhos
+          .map((work) => normalizeFilterValue(work?.dataTrabalho))
+          .filter(Boolean)
+      )
+    ).sort((a, b) => b.localeCompare(a));
+
+    const formatValues = Array.from(
+      new Set(
+        trabalhos
+          .map((work) => normalizeFilterValue(work?.formato))
+          .filter(Boolean)
+      )
+    ).sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+    return {
+      dateValues,
+      formatValues,
+    };
+  };
+
+  const getFilteredWorks = (trabalhos) => {
+    if (!Array.isArray(trabalhos) || trabalhos.length === 0) return [];
+
+    return trabalhos.filter((work) => {
+      const matchesDate = !activeDeliveryFilters.date || normalizeFilterValue(work?.dataTrabalho) === activeDeliveryFilters.date;
+      const matchesFormat = !activeDeliveryFilters.format || normalizeFilterValue(work?.formato) === activeDeliveryFilters.format;
+      return matchesDate && matchesFormat;
+    });
   };
 
   const getClientSlug = () => {
@@ -164,6 +215,15 @@ if (clientRoot) {
   };
 
   const renderAccessGate = (clientConfig) => {
+    allWorks = [];
+    activeDeliveryFilters.date = "";
+    activeDeliveryFilters.format = "";
+
+    if (filtersEl) {
+      filtersEl.hidden = true;
+      filtersEl.innerHTML = "";
+    }
+
     if (metricsEl) {
       metricsEl.innerHTML = '<p class="empty-state">Acesso protegido. Digite a senha acima.</p>';
     }
@@ -495,6 +555,12 @@ if (clientRoot) {
     quantityItem.innerHTML = `<strong>Volume:</strong> ${work.volume || "Não informado"}`;
     metaList.appendChild(quantityItem);
 
+    if (work.tipo) {
+      const typeItem = document.createElement("li");
+      typeItem.innerHTML = `<strong>Tipo:</strong> ${work.tipo}`;
+      metaList.appendChild(typeItem);
+    }
+
     if (work.observacao) {
       const noteItem = document.createElement("li");
       noteItem.innerHTML = `<strong>Nota:</strong> ${work.observacao}`;
@@ -582,15 +648,27 @@ if (clientRoot) {
       metaList.appendChild(item);
     };
 
+    const hasTipoMeta =
+      Array.isArray(work.meta) &&
+      work.meta.some((entry) => String(entry?.label || "").trim().toLowerCase() === "tipo");
+
     if (Array.isArray(work.meta) && work.meta.length > 0) {
       work.meta.forEach((entry) => {
         if (!entry) return;
         appendMetaItem(entry.label || "Informacao", entry.value || "--");
       });
+
+      if (work.tipo && !hasTipoMeta) {
+        appendMetaItem("Tipo", work.tipo);
+      }
     } else {
       appendMetaItem("Data do trabalho", formatDatePtBr(work.dataTrabalho));
       appendMetaItem("Formato", work.formato || "Nao informado");
       appendMetaItem("Volume", work.volume || "Nao informado");
+
+      if (work.tipo) {
+        appendMetaItem("Tipo", work.tipo);
+      }
 
       if (work.observacao) {
         appendMetaItem("Nota", work.observacao);
@@ -703,6 +781,28 @@ if (clientRoot) {
       actions.appendChild(folderButton);
     }
 
+    if (Array.isArray(work.acoes) && work.acoes.length > 0) {
+      work.acoes.forEach((action) => {
+        const button = document.createElement("a");
+        button.className = `btn btn-small ${action?.variant === "primary" ? "btn-primary" : "btn-ghost"}`;
+        button.textContent = action?.label || "Abrir";
+
+        if (action?.link) {
+          button.href = action.link;
+
+          if (action?.novaAba || /^(https?:)?\/\//.test(action.link)) {
+            button.target = "_blank";
+            button.rel = "noreferrer";
+          }
+        } else {
+          button.href = "#";
+          button.setAttribute("aria-disabled", "true");
+        }
+
+        actions.appendChild(button);
+      });
+    }
+
     if (Array.isArray(clientData.acoesComuns) && clientData.acoesComuns.length > 0) {
       clientData.acoesComuns.forEach((action) => {
         const button = document.createElement("a");
@@ -764,6 +864,116 @@ if (clientRoot) {
     return card;
   };
 
+  const renderDeliveryFilters = (trabalhos) => {
+    if (!filtersEl) return;
+
+    filtersEl.innerHTML = "";
+
+    const { dateValues, formatValues } = getDeliveryFilterOptions(trabalhos);
+    const shouldShowFilters = dateValues.length > 1 || formatValues.length > 1;
+
+    if (!shouldShowFilters) {
+      filtersEl.hidden = true;
+      return;
+    }
+
+    const filteredWorks = getFilteredWorks(trabalhos);
+    filtersEl.hidden = false;
+
+    const panel = document.createElement("div");
+    panel.className = "client-filter-bar";
+
+    const topRow = document.createElement("div");
+    topRow.className = "client-filter-top";
+
+    const title = document.createElement("p");
+    title.className = "client-filter-title";
+    title.textContent = "Filtrar materiais";
+
+    const resetButton = document.createElement("button");
+    resetButton.type = "button";
+    resetButton.className = "btn btn-ghost btn-small";
+    resetButton.textContent = "Limpar filtros";
+    resetButton.disabled = !hasActiveDeliveryFilters();
+
+    resetButton.addEventListener("click", () => {
+      activeDeliveryFilters.date = "";
+      activeDeliveryFilters.format = "";
+      updateDeliveryResults();
+    });
+
+    topRow.append(title, resetButton);
+
+    const grid = document.createElement("div");
+    grid.className = "client-filter-grid";
+
+    const dateField = document.createElement("label");
+    dateField.className = "client-filter-field";
+    dateField.textContent = "Data";
+
+    const dateSelect = document.createElement("select");
+    dateSelect.className = "field";
+    dateSelect.setAttribute("aria-label", "Filtrar por data");
+
+    const allDatesOption = document.createElement("option");
+    allDatesOption.value = "";
+    allDatesOption.textContent = "Todas as datas";
+    dateSelect.appendChild(allDatesOption);
+
+    dateValues.forEach((isoDate) => {
+      const option = document.createElement("option");
+      option.value = isoDate;
+      option.textContent = formatDatePtBr(isoDate);
+      dateSelect.appendChild(option);
+    });
+
+    dateSelect.value = activeDeliveryFilters.date;
+    dateSelect.addEventListener("change", () => {
+      activeDeliveryFilters.date = dateSelect.value;
+      updateDeliveryResults();
+    });
+
+    dateField.appendChild(dateSelect);
+
+    const formatField = document.createElement("label");
+    formatField.className = "client-filter-field";
+    formatField.textContent = "Formato";
+
+    const formatSelect = document.createElement("select");
+    formatSelect.className = "field";
+    formatSelect.setAttribute("aria-label", "Filtrar por formato");
+
+    const allFormatsOption = document.createElement("option");
+    allFormatsOption.value = "";
+    allFormatsOption.textContent = "Todos os formatos";
+    formatSelect.appendChild(allFormatsOption);
+
+    formatValues.forEach((formatValue) => {
+      const option = document.createElement("option");
+      option.value = formatValue;
+      option.textContent = formatValue;
+      formatSelect.appendChild(option);
+    });
+
+    formatSelect.value = activeDeliveryFilters.format;
+    formatSelect.addEventListener("change", () => {
+      activeDeliveryFilters.format = formatSelect.value;
+      updateDeliveryResults();
+    });
+
+    formatField.appendChild(formatSelect);
+    grid.append(dateField, formatField);
+
+    const summary = document.createElement("p");
+    summary.className = "client-filter-summary";
+    summary.textContent = hasActiveDeliveryFilters()
+      ? `${filteredWorks.length} material${filteredWorks.length === 1 ? "" : "is"} encontrado${filteredWorks.length === 1 ? "" : "s"} com os filtros atuais.`
+      : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponive${trabalhos.length === 1 ? "l" : "is"}.`;
+
+    panel.append(topRow, grid, summary);
+    filtersEl.appendChild(panel);
+  };
+
   const renderDeliveries = (trabalhos) => {
     if (!deliveriesEl) return;
     deliveriesEl.innerHTML = "";
@@ -800,6 +1010,10 @@ if (clientRoot) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
       empty.textContent = "Nenhum trabalho registrado até o momento.";
+      if (hasActiveDeliveryFilters()) {
+        empty.textContent = "Nenhum trabalho encontrado com os filtros selecionados.";
+      }
+
       deliveriesEl.appendChild(empty);
       return;
     }
@@ -809,9 +1023,23 @@ if (clientRoot) {
     });
   };
 
+  const updateDeliveryResults = () => {
+    renderDeliveryFilters(allWorks);
+    renderDeliveries(getFilteredWorks(allWorks));
+  };
+
   const initClientPage = async () => {
     const dataPath = getDataPath();
     if (!dataPath) {
+      allWorks = [];
+      activeDeliveryFilters.date = "";
+      activeDeliveryFilters.format = "";
+
+      if (filtersEl) {
+        filtersEl.hidden = true;
+        filtersEl.innerHTML = "";
+      }
+
       if (deliveriesEl) {
         deliveriesEl.innerHTML = '<p class="empty-state">Cliente não informado na URL.</p>';
       }
@@ -825,6 +1053,11 @@ if (clientRoot) {
     }
 
     try {
+      if (filtersEl) {
+        filtersEl.hidden = true;
+        filtersEl.innerHTML = "";
+      }
+
       if (deliveriesEl) {
         deliveriesEl.innerHTML = '<p class="loading-state">Carregando trabalhos...</p>';
       }
@@ -837,10 +1070,13 @@ if (clientRoot) {
       const trabalhos = Array.isArray(data.trabalhos) ? data.trabalhos : [];
 
       window.__sparkClientData = cliente;
+      allWorks = trabalhos;
+      activeDeliveryFilters.date = "";
+      activeDeliveryFilters.format = "";
 
       renderHeader(cliente);
       renderMetrics(cliente, trabalhos);
-      renderDeliveries(trabalhos);
+      updateDeliveryResults();
 
       if (noteEl) {
         noteEl.textContent =
@@ -848,6 +1084,15 @@ if (clientRoot) {
       }
     } catch (error) {
       console.error(error);
+      allWorks = [];
+      activeDeliveryFilters.date = "";
+      activeDeliveryFilters.format = "";
+
+      if (filtersEl) {
+        filtersEl.hidden = true;
+        filtersEl.innerHTML = "";
+      }
+
       if (deliveriesEl) {
         deliveriesEl.innerHTML =
           '<p class="empty-state">Não foi possível carregar os dados. Verifique se o arquivo JSON do cliente existe.</p>';

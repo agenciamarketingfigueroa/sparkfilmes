@@ -1309,10 +1309,15 @@ textarea.field {
   color: #ffd8e2;
 }
 
-.status-badge[data-status="Aguardando aprovacao"] {
-  background: rgba(241, 240, 240, 0.12);
-  border-color: rgba(241, 240, 240, 0.35);
-  color: #f1f0f0;
+.status-badge[data-status="Alteracao"],
+.status-badge[data-status="Alteração"],
+.status-badge[data-status="Aprovacao"],
+.status-badge[data-status="Aprovação"],
+.status-badge[data-status="Aguardando aprovacao"],
+.status-badge[data-status="Aguardando aprovação"] {
+  background: rgba(255, 214, 10, 0.18);
+  border-color: rgba(255, 214, 10, 0.42);
+  color: #ffe78a;
 }
 
 .metric-grid {
@@ -1336,6 +1341,56 @@ textarea.field {
 .metric-card span {
   color: var(--color-muted);
   font-size: 0.84rem;
+}
+
+.client-filters {
+  margin-bottom: 1rem;
+}
+
+.client-filter-bar {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 44, 88, 0.08), transparent 28%),
+    linear-gradient(160deg, rgba(16, 16, 21, 0.96), rgba(10, 10, 14, 0.96));
+  box-shadow: var(--shadow-soft);
+}
+
+.client-filter-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.client-filter-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.client-filter-grid {
+  margin-top: 0.8rem;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.client-filter-field {
+  display: grid;
+  gap: 0.38rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.client-filter-summary {
+  margin: 0.8rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-muted);
 }
 
 .delivery-grid {
