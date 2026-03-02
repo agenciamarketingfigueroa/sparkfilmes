@@ -1503,6 +1503,51 @@ textarea.field {
   transform: none;
 }
 
+@media (max-width: 759px) {
+  .cinema-gap-copy .eyebrow,
+  .cinema-gap-copy .section-title,
+  .cinema-gap-lead,
+  .services-intro .eyebrow,
+  .services-intro .section-title,
+  .services-lead {
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .cinema-gap-copy .section-title,
+  .services-intro .section-title {
+    max-width: none;
+    text-wrap: balance;
+  }
+
+  .service-spotlight,
+  .service-tile {
+    aspect-ratio: auto;
+    padding: 1rem;
+  }
+
+  .service-spotlight h3 {
+    max-width: none;
+    text-wrap: balance;
+  }
+
+  body[data-client-page] .page-hero {
+    padding-bottom: 2rem;
+  }
+
+  body[data-client-page] .page-hero + .section {
+    padding-top: 1.4rem;
+  }
+
+  body[data-portfolio-page] .page-hero {
+    padding-bottom: 1.25rem;
+  }
+
+  body[data-portfolio-page] .page-hero + .section {
+    padding-top: 0.9rem;
+  }
+}
+
 @media (min-width: 760px) {
   .site-nav {
     position: static;
