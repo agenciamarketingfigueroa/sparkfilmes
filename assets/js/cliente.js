@@ -191,12 +191,32 @@ if (clientRoot) {
     }
   };
 
-  const getDownloadDeadline = (isoDate, years = 1) => {
+  const getDownloadDeadline = (work) => {
+    const isoDate = work?.dataTrabalho;
     const start = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(start.getTime())) return null;
 
     const deadline = new Date(start);
-    deadline.setFullYear(deadline.getFullYear() + years);
+    const customMonths = Number(work?.prazoMeses);
+    const customYears = Number(work?.prazoAnos);
+    const normalizedFormat = normalizeFilterValue(work?.formato).toLowerCase();
+
+    if (Number.isFinite(customMonths) && customMonths > 0) {
+      deadline.setMonth(deadline.getMonth() + customMonths);
+      return deadline;
+    }
+
+    if (Number.isFinite(customYears) && customYears > 0) {
+      deadline.setFullYear(deadline.getFullYear() + customYears);
+      return deadline;
+    }
+
+    if (normalizedFormat === "bruto") {
+      deadline.setMonth(deadline.getMonth() + 3);
+      return deadline;
+    }
+
+    deadline.setFullYear(deadline.getFullYear() + 1);
     return deadline;
   };
 
@@ -418,8 +438,7 @@ if (clientRoot) {
     }, null);
 
     const nearestActiveDeadline = workItems.reduce((currentClosest, work) => {
-      const deadline =
-        getExplicitDeadline(work?.prazoDownloadAte) || getDownloadDeadline(work?.dataTrabalho, Number(work?.prazoAnos || 1));
+      const deadline = getExplicitDeadline(work?.prazoDownloadAte) || getDownloadDeadline(work);
       const remainingDays = getRemainingDays(deadline);
 
       if (!deadline || remainingDays === null || remainingDays < 0) return currentClosest;
@@ -572,7 +591,7 @@ if (clientRoot) {
       metaList.appendChild(noteItem);
     }
 
-    const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work.dataTrabalho, Number(work.prazoAnos || 1));
+    const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work);
     const remainingDays = getRemainingDays(deadline);
     const countdown = document.createElement("p");
     countdown.className = "countdown";
@@ -845,8 +864,7 @@ if (clientRoot) {
     content.appendChild(metaList);
 
     if (!work.hideCountdown) {
-      const deadline =
-        getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work.dataTrabalho, Number(work.prazoAnos || 1));
+      const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work);
       const remainingDays = getRemainingDays(deadline);
       const countdown = document.createElement("p");
       countdown.className = "countdown";
