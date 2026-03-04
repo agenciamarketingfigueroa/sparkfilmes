@@ -83,6 +83,34 @@
       "descricao": "Registre seu evento com a qualidade máxima e um olhar profissional. Com entregas em Real Time.",
       "categoria": "Reels",
       "ratio": "9:16"
+    },
+    {
+      "id": "https://drive.google.com/file/d/1N4hq1Dlml1SI1_1IipWa-Fa2GhEeu7GY/view?usp=sharing",
+      "titulo": "Aftermovie Festas",
+      "descricao": "Se permita viver seu evento, a gente registra a exata energia desse momento.",
+      "categoria": "Reels",
+      "ratio": "9:16"
+    },
+    {
+      "id": "https://drive.google.com/file/d/1VKVEra9QrmPQhcRm3OrPzdP5A43fYpTY/view?usp=sharing",
+      "titulo": "Making Of - Estúdio",
+      "descricao": "Vai fazer um ensaio em estúdio? Aproveite e já grave um vídeo incrível para gerar expectativa para as fotos que virão.",
+      "categoria": "Reels",
+      "ratio": "9:16"
+    },
+    {
+      "id": "https://drive.google.com/file/d/1E6wNBBcPqNRIO-b0hBGFqDqtwkXx_x7r/view?usp=sharing",
+      "titulo": "Making Of - 15 Anos Externa",
+      "descricao": "Já imaginou um vídeo incrível para seu aniversário? Não deixe esse momento passar batido.",
+      "categoria": "Reels",
+      "ratio": "9:16"
+    },
+    {
+      "id": "https://drive.google.com/file/d/1hnOVH-xWs_Nppf33D2tkg6JL1TZ7cPxw/view?usp=sharing",
+      "titulo": "Save the Date",
+      "descricao": "Pra que um save the date com artes do canva? Nada contra o canva, usamos pra tudo, mas você merece um vídeo à sua altura. Surpreenda seus convidados.",
+      "categoria": "Reels",
+      "ratio": "9:16"
     }
   ],
   "cursos": [
@@ -98,6 +126,48 @@
       "titulo": "Eventos Presenciais | Making Of e Entrevistas",
       "descricao": "Captação em bloco com agilidade para páginas e lançamentos.",
       "categoria": "Evento Presencial",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/vXd3bKpe7GE",
+      "titulo": "Produção Horizontal | 01",
+      "descricao": "Exemplo de captação em formato horizontal para conteúdos de autoridade, cursos e YouTube.",
+      "categoria": "Produção Horizontal",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/ML7mz4ecIKo",
+      "titulo": "Produção Horizontal | 02",
+      "descricao": "Vídeo em 16:9 pensado para aulas, páginas de venda e conteúdos longos.",
+      "categoria": "Produção Horizontal",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/5rKfJMTym60",
+      "titulo": "Produção Horizontal | 03",
+      "descricao": "Trabalho em formato horizontal com foco em retenção e clareza de mensagem.",
+      "categoria": "Produção Horizontal",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/8jcZ1Lup_AA",
+      "titulo": "Produção Horizontal | 04",
+      "descricao": "Exemplo de vídeo horizontal para fortalecer presença, autoridade e distribuição no YouTube.",
+      "categoria": "Produção Horizontal",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/tAoVDOhQLi8?si=AIgRvF-WosB00XvP",
+      "titulo": "Produção Horizontal | 05",
+      "descricao": "Captação em 16:9 com estética profissional para conteúdos educacionais e institucionais.",
+      "categoria": "Produção Horizontal",
+      "ratio": "16:9"
+    },
+    {
+      "id": "https://youtu.be/vLVHykVTYck?si=IA_b5c9bVnmbtIpI",
+      "titulo": "Produção Horizontal | 06",
+      "descricao": "Vídeo horizontal para cursos e YouTube com enquadramento pensado para mais profundidade visual.",
+      "categoria": "Produção Horizontal",
       "ratio": "16:9"
     }
   ]

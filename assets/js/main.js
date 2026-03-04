@@ -178,6 +178,65 @@ const extractYouTubeId = (input) => {
   return "";
 };
 
+const extractGoogleDriveFileId = (input) => {
+  const raw = String(input || "").trim();
+  if (!raw) return "";
+
+  const fileMatch = raw.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+  if (fileMatch?.[1]) return fileMatch[1];
+
+  return "";
+};
+
+const extractGoogleDriveFolderId = (input) => {
+  const raw = String(input || "").trim();
+  if (!raw) return "";
+
+  const folderMatch = raw.match(/drive\.google\.com\/drive\/folders\/([a-zA-Z0-9_-]+)/i);
+  if (folderMatch?.[1]) return folderMatch[1];
+
+  return "";
+};
+
+const resolvePlayerSource = (input) => {
+  const raw = String(input || "").trim();
+  if (!raw) {
+    return { provider: "unknown", sourceUrl: "", embedUrl: "", embedId: "" };
+  }
+
+  const youtubeId = extractYouTubeId(raw);
+  if (youtubeId) {
+    return {
+      provider: "youtube",
+      sourceUrl: raw,
+      embedUrl: "",
+      embedId: youtubeId
+    };
+  }
+
+  const driveFileId = extractGoogleDriveFileId(raw);
+  if (driveFileId) {
+    return {
+      provider: "drive",
+      sourceUrl: raw,
+      embedUrl: `https://drive.google.com/file/d/${driveFileId}/preview`,
+      embedId: driveFileId
+    };
+  }
+
+  const driveFolderId = extractGoogleDriveFolderId(raw);
+  if (driveFolderId) {
+    return {
+      provider: "drive",
+      sourceUrl: raw,
+      embedUrl: `https://drive.google.com/embeddedfolderview?id=${driveFolderId}#grid`,
+      embedId: driveFolderId
+    };
+  }
+
+  return { provider: "unknown", sourceUrl: raw, embedUrl: "", embedId: "" };
+};
+
 const loadYouTubeApi = () => {
   if (window.YT && typeof window.YT.Player === "function") {
     return Promise.resolve(window.YT);
@@ -209,53 +268,54 @@ const loadYouTubeApi = () => {
 };
 
 const createPlayerCard = (item, index, type) => {
-  const youtubeId = extractYouTubeId(item.id);
+  const playerSource = resolvePlayerSource(item.id);
   const safeType = normalizeText(type).replace(/\s+/g, "-");
   const cardId = `${safeType}-${index + 1}`;
   const ratioClass = String(item.ratio || "").includes("9:16") ? "ratio-9x16" : "ratio-16x9";
 
   const card = document.createElement("article");
   card.className = "video-card";
+  card.dataset.playerId = cardId;
+  card.dataset.playerProvider = playerSource.provider;
   card.setAttribute("data-reveal", "");
 
   const stage = document.createElement("div");
   stage.className = `video-stage ${ratioClass}`;
 
-  const playerRoot = document.createElement("div");
-  playerRoot.className = "yt-player";
-  playerRoot.dataset.playerId = cardId;
+  if (playerSource.provider === "youtube") {
+    const playerRoot = document.createElement("div");
+    playerRoot.className = "yt-player";
+    playerRoot.dataset.playerId = cardId;
+    playerRoot.dataset.youtubeId = playerSource.embedId;
+    stage.appendChild(playerRoot);
+  } else if (playerSource.provider === "drive") {
+    const drivePlayer = document.createElement("iframe");
+    drivePlayer.className = "drive-player";
+    drivePlayer.src = playerSource.embedUrl;
+    drivePlayer.loading = "lazy";
+    drivePlayer.referrerPolicy = "strict-origin-when-cross-origin";
+    drivePlayer.allow = "autoplay; fullscreen; picture-in-picture";
+    drivePlayer.setAttribute("allowfullscreen", "");
+    drivePlayer.title = `${item.titulo || "Video SparkFilmes"} - Google Drive`;
+    stage.appendChild(drivePlayer);
 
-  if (youtubeId) {
-    playerRoot.dataset.youtubeId = youtubeId;
+    card.dataset.playerUrl = playerSource.sourceUrl;
+    card.dataset.playerPreview = playerSource.embedUrl;
   } else {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "ID do YouTube inválido. Atualize em data/portfolio.json.";
+    empty.textContent = "Link inválido. Atualize em data/portfolio.json.";
     stage.appendChild(empty);
   }
 
-  if (youtubeId) {
-    stage.appendChild(playerRoot);
-  }
-
-  const controls = document.createElement("div");
-  controls.className = "player-controls";
-
-  const actions = [
-    { label: "Play", action: "play" },
-    { label: "Pause", action: "pause" },
-    { label: "Stop", action: "stop" }
-  ];
-
-  actions.forEach((entry) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "control-btn";
-    button.textContent = entry.label;
-    button.dataset.playerAction = entry.action;
-    button.dataset.playerTarget = cardId;
-    controls.appendChild(button);
-  });
+  const actions =
+    playerSource.provider === "unknown"
+      ? []
+      : [
+          { label: "Play", action: "play" },
+          { label: "Pause", action: "pause" },
+          { label: "Stop", action: "stop" }
+        ];
 
   const meta = document.createElement("div");
   meta.className = "video-meta";
@@ -271,7 +331,26 @@ const createPlayerCard = (item, index, type) => {
   tag.textContent = item.categoria || type;
 
   meta.append(title, description, tag);
-  card.append(stage, controls, meta);
+
+  if (actions.length > 0) {
+    const controls = document.createElement("div");
+    controls.className = "player-controls";
+
+    actions.forEach((entry) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "control-btn";
+      button.textContent = entry.label;
+      button.dataset.playerAction = entry.action;
+      button.dataset.playerTarget = cardId;
+      controls.appendChild(button);
+    });
+
+    card.append(stage, controls, meta);
+  } else {
+    card.append(stage, meta);
+  }
+
   return card;
 };
 
@@ -325,25 +404,55 @@ const initPlayerControls = () => {
     const target = button.dataset.playerTarget;
     if (!action || !target) return;
 
-    const player = youtubePlayers.get(target);
-    if (!player) return;
+    const card = document.querySelector(`.video-card[data-player-id="${target}"]`);
+    if (!card) return;
+
+    const provider = card.dataset.playerProvider || "";
+
+    if (provider === "youtube") {
+      const player = youtubePlayers.get(target);
+      if (!player) return;
+
+      if (action === "play") {
+        youtubePlayers.forEach((instance, key) => {
+          if (key === target) return;
+          if (typeof instance.pauseVideo === "function") instance.pauseVideo();
+        });
+        player.playVideo();
+        return;
+      }
+
+      if (action === "pause") {
+        player.pauseVideo();
+        return;
+      }
+
+      if (action === "stop") {
+        player.stopVideo();
+      }
+
+      return;
+    }
+
+    if (provider !== "drive") return;
+
+    const playerPreview = card.dataset.playerPreview || "";
+    const drivePlayer = card.querySelector(".drive-player");
+    if (!(drivePlayer instanceof HTMLIFrameElement)) return;
 
     if (action === "play") {
-      youtubePlayers.forEach((instance, key) => {
-        if (key === target) return;
-        if (typeof instance.pauseVideo === "function") instance.pauseVideo();
-      });
-      player.playVideo();
+      if (!playerPreview) return;
+      drivePlayer.src = playerPreview;
       return;
     }
 
     if (action === "pause") {
-      player.pauseVideo();
+      drivePlayer.src = "about:blank";
       return;
     }
 
     if (action === "stop") {
-      player.stopVideo();
+      drivePlayer.src = "about:blank";
     }
   });
 };
