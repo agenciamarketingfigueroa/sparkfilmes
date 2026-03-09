@@ -7,6 +7,13 @@
       "url": "./material.html?cliente=cliente-modelo"
     },
     {
+      "nome": "Lilian Rocha",
+      "slug": "lilian-rocha",
+      "segmento": "Constelação Familiar e Palestras",
+      "senha": "Lilian@1234",
+      "url": "./lilian-rocha.html"
+    },
+    {
       "nome": "Victor Lopes",
       "slug": "victor-lopes",
       "segmento": "Gerenciamento de Alta Performance",

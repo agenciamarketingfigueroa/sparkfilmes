@@ -1,0 +1,49 @@
+{
+  "cliente": {
+    "nome": "Lilian Rocha",
+    "slug": "lilian-rocha",
+    "nicho": "Constelação Familiar e Palestras",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Lilian Rocha/lilian-rocha-perfil-otimizado.jpg",
+    "fotoPerfilAlt": "Foto de perfil da Lilian Rocha",
+    "ultimaAtualizacao": "2026-03-09",
+    "entregasFundoEscuro": true,
+    "resumo": "Projeto com foco em autoridade, cobertura de eventos e conteúdos para redes sociais.",
+    "formatoPrincipal": "Fotos + Reels",
+    "metricas": [
+      {
+        "label": "Trabalhos feitos",
+        "value": "1"
+      },
+      {
+        "label": "Entrega atual",
+        "value": "174 fotos e 1 reel"
+      },
+      {
+        "label": "Status da entrega",
+        "value": "Entregue"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "Álvaro & Mateus",
+      "dataTrabalho": "2026-02-25",
+      "statusEntrega": "Entregue",
+      "formato": "Final",
+      "volume": "174 fotos e 1 reel",
+      "observacao": "Fotos e vídeos disponíveis para download.",
+      "capa": "../assets/img/Clientes/Lilian Rocha/alvaro-mateus-10-anos-thumb.jpg",
+      "linkPasta": "https://drive.google.com/drive/folders/1YRavuStR404PcUnF0bsb1h-F9t2PN3zF?usp=sharing",
+      "linkPastaTexto": "Fotos",
+      "acoes": [
+        {
+          "label": "Vídeo",
+          "link": "https://drive.google.com/drive/folders/1wtU5rOBogOKH4N9iY5lmoKKJeDA2eMHW?usp=sharing",
+          "variant": "ghost"
+        }
+      ]
+    }
+  ]
+}
