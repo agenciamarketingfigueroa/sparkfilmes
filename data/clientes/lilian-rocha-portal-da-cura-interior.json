@@ -1,0 +1,56 @@
+{
+  "cliente": {
+    "nome": "Lilian Rocha | Portal da Cura Interior",
+    "slug": "lilian-rocha-portal-da-cura-interior",
+    "nicho": "Constelação Familiar e Palestras",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Lilian Rocha/portal-da-cura-interior(28-01-2026).svg",
+    "fotoPerfilAlt": "Evento Portal da Cura Interior",
+    "ultimaAtualizacao": "2026-03-09",
+    "entregasFundoEscuro": true,
+    "resumo": "Materiais do evento Portal da Cura Interior organizados por data de trabalho.",
+    "formatoPrincipal": "Evento",
+    "metricas": [
+      {
+        "label": "Evento",
+        "value": "Portal da Cura Interior"
+      },
+      {
+        "label": "Trabalhos feitos",
+        "value": "2"
+      },
+      {
+        "label": "Formato",
+        "value": "Evento"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-003",
+      "titulo": "Portal da Cura Interior",
+      "dataTrabalho": "2025-11-16",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "48 fotos",
+      "observacao": "Fotos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/portal-da-cura-interior(16-11-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1HMKo6GpAMf8XxtOOfm1zST75THXak3YV?usp=sharing",
+      "linkPastaTexto": "Fotos"
+    },
+    {
+      "id": "job-002",
+      "titulo": "Portal da Cura Interior",
+      "dataTrabalho": "2026-01-28",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "50 fotos",
+      "observacao": "Fotos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/portal-da-cura-interior(28-01-2026).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1Y-KVqkrTfZ9efZ7z-07F-xrCCHEL05a9?usp=sharing",
+      "linkPastaTexto": "Fotos"
+    }
+  ]
+}

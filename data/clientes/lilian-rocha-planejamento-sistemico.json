@@ -1,0 +1,43 @@
+{
+  "cliente": {
+    "nome": "Lilian Rocha | Planejamento Sistêmico",
+    "slug": "lilian-rocha-planejamento-sistemico",
+    "nicho": "Constelação Familiar e Palestras",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Lilian Rocha/planejamento-sistemico(10_01_2026).svg",
+    "fotoPerfilAlt": "Evento Planejamento Sistêmico",
+    "ultimaAtualizacao": "2026-03-09",
+    "entregasFundoEscuro": true,
+    "resumo": "Materiais do evento Planejamento Sistêmico.",
+    "formatoPrincipal": "Evento",
+    "metricas": [
+      {
+        "label": "Evento",
+        "value": "Planejamento Sistêmico"
+      },
+      {
+        "label": "Trabalhos feitos",
+        "value": "1"
+      },
+      {
+        "label": "Formato",
+        "value": "Evento"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-006",
+      "titulo": "Planejamento Sistêmico 2026",
+      "dataTrabalho": "2026-01-10",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "50 fotos",
+      "observacao": "Fotos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/planejamento-sistemico(10_01_2026).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1J_wd9sYc6rSI4uTnAbrcYBhZf1cGXRKe?usp=sharing",
+      "linkPastaTexto": "Fotos"
+    }
+  ]
+}

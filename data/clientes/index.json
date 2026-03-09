@@ -14,6 +14,24 @@
       "url": "./lilian-rocha.html"
     },
     {
+      "nome": "Mães Leoas",
+      "slug": "lilian-rocha-maes-leoas",
+      "segmento": "Constelação Familiar e Palestras | Evento",
+      "url": "./lilian-rocha-maes-leoas.html"
+    },
+    {
+      "nome": "Portal da Cura Interior",
+      "slug": "lilian-rocha-portal-da-cura-interior",
+      "segmento": "Constelação Familiar e Palestras | Evento",
+      "url": "./lilian-rocha-portal-da-cura-interior.html"
+    },
+    {
+      "nome": "Planejamento Sistêmico",
+      "slug": "lilian-rocha-planejamento-sistemico",
+      "segmento": "Constelação Familiar e Palestras | Evento",
+      "url": "./lilian-rocha-planejamento-sistemico.html"
+    },
+    {
       "nome": "Victor Lopes",
       "slug": "victor-lopes",
       "segmento": "Gerenciamento de Alta Performance",

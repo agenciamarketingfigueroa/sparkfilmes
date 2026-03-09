@@ -1,0 +1,63 @@
+{
+  "cliente": {
+    "nome": "Lilian Rocha | Mães Leoas",
+    "slug": "lilian-rocha-maes-leoas",
+    "nicho": "Constelação Familiar e Palestras",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Lilian Rocha/maes-leoas(24-05-2025).svg",
+    "fotoPerfilAlt": "Evento Mães Leoas",
+    "ultimaAtualizacao": "2026-03-09",
+    "entregasFundoEscuro": true,
+    "resumo": "Materiais do evento Mães Leoas organizados por data de trabalho.",
+    "formatoPrincipal": "Evento",
+    "metricas": [
+      {
+        "label": "Evento",
+        "value": "Mães Leoas"
+      },
+      {
+        "label": "Trabalhos feitos",
+        "value": "2"
+      },
+      {
+        "label": "Formato",
+        "value": "Evento"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-005",
+      "titulo": "Mães Leoas",
+      "dataTrabalho": "2025-05-24",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "30 fotos e 2 vídeos",
+      "observacao": "Fotos e vídeos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/maes-leoas(24-05-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1Wk4pNV23uRO_Zfyau5bzUBI_5BwC39VG?usp=sharing",
+      "linkPastaTexto": "Fotos",
+      "acoes": [
+        {
+          "label": "Vídeos",
+          "link": "https://drive.google.com/drive/folders/1LLPm8_cvCWmIUH86HWf6ZqmLl-ChxkaH?usp=sharing",
+          "variant": "ghost"
+        }
+      ]
+    },
+    {
+      "id": "job-004",
+      "titulo": "Mães Leoas",
+      "dataTrabalho": "2025-09-13",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "26 fotos",
+      "observacao": "Fotos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/maes-leoas(13-09-2025).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/13q0gQjnGBzxo7PF9EAIbMvcwR3Q4d9D9?usp=sharing",
+      "linkPastaTexto": "Fotos"
+    }
+  ]
+}
