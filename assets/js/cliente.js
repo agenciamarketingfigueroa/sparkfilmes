@@ -212,7 +212,7 @@ if (clientRoot) {
     }
 
     if (normalizedFormat === "bruto") {
-      deadline.setMonth(deadline.getMonth() + 3);
+      deadline.setDate(deadline.getDate() + 90);
       return deadline;
     }
 
@@ -226,6 +226,15 @@ if (clientRoot) {
     const explicit = new Date(`${isoDate}T00:00:00`);
     if (Number.isNaN(explicit.getTime())) return null;
     return explicit;
+  };
+
+  const getWorkDeadline = (work) => {
+    const normalizedFormat = normalizeFilterValue(work?.formato).toLowerCase();
+    if (normalizedFormat === "bruto") {
+      return getDownloadDeadline(work);
+    }
+
+    return getExplicitDeadline(work?.prazoDownloadAte) || getDownloadDeadline(work);
   };
 
   const getRemainingDays = (deadlineDate) => {
@@ -438,7 +447,7 @@ if (clientRoot) {
     }, null);
 
     const nearestActiveDeadline = workItems.reduce((currentClosest, work) => {
-      const deadline = getExplicitDeadline(work?.prazoDownloadAte) || getDownloadDeadline(work);
+      const deadline = getWorkDeadline(work);
       const remainingDays = getRemainingDays(deadline);
 
       if (!deadline || remainingDays === null || remainingDays < 0) return currentClosest;
@@ -591,7 +600,7 @@ if (clientRoot) {
       metaList.appendChild(noteItem);
     }
 
-    const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work);
+    const deadline = getWorkDeadline(work);
     const remainingDays = getRemainingDays(deadline);
     const countdown = document.createElement("p");
     countdown.className = "countdown";
@@ -864,7 +873,7 @@ if (clientRoot) {
     content.appendChild(metaList);
 
     if (!work.hideCountdown) {
-      const deadline = getExplicitDeadline(work.prazoDownloadAte) || getDownloadDeadline(work);
+      const deadline = getWorkDeadline(work);
       const remainingDays = getRemainingDays(deadline);
       const countdown = document.createElement("p");
       countdown.className = "countdown";
@@ -1146,7 +1155,7 @@ if (clientRoot) {
 
       if (noteEl) {
         noteEl.textContent =
-          cliente.notaRodape || "Arquivos hospedados no Google Drive. Prazo padrao de download: 1 ano por trabalho.";
+          cliente.notaRodape || "Arquivos hospedados no Google Drive. Prazo padrao: 1 ano (formato Bruto: 90 dias).";
       }
     } catch (error) {
       console.error(error);
