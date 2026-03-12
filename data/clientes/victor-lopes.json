@@ -5,18 +5,18 @@
     "nicho": "Gerenciamento de Alta Performance",
     "status": "Ativo",
     "fotoPerfil": "assets/img/Clientes/Victor Lopes/victor-lopes-perfil.svg",
-    "ultimaAtualizacao": "2026-02-28",
+    "ultimaAtualizacao": "2026-03-11",
     "entregasFundoEscuro": true,
     "resumo": "Projeto recorrente com foco em autoridade, venda de cursos e escala de conteudo para anuncios e redes sociais e YouTube.",
     "formatoPrincipal": "YouTube + Conteudo para anuncios",
     "metricas": [
       {
         "label": "Trabalhos feitos",
-        "value": "9"
+        "value": "10"
       },
       {
         "label": "Entrega atual",
-        "value": "9 materiais"
+        "value": "10 materiais"
       },
       {
         "label": "Prazo atual",
@@ -231,6 +231,19 @@
           "link": "https://youtu.be/3BYzs3W1-k4"
         }
       ]
+    },
+    {
+      "id": "job-010",
+      "titulo": "Conteudos para o Instagram",
+      "dataTrabalho": "2026-03-11",
+      "statusEntrega": "Entregue",
+      "formato": "Bruto",
+      "volume": "25 videos",
+      "observacao": "Dia do video do Calanguinho",
+      "prazoDownloadAte": "2026-06-09",
+      "capa": "../assets/img/Clientes/Victor Lopes/victor-lopes(11-03-2026).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1bPWSnQfPW34J2SKxvx4UzF3MU6sQddpB?usp=sharing",
+      "linkDownload": ""
     }
   ]
 }
