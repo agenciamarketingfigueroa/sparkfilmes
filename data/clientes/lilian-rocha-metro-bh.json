@@ -1,0 +1,43 @@
+{
+  "cliente": {
+    "nome": "Lilian Rocha | Metro BH 2026",
+    "slug": "lilian-rocha-metro-bh",
+    "nicho": "Constelação Familiar e Palestras",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Lilian Rocha/lilian-rocha-metro-bh-(09-03-2026).svg",
+    "fotoPerfilAlt": "Palestra Metro BH 2026",
+    "ultimaAtualizacao": "2026-03-13",
+    "entregasFundoEscuro": true,
+    "resumo": "Materiais da palestra Metro BH 2026.",
+    "formatoPrincipal": "Palestra",
+    "metricas": [
+      {
+        "label": "Evento",
+        "value": "Metro BH 2026"
+      },
+      {
+        "label": "Trabalhos feitos",
+        "value": "1"
+      },
+      {
+        "label": "Formato",
+        "value": "Palestra"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-007",
+      "titulo": "Metro BH 2026",
+      "dataTrabalho": "2026-03-09",
+      "statusEntrega": "Entregue",
+      "formato": "Palestra",
+      "volume": "40 fotos",
+      "observacao": "Fotos disponíveis para download.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Lilian Rocha/lilian-rocha-metro-bh-(09-03-2026).svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1QBUqtcW8yy8LotSLKr96v32JCtj0D2Uz?usp=sharing",
+      "linkPastaTexto": "Fotos"
+    }
+  ]
+}
