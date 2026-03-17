@@ -37,6 +37,12 @@
         "label": "Festa de Formatura",
         "link": "https://drive.google.com/drive/folders/1gGMJgJTm6irJZPeoZGj13_anc8_I8dJf?usp=sharing",
         "variant": "ghost"
+      },
+      {
+        "label": "YouTube",
+        "link": "https://youtu.be/dtpfUY4JrZc",
+        "variant": "ghost",
+        "novaAba": true
       }
     ],
     "ocultarTituloCardsEntrega": true,
