@@ -1,0 +1,55 @@
+{
+  "cliente": {
+    "nome": "Metro BH",
+    "slug": "metro-bh",
+    "nicho": "Conteúdo para redes sociais",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Metro BH/metro-bh-perfil.svg",
+    "fotoPerfilAlt": "Foto de perfil Metro BH",
+    "ultimaAtualizacao": "2026-03-23",
+    "entregasFundoEscuro": true,
+    "resumo": "Materiais em processo de edição para Instagram.",
+    "formatoPrincipal": "Instagram",
+    "metricas": [
+      {
+        "label": "Projeto",
+        "value": "Metro BH - 03 Anos"
+      },
+      {
+        "label": "Status",
+        "value": "Edição"
+      },
+      {
+        "label": "Formato",
+        "value": "Instagram"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "Metro BH - 03 Anos",
+      "dataTrabalho": "2026-03-23",
+      "statusEntrega": "Edição",
+      "formato": "Instagram",
+      "volume": "Aguardando",
+      "observacao": "Materiais ainda em processo de edição.",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Metro BH/metro-bh-perfil.svg",
+      "linkPasta": "https://drive.google.com/drive/folders/1XouxEKWrRVRJkuQovNt4wDP5TtrIZOqt?usp=sharing",
+      "linkPastaTexto": "Stories",
+      "acoes": [
+        {
+          "label": "Vídeos",
+          "link": "",
+          "variant": "ghost"
+        },
+        {
+          "label": "Fotos",
+          "link": "",
+          "variant": "ghost"
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-{
+﻿{
   "clientes": [
     {
       "nome": "Cliente Modelo",
@@ -36,6 +36,13 @@
       "slug": "lilian-rocha-metro-bh",
       "segmento": "Constelação Familiar e Palestras | Palestra",
       "url": "./lilian-rocha-metro-bh.html"
+    },
+    {
+      "nome": "Metro BH",
+      "slug": "metro-bh",
+      "segmento": "Conteúdo para redes sociais",
+      "senha": "Metro@1234",
+      "url": "./metro-bh.html"
     },
     {
       "nome": "Victor Lopes",

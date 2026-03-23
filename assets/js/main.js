@@ -564,20 +564,42 @@ const initMaterialSearch = async () => {
       return;
     }
 
-    const matches = clients.filter((client) => {
+    const getClientScore = (client) => {
       const name = normalizeText(client.nome);
       const slug = normalizeText(client.slug);
       const segment = normalizeText(client.segmento || client.nicho);
-      return name.includes(query) || slug.includes(query) || segment.includes(query);
-    });
 
-    const exactMatch = clients.find((client) => {
-      const name = normalizeText(client.nome);
-      const slug = normalizeText(client.slug);
-      return name === query || slug === query;
-    });
+      let score = 0;
 
-    const selectedClient = exactMatch || matches[0];
+      if (name === query) score += 1000;
+      if (slug === query) score += 950;
+      if (name.startsWith(query)) score += 300;
+      if (slug.startsWith(query)) score += 260;
+      if (name.includes(` ${query}`)) score += 180;
+      if (slug.includes(`-${query}`)) score += 160;
+      if (name.includes(query)) score += 120;
+      if (slug.includes(query)) score += 100;
+      if (segment.includes(query)) score += 40;
+
+      // Desempate: nomes mais curtos tendem a representar o cliente exato.
+      score -= Math.min(60, Math.abs(name.length - query.length));
+
+      return score;
+    };
+
+    const rankedMatches = clients
+      .map((client) => ({ client, score: getClientScore(client) }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+
+        const nameA = normalizeText(a.client.nome);
+        const nameB = normalizeText(b.client.nome);
+        if (nameA.length !== nameB.length) return nameA.length - nameB.length;
+        return nameA.localeCompare(nameB, "pt-BR");
+      });
+
+    const selectedClient = rankedMatches[0]?.client;
 
     if (selectedClient) {
       const protectedPassword = String(selectedClient.senha || "").trim();
