@@ -1,4 +1,5 @@
 ﻿{
+  "senhaInternaPadrao": "1508",
   "clientes": [
     {
       "nome": "Cliente Modelo",

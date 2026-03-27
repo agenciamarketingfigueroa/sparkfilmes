@@ -100,8 +100,19 @@ if (clientRoot) {
   };
 
   const getAccessKey = (slug) => `client-access:${slug}`;
+  const getInternalAccessKey = () => "client-access:internal-master";
+
+  const hasInternalAccess = () => {
+    try {
+      return sessionStorage.getItem(getInternalAccessKey()) === "ok";
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
 
   const hasClientAccess = (slug) => {
+    if (hasInternalAccess()) return true;
     if (!slug) return true;
 
     try {
@@ -122,6 +133,14 @@ if (clientRoot) {
     }
   };
 
+  const setInternalAccess = () => {
+    try {
+      sessionStorage.setItem(getInternalAccessKey(), "ok");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getClientAccessConfig = async () => {
     const slug = getClientSlug();
     if (!slug) return null;
@@ -132,7 +151,13 @@ if (clientRoot) {
 
       const data = await response.json();
       const clients = Array.isArray(data.clientes) ? data.clientes : [];
-      return clients.find((client) => client.slug === slug) || null;
+      const clientConfig = clients.find((client) => client.slug === slug) || null;
+      if (!clientConfig) return null;
+
+      return {
+        ...clientConfig,
+        senhaInternaPadrao: String(data.senhaInternaPadrao || "").trim(),
+      };
     } catch (error) {
       console.error(error);
       return null;
@@ -318,10 +343,20 @@ if (clientRoot) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      if (input.value !== String(clientConfig?.senha || "")) {
+      const inputValue = String(input.value || "");
+      const clientPassword = String(clientConfig?.senha || "");
+      const internalPassword = String(clientConfig?.senhaInternaPadrao || "");
+      const matchesClientPassword = Boolean(clientPassword) && inputValue === clientPassword;
+      const matchesInternalPassword = Boolean(internalPassword) && inputValue === internalPassword;
+
+      if (!matchesClientPassword && !matchesInternalPassword) {
         feedback.textContent = "Senha incorreta. Verifique e tente novamente.";
         input.select();
         return;
+      }
+
+      if (matchesInternalPassword) {
+        setInternalAccess();
       }
 
       setClientAccess(clientConfig?.slug || "");
