@@ -276,7 +276,7 @@ if (clientRoot) {
 
     const eyebrow = document.createElement("p");
     eyebrow.className = "eyebrow";
-    eyebrow.textContent = "Area protegida";
+    eyebrow.textContent = "Área protegida";
 
     const title = document.createElement("h1");
     title.textContent = clientConfig?.nome || "Material protegido";
@@ -353,7 +353,7 @@ if (clientRoot) {
 
     const description = document.createElement("p");
     description.className = "client-description";
-    description.textContent = cliente.resumo || "Catalogo de trabalhos e entregas organizadas pela SparkFilmes.";
+    description.textContent = cliente.resumo || "Catálogo de trabalhos e entregas organizadas pela SparkFilmes.";
     if (cliente.ocultarSubtitulo) {
       subtitle.textContent = "";
       subtitle.hidden = true;
@@ -479,7 +479,7 @@ if (clientRoot) {
         : nearestActiveDeadline
         ? {
             label: `Menor prazo para download: ${nearestActiveDeadline.remainingDays} dias`,
-            value: nearestActiveDeadline.work.titulo || "Trabalho sem titulo"
+            value: nearestActiveDeadline.work.titulo || "Trabalho sem título"
           }
         : {
             label: "Trabalho com menor prazo para download",
@@ -569,7 +569,7 @@ if (clientRoot) {
     content.className = "delivery-content";
 
     const title = document.createElement("h3");
-    title.textContent = work.titulo || "Trabalho sem titulo";
+    title.textContent = work.titulo || "Trabalho sem título";
 
     const status = createStatusBadge(work.statusEntrega || "Em andamento");
 
@@ -668,7 +668,7 @@ if (clientRoot) {
     content.className = "delivery-content";
 
     const title = document.createElement("h3");
-    title.textContent = work.titulo || "Trabalho sem titulo";
+    title.textContent = work.titulo || "Trabalho sem título";
 
     const status = createStatusBadge(work.statusEntrega || "Em andamento");
 
@@ -688,7 +688,7 @@ if (clientRoot) {
     if (Array.isArray(work.meta) && work.meta.length > 0) {
       work.meta.forEach((entry) => {
         if (!entry) return;
-        appendMetaItem(entry.label || "Informacao", entry.value || "--");
+        appendMetaItem(entry.label || "Informação", entry.value || "--");
       });
 
       if (work.tipo && !hasTipoMeta) {
@@ -696,8 +696,8 @@ if (clientRoot) {
       }
     } else {
       appendMetaItem("Data do trabalho", formatDatePtBr(work.dataTrabalho));
-      appendMetaItem("Formato", work.formato || "Nao informado");
-      appendMetaItem("Volume", work.volume || "Nao informado");
+      appendMetaItem("Formato", work.formato || "Não informado");
+      appendMetaItem("Volume", work.volume || "Não informado");
 
       if (work.tipo) {
         appendMetaItem("Tipo", work.tipo);
@@ -785,7 +785,7 @@ if (clientRoot) {
         }
 
         if (!work.linkPasta) {
-          feedback.textContent = "O link do Google Drive ainda nao foi configurado.";
+          feedback.textContent = "O link do Google Drive ainda não foi configurado.";
           return;
         }
 
@@ -879,11 +879,11 @@ if (clientRoot) {
       countdown.className = "countdown";
 
       if (!deadline || remainingDays === null) {
-        countdown.textContent = "Prazo de download: nao informado.";
+        countdown.textContent = "Prazo de download: não informado.";
       } else if (remainingDays < 0) {
         countdown.textContent = `Prazo expirado em ${formatDatePtBr(deadline.toISOString().slice(0, 10))}.`;
       } else {
-        countdown.textContent = `Prazo de download: ${remainingDays} dias restantes (ate ${formatDatePtBr(
+        countdown.textContent = `Prazo de download: ${remainingDays} dias restantes (até ${formatDatePtBr(
           deadline.toISOString().slice(0, 10)
         )}).`;
       }
@@ -901,8 +901,10 @@ if (clientRoot) {
 
     filtersEl.innerHTML = "";
 
+    const clientData = window.__sparkClientData || {};
     const { dateValues, formatValues } = getDeliveryFilterOptions(trabalhos);
-    const shouldShowFilters = trabalhos.length > 1 || dateValues.length > 1 || formatValues.length > 1;
+    const shouldShowFilters =
+      Boolean(clientData?.sempreMostrarFiltros) || trabalhos.length > 1 || dateValues.length > 1 || formatValues.length > 1;
 
     if (!shouldShowFilters) {
       filtersEl.hidden = true;
@@ -942,13 +944,13 @@ if (clientRoot) {
 
     const titleField = document.createElement("label");
     titleField.className = "client-filter-field";
-    titleField.textContent = "Titulo";
+    titleField.textContent = "Título";
 
     const titleInput = document.createElement("input");
     titleInput.className = "field";
     titleInput.type = "search";
-    titleInput.placeholder = "Buscar por titulo";
-    titleInput.setAttribute("aria-label", "Buscar por titulo");
+    titleInput.placeholder = "Buscar por título";
+    titleInput.setAttribute("aria-label", "Buscar por título");
     titleInput.value = activeDeliveryFilters.title;
     titleInput.addEventListener("input", () => {
       activeDeliveryFilters.title = titleInput.value;
@@ -1018,7 +1020,7 @@ if (clientRoot) {
     summary.className = "client-filter-summary";
     summary.textContent = hasActiveDeliveryFilters()
       ? `${filteredWorks.length} material${filteredWorks.length === 1 ? "" : "is"} encontrado${filteredWorks.length === 1 ? "" : "s"} com os filtros atuais.`
-      : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponive${trabalhos.length === 1 ? "l" : "is"}.`;
+      : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponível${trabalhos.length === 1 ? "" : "eis"}.`;
 
     panel.append(topRow, grid, summary);
     filtersEl.appendChild(panel);
@@ -1085,7 +1087,7 @@ if (clientRoot) {
     if (summary) {
       summary.textContent = hasActiveDeliveryFilters()
         ? `${filteredWorks.length} material${filteredWorks.length === 1 ? "" : "is"} encontrado${filteredWorks.length === 1 ? "" : "s"} com os filtros atuais.`
-        : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponive${trabalhos.length === 1 ? "l" : "is"}.`;
+        : `${trabalhos.length} material${trabalhos.length === 1 ? "" : "is"} disponível${trabalhos.length === 1 ? "" : "eis"}.`;
     }
   };
 

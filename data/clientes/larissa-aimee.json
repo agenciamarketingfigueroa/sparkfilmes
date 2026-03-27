@@ -1,0 +1,51 @@
+{
+  "cliente": {
+    "nome": "Larissa Aimée",
+    "slug": "larissa-aimee",
+    "nicho": "Estética",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Larissa Aimee/larissa-aimee-perfil.png",
+    "fotoPerfilAlt": "Foto de perfil da Larissa Aimée",
+    "ultimaAtualizacao": "2026-03-26",
+    "entregasFundoEscuro": true,
+    "sempreMostrarFiltros": true,
+    "resumo": "Parceria com cobertura de eventos e produções de conteúdos.",
+    "formatoPrincipal": "Cobertura de eventos e produção de conteúdos",
+    "metricas": [
+      {
+        "label": "Parceria",
+        "value": "Cobertura de eventos"
+      },
+      {
+        "label": "Status",
+        "value": "Entregue"
+      },
+      {
+        "label": "Formato",
+        "value": "Privado"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "Chá de Fraldas Arthur",
+      "dataTrabalho": "2026-03-21",
+      "statusEntrega": "Entregue",
+      "formato": "Privado",
+      "volume": "Aguardando",
+      "observacao": "Materiais ainda em processo de edição",
+      "prazoAnos": 3,
+      "capa": "../assets/img/Clientes/Larissa Aimee/larissa-aimee-cha-de-fraldas-arthur.jpg",
+      "linkPasta": "https://drive.google.com/drive/folders/1Ijk8ZyF3yQ2dWtFMeJi429dY_1FG3KHn?usp=sharing",
+      "linkPastaTexto": "Fotos",
+      "acoes": [
+        {
+          "label": "Vídeo",
+          "link": "https://drive.google.com/drive/folders/14emjX5q79ULgRluOga9ojjR-UGh1cjce?usp=sharing",
+          "variant": "ghost"
+        }
+      ]
+    }
+  ]
+}
