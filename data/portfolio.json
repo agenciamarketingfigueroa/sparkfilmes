@@ -22,6 +22,16 @@
       "ratio": "9:16"
     },
     {
+      "id": "https://youtube.com/shorts/I_5HfarbMXk",
+      "titulo": "Cobertura de Eventos",
+      "descricao": "Registre seu evento, através de fotos e vídeos de forma cinematográfica com um olhar totalmente humanizado.",
+      "categoria": "Eventos",
+      "ratio": "9:16",
+      "ctaLabel": "Veja o Evento Completo",
+      "ctaHref": "cobertura-eventos/index.html",
+      "ctaContext": "home"
+    },
+    {
       "id": "https://youtube.com/shorts/U8Um04ewRYw",
       "titulo": "Criativos Infoprodutos",
       "descricao": "Num mercado extremamente competitivo a qualidade pode te colocar a frente dos seus concorrentes",
@@ -172,5 +182,4 @@
     }
   ]
 }
-
 

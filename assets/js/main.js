@@ -17,6 +17,17 @@ const resolvePath = (relativePath) => {
   return `${basePath}/${cleanRelative}`;
 };
 
+const resolveLinkUrl = (input) => {
+  const raw = String(input || "").trim();
+  if (!raw) return "#";
+
+  if (/^(https?:)?\/\//.test(raw) || raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tel:")) {
+    return raw;
+  }
+
+  return resolvePath(raw);
+};
+
 const normalizeText = (value) =>
   String(value || "")
     .toLowerCase()
@@ -267,11 +278,14 @@ const loadYouTubeApi = () => {
   return youtubeApiPromise;
 };
 
-const createPlayerCard = (item, index, type) => {
+const createPlayerCard = (item, index, type, context = "") => {
   const playerSource = resolvePlayerSource(item.id);
   const safeType = normalizeText(type).replace(/\s+/g, "-");
   const cardId = `${safeType}-${index + 1}`;
   const ratioClass = String(item.ratio || "").includes("9:16") ? "ratio-9x16" : "ratio-16x9";
+  const normalizedContext = normalizeText(context);
+  const ctaContext = normalizeText(item.ctaContext);
+  const hasMatchingCta = Boolean(item.ctaLabel && item.ctaHref && (!ctaContext || ctaContext === normalizedContext));
 
   const card = document.createElement("article");
   card.className = "video-card";
@@ -331,6 +345,23 @@ const createPlayerCard = (item, index, type) => {
   tag.textContent = item.categoria || type;
 
   meta.append(title, description, tag);
+
+  if (hasMatchingCta) {
+    const cta = document.createElement("a");
+    const href = resolveLinkUrl(item.ctaHref);
+    const isExternalUrl = /^(https?:)?\/\//.test(href);
+
+    cta.className = "btn btn-primary video-cta";
+    cta.href = href;
+    cta.textContent = item.ctaLabel;
+
+    if (isExternalUrl) {
+      cta.target = "_blank";
+      cta.rel = "noopener noreferrer";
+    }
+
+    meta.appendChild(cta);
+  }
 
   if (actions.length > 0) {
     const controls = document.createElement("div");
@@ -470,6 +501,7 @@ const renderPortfolioFeeds = async () => {
     targets.forEach((target) => {
       const type = target.dataset.portfolioType || "reels";
       const limit = Number(target.dataset.portfolioLimit || 0);
+      const context = target.dataset.portfolioContext || "";
       const source = Array.isArray(portfolioData[type]) ? portfolioData[type] : [];
       const items = limit > 0 ? source.slice(0, limit) : source;
 
@@ -484,7 +516,7 @@ const renderPortfolioFeeds = async () => {
       }
 
       items.forEach((item, index) => {
-        target.appendChild(createPlayerCard(item, index, type));
+        target.appendChild(createPlayerCard(item, index, type, context));
       });
 
       refreshReveal(target);
@@ -661,5 +693,4 @@ const init = async () => {
 };
 
 init();
-
 
