@@ -1,0 +1,55 @@
+{
+  "cliente": {
+    "nome": "Bruna Brant",
+    "slug": "bruna-brant",
+    "nicho": "Cantora católica",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Bruna Brant/bruna-brant-perfil.png",
+    "fotoPerfilAlt": "Foto de perfil da Bruna Brant",
+    "ultimaAtualizacao": "2026-04-24",
+    "entregasFundoEscuro": true,
+    "sempreMostrarFiltros": true,
+    "resumo": "Bruna Brant é uma cantora católica e seu novo projeto chama-se Sonhe com o céu.",
+    "formatoPrincipal": "Shows",
+    "metricas": [
+      {
+        "label": "Projeto atual",
+        "value": "Sonhe com o céu"
+      },
+      {
+        "label": "Status",
+        "value": "Em andamento"
+      },
+      {
+        "label": "Shows cadastrados",
+        "value": "2"
+      }
+    ]
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "Show em Pedra Bonita",
+      "dataTrabalho": "2026-04-24",
+      "statusEntrega": "Em andamento",
+      "formato": "Show",
+      "volume": "Cobertura de show",
+      "observacao": "Projeto Sonhe com o céu em andamento.",
+      "hideCountdown": true,
+      "capa": "../assets/img/Clientes/Bruna Brant/bruna-brant-perfil.png",
+      "linkPastaTexto": "Em produção"
+    },
+    {
+      "id": "job-002",
+      "titulo": "Show em Conselheiro Pena",
+      "dataTrabalho": "2026-04-25",
+      "statusEntrega": "Em andamento",
+      "formato": "Show",
+      "volume": "Cobertura de show",
+      "observacao": "Projeto Sonhe com o céu em andamento.",
+      "hideCountdown": true,
+      "capa": "../assets/img/Clientes/Bruna Brant/bruna-brant-perfil.png",
+      "linkPastaTexto": "Em produção"
+    }
+  ]
+}
