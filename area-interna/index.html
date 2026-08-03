@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Área interna | SparkFilmes</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/logo-favicon-spark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/interno.css" />
+  </head>
+  <body class="internal-body">
+    <main class="auth-shell">
+      <section class="auth-card" data-login-view>
+        <img class="internal-logo" src="../assets/img/logo-home.svg" alt="SparkFilmes" />
+        <p class="internal-eyebrow">Área restrita</p>
+        <h1>Ferramentas da equipe</h1>
+        <p class="internal-muted">Entre para montar orçamentos com os valores de referência da produtora.</p>
+
+        <form class="auth-form" data-login-form>
+          <label for="senha">Senha</label>
+          <input id="senha" name="senha" type="password" autocomplete="current-password" required autofocus />
+          <p class="form-feedback" data-login-feedback aria-live="polite"></p>
+          <button class="internal-button internal-button-primary" type="submit">Entrar</button>
+        </form>
+        <p class="test-access">Acesso de teste: <code>spark2026</code></p>
+      </section>
+
+      <section class="panel-card" data-panel-view hidden>
+        <header class="panel-header">
+          <div>
+            <img class="internal-logo" src="../assets/img/logo-home.svg" alt="SparkFilmes" />
+            <p class="internal-eyebrow">Área interna</p>
+            <h1>Olá, equipe Spark.</h1>
+            <p class="internal-muted">Escolha uma ferramenta para começar.</p>
+          </div>
+          <button class="internal-button internal-button-quiet" type="button" data-logout>Sair</button>
+        </header>
+
+        <div class="tool-grid">
+          <a class="tool-card tool-card-active" href="../orcamentos/">
+            <span class="tool-icon" aria-hidden="true">R$</span>
+            <span>
+              <strong>Montar orçamento</strong>
+              <small>Calcule serviços e gere uma mensagem para o WhatsApp.</small>
+            </span>
+          </a>
+          <article class="tool-card tool-card-disabled" aria-disabled="true">
+            <span class="tool-icon" aria-hidden="true">#</span>
+            <span>
+              <strong>Histórico de propostas</strong>
+              <small>Planejado para a próxima versão com banco de dados.</small>
+            </span>
+          </article>
+        </div>
+      </section>
+    </main>
+    <script src="../assets/js/internal-auth.js"></script>
+  </body>
+</html>

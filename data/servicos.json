@@ -1,0 +1,223 @@
+{
+  "meta": {
+    "versao": 2,
+    "atualizadoEm": "2026-08-03",
+    "fonte": "Base de Cálculo de Custos Gerais (Orçamentos).xlsx e Orçamento Sparkfilmes - Jacqueline.pdf",
+    "observacao": "Valores de referência calculados pela planilha. Revise antes de enviar cada orçamento."
+  },
+  "empresa": {
+    "nome": "SparkFilmes",
+    "whatsapp": "5531999427901",
+    "assinatura": "SparkFilmes — histórias com linguagem de cinema."
+  },
+  "parametros": {
+    "horasPorDiaria": 8,
+    "horasProdutivasMes": 160,
+    "custoFixoMensal": 1629
+  },
+  "profissionais": [
+    {
+      "id": "videomaker",
+      "nome": "Videomaker",
+      "valorHora": 110.6152778,
+      "depreciacaoMensal": 1069.444444,
+      "faturamentoDesejado": 15000
+    },
+    {
+      "id": "fotografo",
+      "nome": "Fotógrafo",
+      "valorHora": 109.8166667,
+      "depreciacaoMensal": 941.6666667,
+      "faturamentoDesejado": 15000
+    },
+    {
+      "id": "storymaker",
+      "nome": "Storiemaker",
+      "valorHora": 51.95208333,
+      "depreciacaoMensal": 683.3333333,
+      "faturamentoDesejado": 6000
+    }
+  ],
+  "tiposProducao": [
+    {
+      "id": "social",
+      "nome": "Conteúdo para redes sociais",
+      "formatos": ["Vertical 9:16", "Horizontal 16:9", "Quadrado 1:1", "Entrevista", "Publicitário"]
+    },
+    {
+      "id": "institucional",
+      "nome": "Vídeo institucional",
+      "formatos": ["Horizontal 16:9", "Vertical 9:16", "Entrevista", "Documental", "Publicitário"]
+    },
+    {
+      "id": "evento",
+      "nome": "Cobertura de evento",
+      "formatos": ["Misto", "Aftermovie", "Vertical 9:16", "Horizontal 16:9", "Captação multicâmera", "Fotografia"]
+    },
+    {
+      "id": "campanha",
+      "nome": "Campanha publicitária",
+      "formatos": ["Publicitário", "Vertical 9:16", "Horizontal 16:9", "Motion graphics"]
+    },
+    {
+      "id": "podcast",
+      "nome": "Podcast ou videocast",
+      "formatos": ["Captação multicâmera", "Horizontal 16:9", "Vertical 9:16", "Entrevista"]
+    },
+    {
+      "id": "fotografia",
+      "nome": "Fotografia",
+      "formatos": ["Evento", "Retrato", "Produto", "Institucional"]
+    },
+    {
+      "id": "motion",
+      "nome": "Motion design ou animação",
+      "formatos": ["Motion graphics", "Vertical 9:16", "Horizontal 16:9", "Quadrado 1:1"]
+    },
+    {
+      "id": "consulta",
+      "nome": "Projeto sob consulta",
+      "formatos": ["Formato a definir"]
+    }
+  ],
+  "modelosContratacao": [
+    { "id": "pacote", "nome": "Pacote fechado" },
+    { "id": "tecnico", "nome": "Diária ou hora técnica" },
+    { "id": "sob-medida", "nome": "Projeto sob medida" }
+  ],
+  "pacotesEventos": [
+    {
+      "id": "essencial",
+      "nome": "Plano Essencial",
+      "subtitulo": "Fotógrafo + Storiemaker — mesmo profissional",
+      "preco": 850,
+      "profissionaisEmCampo": 1,
+      "horasCoberturaIncluidas": 4,
+      "entregas": [
+        "Cobertura fotográfica completa do evento, da decoração à festa",
+        "Vídeos curtos para redes sociais feitos pelo mesmo profissional",
+        "Galeria de fotos editadas",
+        "Vídeos para Stories/Reels"
+      ],
+      "etapas": [
+        { "nome": "Briefing e planejamento", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Deslocamento total (ida e volta)", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Montagem e registros da decoração", "profissionalId": "fotografo", "minutos": 60 },
+        { "nome": "Cobertura de fotografia + Stories/Reels", "profissionalId": "fotografo", "minutos": 180 },
+        { "nome": "Backup e organização do material", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Seleção e tratamento das fotos", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Edição de Stories/Reels", "profissionalId": "storymaker", "minutos": 0 },
+        { "nome": "Exportação, upload e entrega", "profissionalId": "fotografo", "minutos": 0 }
+      ]
+    },
+    {
+      "id": "spark",
+      "nome": "Plano Spark",
+      "subtitulo": "Fotógrafo + Videomaker — 2 profissionais dedicados",
+      "preco": 1500,
+      "profissionaisEmCampo": 2,
+      "horasCoberturaIncluidas": 4,
+      "entregas": [
+        "Cobertura fotográfica completa do evento",
+        "Cobertura em vídeo com profissional exclusivo",
+        "Galeria de fotos editadas",
+        "Vídeo editado do evento"
+      ],
+      "etapas": [
+        { "nome": "Briefing e planejamento", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Deslocamento total — fotografia", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Deslocamento total — vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Montagem e decoração — fotografia", "profissionalId": "fotografo", "minutos": 60 },
+        { "nome": "Montagem e decoração — vídeo", "profissionalId": "videomaker", "minutos": 60 },
+        { "nome": "Cobertura fotográfica do evento", "profissionalId": "fotografo", "minutos": 180 },
+        { "nome": "Cobertura em vídeo do evento", "profissionalId": "videomaker", "minutos": 180 },
+        { "nome": "Backup e organização — fotografia", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Backup e organização — vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Seleção e tratamento das fotos", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Edição e finalização do vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Exportação, upload e entrega", "profissionalId": "videomaker", "minutos": 0 }
+      ]
+    },
+    {
+      "id": "flame",
+      "nome": "Plano Flame",
+      "subtitulo": "Fotógrafo + Videomaker + Storiemaker — cobertura completa",
+      "preco": 1950,
+      "profissionaisEmCampo": 3,
+      "horasCoberturaIncluidas": 4,
+      "entregas": [
+        "Cobertura fotográfica completa do evento",
+        "Vídeo editado com profissional exclusivo",
+        "Conteúdo em tempo real para Stories/Reels com profissional exclusivo",
+        "Galeria de fotos, vídeo editado e vídeos para redes sociais"
+      ],
+      "etapas": [
+        { "nome": "Briefing e planejamento", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Deslocamento total — fotografia", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Deslocamento total — vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Deslocamento total — stories", "profissionalId": "storymaker", "minutos": 0 },
+        { "nome": "Montagem e decoração — fotografia", "profissionalId": "fotografo", "minutos": 60 },
+        { "nome": "Montagem e decoração — vídeo", "profissionalId": "videomaker", "minutos": 60 },
+        { "nome": "Preparação de conteúdo — stories", "profissionalId": "storymaker", "minutos": 60 },
+        { "nome": "Cobertura fotográfica do evento", "profissionalId": "fotografo", "minutos": 180 },
+        { "nome": "Cobertura em vídeo do evento", "profissionalId": "videomaker", "minutos": 180 },
+        { "nome": "Conteúdo em tempo real para Stories/Reels", "profissionalId": "storymaker", "minutos": 180 },
+        { "nome": "Backup e organização — fotografia", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Backup e organização — vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Seleção e tratamento das fotos", "profissionalId": "fotografo", "minutos": 0 },
+        { "nome": "Edição e finalização do vídeo", "profissionalId": "videomaker", "minutos": 0 },
+        { "nome": "Edição complementar de Stories/Reels", "profissionalId": "storymaker", "minutos": 0 },
+        { "nome": "Exportação, upload e entrega", "profissionalId": "videomaker", "minutos": 0 }
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "leve",
+      "nome": "Projeto leve",
+      "etapas": [
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
+        { "nome": "Gravação", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
+        { "nome": "Edição", "tipoCobranca": "hora" },
+        { "nome": "Áudio", "tipoCobranca": "hora" },
+        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+      ]
+    },
+    {
+      "id": "medio",
+      "nome": "Projeto médio",
+      "etapas": [
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
+        { "nome": "Gravação", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
+        { "nome": "Organização de material (decupagem)", "tipoCobranca": "hora" },
+        { "nome": "Edição", "tipoCobranca": "hora" },
+        { "nome": "Color", "tipoCobranca": "hora" },
+        { "nome": "Motion", "tipoCobranca": "hora" },
+        { "nome": "Áudio", "tipoCobranca": "hora" },
+        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+      ]
+    },
+    {
+      "id": "completo",
+      "nome": "Projeto completo",
+      "etapas": [
+        { "nome": "Reunião de briefing", "tipoCobranca": "hora" },
+        { "nome": "Criação de roteiro", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
+        { "nome": "Diária de alimentação", "tipoCobranca": "fixo" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
+        { "nome": "Organização de material", "tipoCobranca": "hora" },
+        { "nome": "Edição", "tipoCobranca": "hora" },
+        { "nome": "Color", "tipoCobranca": "hora" },
+        { "nome": "Motion", "tipoCobranca": "hora" },
+        { "nome": "Áudio", "tipoCobranca": "hora" },
+        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+      ]
+    }
+  ]
+}

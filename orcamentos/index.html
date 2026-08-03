@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Montar orçamento | SparkFilmes</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/logo-favicon-spark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/interno.css" />
+  </head>
+  <body class="internal-body budget-body" data-requires-auth="true">
+    <header class="internal-header">
+      <a class="internal-brand" href="../area-interna/">
+        <img src="../assets/img/logo-home.svg" alt="SparkFilmes" />
+      </a>
+      <nav aria-label="Navegação interna">
+        <a href="../area-interna/">Área interna</a>
+        <button type="button" data-logout>Sair</button>
+      </nav>
+    </header>
+
+    <main class="budget-page">
+      <header class="budget-intro">
+        <div>
+          <p class="internal-eyebrow">Orçamento audiovisual</p>
+          <h1>Monte uma estimativa em poucos minutos.</h1>
+          <p>Os valores sugeridos vêm da planilha de custos e permanecem editáveis antes do envio.</p>
+        </div>
+        <span class="source-badge">Base atualizada em 03/08/2026</span>
+      </header>
+
+      <div class="budget-layout">
+        <form class="budget-form" id="budget-form" novalidate>
+          <section class="form-section">
+            <div class="section-number">01</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2>Cliente e projeto</h2>
+                <p>Dados que aparecerão na mensagem final.</p>
+              </header>
+              <div class="field-grid field-grid-2">
+                <label class="field">
+                  <span>Cliente ou empresa <b>*</b></span>
+                  <input id="client-name" type="text" maxlength="80" placeholder="Ex.: Empresa Exemplo" required />
+                </label>
+                <label class="field">
+                  <span>Contato</span>
+                  <input id="client-contact" type="text" maxlength="80" placeholder="WhatsApp ou e-mail" />
+                </label>
+                <label class="field">
+                  <span>Tipo de produção <b>*</b></span>
+                  <select id="project-type" required>
+                    <option value="">Selecione</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Formato <b>*</b></span>
+                  <select id="project-format" required disabled>
+                    <option value="">Escolha o tipo primeiro</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Modelo de contratação <b>*</b></span>
+                  <select id="contract-model" required>
+                    <option value="">Selecione</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Data desejada <b>*</b></span>
+                  <input id="desired-date" type="date" required />
+                </label>
+                <label class="field field-span-2">
+                  <span>Nome do serviço ou pacote <b>*</b></span>
+                  <input id="service-title" type="text" maxlength="100" placeholder="Ex.: Cobertura premium do evento" required />
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-number">02</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2>Composição do serviço</h2>
+                <p>Escolha o modelo para liberar os campos de cálculo.</p>
+              </header>
+
+              <div class="empty-configuration" id="empty-configuration">
+                Selecione um modelo de contratação acima.
+              </div>
+
+              <div class="model-panel" id="package-panel" hidden>
+                <div id="event-package-panel" hidden>
+                  <div class="event-quote-mode">
+                    <div>
+                      <span class="mini-eyebrow">Modo do orçamento</span>
+                      <h3>Como deseja apresentar os pacotes?</h3>
+                    </div>
+                    <div class="segmented-control quote-mode-control" role="group" aria-label="Modo do orçamento de evento">
+                      <label><input type="radio" name="event-quote-mode" value="escolhido" checked /><span>Pacote escolhido</span></label>
+                      <label><input type="radio" name="event-quote-mode" value="todos" /><span>Enviar os 3 pacotes</span></label>
+                    </div>
+                  </div>
+                  <div class="event-package-heading">
+                    <div>
+                      <span class="mini-eyebrow">Pacotes oficiais</span>
+                      <h3>Escolha a cobertura do evento</h3>
+                    </div>
+                    <span>Até 4 horas de cobertura</span>
+                  </div>
+                  <div class="event-package-options" id="event-package-options"></div>
+
+                  <div class="all-packages-message" id="all-packages-message" hidden>
+                    <strong>Orçamento com liberdade de escolha</strong>
+                    <span>A mensagem apresentará Essencial, Spark e Flame, com equipe, entregas e valor de cada opção.</span>
+                  </div>
+
+                  <div id="event-selected-tools">
+                    <article class="selected-package" id="selected-event-package">
+                      <div class="selected-package-head">
+                        <div>
+                          <span id="event-package-team">Equipe a definir</span>
+                          <h3 id="event-package-name">Selecione um pacote</h3>
+                        </div>
+                        <strong id="event-package-price">R$ 0,00</strong>
+                      </div>
+                      <ul id="event-package-deliveries"></ul>
+                      <label class="field compact-field">
+                        <span>Quantidade de eventos/pacotes</span>
+                        <input id="event-package-quantity" type="number" min="1" step="1" value="1" />
+                      </label>
+                    </article>
+
+                    <div class="stage-time-heading">
+                      <div>
+                        <span class="mini-eyebrow">Análise interna</span>
+                        <h3>Tempo por etapa do processo</h3>
+                        <p>Preencha o tempo total de trabalho de cada profissional. Os minutos atualizam o custo técnico, sem alterar o preço comercial do pacote.</p>
+                      </div>
+                      <div class="stage-time-total"><span>Total de trabalho</span><strong id="event-stage-total-minutes">0 min</strong></div>
+                    </div>
+                    <div class="event-stage-items" id="event-stage-items"></div>
+                    <div class="technical-analysis">
+                      <span>Custo técnico estimado pelo tempo</span>
+                      <strong id="event-technical-cost">R$ 0,00</strong>
+                      <small>Os minutos são convertidos para o valor-hora da planilha.</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="generic-package-panel">
+                  <div class="field-grid field-grid-2">
+                    <label class="field">
+                      <span>Complexidade de referência</span>
+                      <select id="package-template"></select>
+                    </label>
+                    <label class="field">
+                      <span>Profissional principal</span>
+                      <select id="package-professional"></select>
+                    </label>
+                    <label class="field">
+                      <span>Quantidade de pacotes</span>
+                      <input id="package-quantity" type="number" min="1" step="1" value="1" />
+                    </label>
+                    <label class="field">
+                      <span>Horas estimadas por pacote</span>
+                      <input id="package-hours" type="number" min="0" step="0.5" placeholder="Ex.: 16" />
+                    </label>
+                  </div>
+                  <div class="scope-box">
+                    <strong>Etapas sugeridas pela planilha</strong>
+                    <p id="package-scope">Selecione uma complexidade.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="model-panel" id="technical-panel" hidden>
+                <div class="field-grid field-grid-3">
+                  <label class="field">
+                    <span>Profissional</span>
+                    <select id="technical-professional"></select>
+                  </label>
+                  <label class="field">
+                    <span>Unidade</span>
+                    <select id="technical-unit">
+                      <option value="diaria">Diária de 8 horas</option>
+                      <option value="hora">Hora técnica</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Quantidade</span>
+                    <input id="technical-quantity" type="number" min="0" step="0.5" value="1" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="model-panel" id="custom-panel" hidden>
+                <div class="custom-toolbar">
+                  <label class="field">
+                    <span>Carregar etapas</span>
+                    <select id="custom-template"></select>
+                  </label>
+                  <button class="internal-button internal-button-quiet" id="add-line" type="button">+ Adicionar etapa</button>
+                </div>
+                <div class="line-items" id="line-items"></div>
+              </div>
+
+              <div class="pricing-box" id="pricing-box" hidden>
+                <div>
+                  <span id="reference-label">Valor sugerido pela base</span>
+                  <strong id="reference-value">R$ 0,00</strong>
+                  <small id="reference-detail">Preencha a configuração para calcular.</small>
+                </div>
+                <label class="field money-field">
+                  <span>Valor final dos serviços</span>
+                  <span class="currency-input"><i>R$</i><input id="service-value" type="number" min="0" step="0.01" value="0" /></span>
+                </label>
+                <button class="text-button" id="use-reference" type="button">Usar valor sugerido</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-number">03</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2>Atendimento e deslocamento</h2>
+                <p>Na versão de teste, distância e custos são informados manualmente.</p>
+              </header>
+              <div class="segmented-control" role="group" aria-label="Tipo de atendimento">
+                <label><input type="radio" name="attendance" value="remoto" checked /><span>Remoto</span></label>
+                <label><input type="radio" name="attendance" value="presencial" /><span>Presencial</span></label>
+              </div>
+              <div class="field-grid field-grid-2 conditional-location" id="location-fields" hidden>
+                <label class="field field-span-2">
+                  <span>Local da gravação <b>*</b></span>
+                  <input id="address" type="text" maxlength="180" placeholder="Endereço completo ou nome do local" />
+                </label>
+                <label class="field">
+                  <span>Distância estimada (km)</span>
+                  <input id="distance-km" type="number" min="0" step="0.1" placeholder="Ex.: 12,4" />
+                </label>
+                <label class="field money-field">
+                  <span>Deslocamento</span>
+                  <span class="currency-input"><i>R$</i><input id="travel-fee" type="number" min="0" step="0.01" value="0" /></span>
+                </label>
+                <label class="field money-field">
+                  <span>Estacionamento, pedágio e extras</span>
+                  <span class="currency-input"><i>R$</i><input id="travel-extras" type="number" min="0" step="0.01" value="0" /></span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section">
+            <div class="section-number">04</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2>Observações</h2>
+                <p>Inclua entregáveis, condições, rodadas de alteração e detalhes do escopo.</p>
+              </header>
+              <label class="field">
+                <span>Condições especiais</span>
+                <textarea id="notes" rows="5" maxlength="800" placeholder="Ex.: Inclui captação, edição e uma rodada de ajustes."></textarea>
+              </label>
+            </div>
+          </section>
+        </form>
+
+        <aside class="budget-preview" aria-live="polite">
+          <div class="preview-topline"><span>Prévia ao vivo</span><i></i></div>
+          <p class="preview-kicker" id="preview-type">Produção audiovisual</p>
+          <h2 id="preview-title">Seu orçamento começa aqui</h2>
+          <p class="preview-description" id="preview-description">Preencha os dados ao lado para montar a estimativa.</p>
+          <ul class="preview-package-deliveries" id="preview-package-deliveries" hidden></ul>
+
+          <dl class="preview-details">
+            <div><dt>Formato</dt><dd id="preview-format">A definir</dd></div>
+            <div><dt>Data desejada</dt><dd id="preview-date">A definir</dd></div>
+            <div><dt>Atendimento</dt><dd id="preview-attendance">Remoto</dd></div>
+            <div><dt>Carga estimada</dt><dd id="preview-hours">0 horas</dd></div>
+          </dl>
+
+          <div class="preview-prices">
+            <div><span id="preview-services-label">Serviços</span><strong id="preview-services">R$ 0,00</strong></div>
+            <div><span>Deslocamento e extras</span><strong id="preview-travel">R$ 0,00</strong></div>
+            <div class="preview-total"><span id="preview-total-label">Total estimado</span><strong id="preview-total">R$ 0,00</strong></div>
+          </div>
+
+          <div class="preview-actions">
+            <button class="internal-button internal-button-primary" id="send-whatsapp" type="button">Enviar para o WhatsApp</button>
+            <button class="internal-button internal-button-quiet" id="copy-message" type="button">Copiar mensagem</button>
+            <button class="text-button" id="clear-budget" type="button">Limpar orçamento</button>
+          </div>
+          <p class="budget-feedback" id="budget-feedback" aria-live="polite"></p>
+          <p class="privacy-note">Uso interno. Os valores ficam visíveis no código desta versão estática.</p>
+        </aside>
+      </div>
+    </main>
+
+    <script src="../assets/js/internal-auth.js"></script>
+    <script src="../assets/js/orcamentos-core.js"></script>
+    <script src="../assets/js/orcamentos.js"></script>
+  </body>
+</html>

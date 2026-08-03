@@ -33,6 +33,34 @@ python -m http.server 8080
 
 Acesse: `http://localhost:8080`
 
+## Ferramenta interna de orçamentos
+
+Com o servidor local ativo, acesse:
+
+```text
+http://localhost:8080/area-interna/
+```
+
+Senha da versão de teste: `spark2026`
+
+A ferramenta usa `data/servicos.json` como base de profissionais, valores-hora,
+tipos de produção e etapas. Ela calcula pacotes, diárias/horas técnicas e projetos
+sob medida, permitindo ajustar o valor final antes de copiar ou abrir a mensagem
+no WhatsApp oficial da SparkFilmes.
+
+Ao selecionar `Cobertura de evento`, são carregados os pacotes oficiais Essencial,
+Spark e Flame. Cada pacote possui equipe, entregas, preço comercial e campos de
+minutos por etapa para acompanhar separadamente o custo técnico interno. O envio
+pode apresentar o pacote previamente escolhido ou as três opções para o cliente
+comparar antes de decidir.
+
+Esta primeira versão é estática: a senha e os preços ficam acessíveis no código
+publicado, e os orçamentos não são armazenados. Para validar os cálculos com Deno:
+
+```bash
+deno run --allow-read tests/orcamentos-core.test.js
+```
+
 ## Personalizacao rapida
 
 1. WhatsApp oficial
@@ -59,4 +87,3 @@ Acesse: `http://localhost:8080`
 
 O site usa iframe com controles nativos ocultos e botoes proprios (`Play`, `Pause`, `Stop`).
 Isso reduz distracoes, mas a marca/infra do YouTube ainda depende das regras da plataforma.
-

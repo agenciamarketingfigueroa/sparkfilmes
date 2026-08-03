@@ -1,0 +1,140 @@
+import assert from "node:assert/strict";
+import "../assets/js/orcamentos-core.js";
+
+const core = globalThis.SparkBudgetCore;
+const catalogUrl = new URL("../data/servicos.json", import.meta.url);
+const catalog = JSON.parse(await Deno.readTextFile(catalogUrl));
+const rate = (id) => catalog.profissionais.find((item) => item.id === id).valorHora;
+
+assert.deepEqual(
+  catalog.pacotesEventos.map((item) => [item.nome, item.preco]),
+  [["Plano Essencial", 850], ["Plano Spark", 1500], ["Plano Flame", 1950]]
+);
+assert.deepEqual(
+  catalog.pacotesEventos.map((item) => item.etapas.reduce((total, stage) => total + stage.minutos, 0)),
+  [240, 480, 720]
+);
+
+const packageBudget = core.calculateBudget({
+  model: "pacote",
+  packageQuantity: 2,
+  hoursPerPackage: 16,
+  hourlyRate: rate("videomaker"),
+  attendance: "remoto"
+});
+assert.equal(packageBudget.reference, 3539.69);
+assert.equal(packageBudget.estimatedHours, 32);
+assert.equal(packageBudget.total, 3539.69);
+
+const sparkPackage = catalog.pacotesEventos.find((item) => item.id === "spark");
+const sparkStageLines = sparkPackage.etapas.map((stage) => ({
+  minutes: stage.minutos,
+  hourlyRate: rate(stage.profissionalId)
+}));
+const eventBudget = core.calculateBudget({
+  model: "pacote",
+  projectType: "evento",
+  eventPackageId: sparkPackage.id,
+  eventPackagePrice: sparkPackage.preco,
+  eventPackageQuantity: 1,
+  eventStageLines: sparkStageLines,
+  attendance: "presencial"
+});
+assert.equal(eventBudget.reference, 1500);
+assert.equal(eventBudget.services, 1500);
+assert.equal(eventBudget.estimatedHours, 8);
+assert.equal(eventBudget.estimatedMinutes, 480);
+assert.equal(eventBudget.technicalCost, 881.73);
+
+const dailyBudget = core.calculateBudget({
+  model: "tecnico",
+  technicalUnit: "diaria",
+  technicalQuantity: 2,
+  hoursPerDay: 8,
+  hourlyRate: rate("fotografo"),
+  attendance: "remoto"
+});
+assert.equal(dailyBudget.reference, 1757.07);
+assert.equal(dailyBudget.estimatedHours, 16);
+assert.equal(dailyBudget.unitLabel, "diárias");
+
+const customBudget = core.calculateBudget({
+  model: "sob-medida",
+  lines: [
+    { billingType: "hora", quantity: 2, unitValue: rate("videomaker") },
+    { billingType: "fixo", quantity: 1, unitValue: 150 }
+  ],
+  attendance: "presencial",
+  travelFee: 100,
+  travelExtras: 25
+});
+assert.equal(customBudget.reference, 371.23);
+assert.equal(customBudget.travel, 125);
+assert.equal(customBudget.total, 496.23);
+
+const validInput = {
+  clientName: "Cliente Teste",
+  projectTypeName: "Conteúdo para redes sociais",
+  model: "tecnico",
+  modelName: "Diária ou hora técnica",
+  format: "Vertical 9:16",
+  serviceTitle: "Captação de conteúdo",
+  desiredDate: "2099-08-30",
+  technicalQuantity: 1,
+  technicalUnit: "diaria",
+  attendance: "remoto"
+};
+assert.deepEqual(core.validateBudget(validInput), []);
+assert.ok(core.validateBudget({ ...validInput, attendance: "presencial", address: "" }).includes("Informe o local da gravação presencial."));
+
+const message = core.buildWhatsAppMessage(validInput, dailyBudget, catalog.empresa);
+assert.match(message, /Orçamento SparkFilmes/);
+assert.match(message, /Cliente Teste/);
+assert.match(message, /R\$\s1\.757,07/);
+
+const eventInput = {
+  ...validInput,
+  projectType: "evento",
+  projectTypeName: "Cobertura de evento",
+  model: "pacote",
+  modelName: "Pacote fechado",
+  serviceTitle: sparkPackage.nome,
+  eventPackageId: sparkPackage.id,
+  eventPackageName: sparkPackage.nome,
+  eventPackageTeam: sparkPackage.subtitulo,
+  eventPackagePrice: sparkPackage.preco,
+  eventPackageQuantity: 1,
+  eventCoverageHours: sparkPackage.horasCoberturaIncluidas,
+  eventPackageDeliveries: sparkPackage.entregas,
+  eventStageLines: sparkStageLines,
+  attendance: "presencial",
+  address: "Casa Palma"
+};
+assert.deepEqual(core.validateBudget(eventInput), []);
+const eventMessage = core.buildWhatsAppMessage(eventInput, eventBudget, catalog.empresa);
+assert.match(eventMessage, /Plano Spark/);
+assert.match(eventMessage, /até 4 horas/);
+assert.match(eventMessage, /Horas extras.*cobradas à parte/);
+assert.match(eventMessage, /R\$\s1\.500,00/);
+
+const allPackagesInput = {
+  ...eventInput,
+  serviceTitle: "Opções de cobertura de evento",
+  eventQuoteMode: "todos",
+  eventStageLines: [],
+  allEventPackages: catalog.pacotesEventos.map((item) => ({
+    name: item.nome,
+    price: item.preco,
+    team: item.subtitulo,
+    deliveries: item.entregas
+  }))
+};
+assert.deepEqual(core.validateBudget(allPackagesInput), []);
+const allPackagesMessage = core.buildWhatsAppMessage(allPackagesInput, eventBudget, catalog.empresa);
+assert.match(allPackagesMessage, /Plano Essencial/);
+assert.match(allPackagesMessage, /Plano Spark/);
+assert.match(allPackagesMessage, /Plano Flame/);
+assert.match(allPackagesMessage, /conforme o pacote escolhido/);
+assert.doesNotMatch(allPackagesMessage, /Total estimado/);
+
+console.log("Todos os testes do calculador passaram.");
