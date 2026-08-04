@@ -41,8 +41,6 @@ Com o servidor local ativo, acesse:
 http://localhost:8080/area-interna/
 ```
 
-Senha da versão de teste: `spark2026`
-
 A ferramenta usa `data/servicos.json` como base de profissionais, valores-hora,
 tipos de produção e etapas. Ela calcula pacotes, diárias/horas técnicas e projetos
 sob medida, permitindo ajustar o valor final antes de copiar ou abrir a mensagem

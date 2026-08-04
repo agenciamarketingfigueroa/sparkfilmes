@@ -2,7 +2,7 @@
   "use strict";
 
   const AUTH_KEY = "sparkfilmes-internal-auth";
-  const TEST_PASSWORD = "spark2026";
+  const PASSWORD = "1508";
   const body = document.body;
   const isAuthenticated = () => sessionStorage.getItem(AUTH_KEY) === "authenticated";
 
@@ -35,7 +35,7 @@
     event.preventDefault();
     const password = String(new FormData(loginForm).get("senha") || "");
 
-    if (password !== TEST_PASSWORD) {
+    if (password !== PASSWORD) {
       if (feedback) feedback.textContent = "Senha incorreta. Tente novamente.";
       loginForm.querySelector("input")?.focus();
       return;

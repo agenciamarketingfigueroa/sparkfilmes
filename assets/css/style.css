@@ -256,6 +256,19 @@ p {
   --btn-border: rgba(241, 240, 240, 0.26);
 }
 
+.btn-login {
+  --btn-bg: rgba(13, 13, 15, 0.04);
+  --btn-border: rgba(13, 13, 15, 0.22);
+  --btn-text: #0d0d0f;
+}
+
+.btn-login:hover,
+.btn-login:focus-visible {
+  --btn-bg: #0d0d0f;
+  --btn-border: #0d0d0f;
+  --btn-text: #f1f0f0;
+}
+
 .btn-small {
   padding: 0.64rem 0.95rem;
   font-size: 0.84rem;
