@@ -8,7 +8,13 @@
   "empresa": {
     "nome": "SparkFilmes",
     "whatsapp": "5531999427901",
-    "assinatura": "SparkFilmes — histórias com linguagem de cinema."
+    "assinatura": "SparkFilmes — histórias com linguagem de cinema.",
+    "pagamento": {
+      "pixNome": "Felipe Figueroa Santos",
+      "pixChave": "31971094236",
+      "pixBanco": "Nubank",
+      "cartao": "Em até 12x. Consulte condições."
+    }
   },
   "parametros": {
     "horasPorDiaria": 8,
@@ -33,6 +39,13 @@
     {
       "id": "storymaker",
       "nome": "Storiemaker",
+      "valorHora": 51.95208333,
+      "depreciacaoMensal": 683.3333333,
+      "faturamentoDesejado": 6000
+    },
+    {
+      "id": "editor",
+      "nome": "Editor",
       "valorHora": 51.95208333,
       "depreciacaoMensal": 683.3333333,
       "faturamentoDesejado": 6000
@@ -75,6 +88,11 @@
       "formatos": ["Motion graphics", "Vertical 9:16", "Horizontal 16:9", "Quadrado 1:1"]
     },
     {
+      "id": "edicao-conteudo",
+      "nome": "Edição de conteúdo",
+      "formatos": ["Edição de conteúdo"]
+    },
+    {
       "id": "consulta",
       "nome": "Projeto sob consulta",
       "formatos": ["Formato a definir"]
@@ -82,7 +100,7 @@
   ],
   "modelosContratacao": [
     { "id": "pacote", "nome": "Pacote fechado" },
-    { "id": "tecnico", "nome": "Diária ou hora técnica" },
+    { "id": "tecnico", "nome": "Diária" },
     { "id": "sob-medida", "nome": "Projeto sob medida" }
   ],
   "pacotesEventos": [
@@ -217,6 +235,19 @@
         { "nome": "Áudio", "tipoCobranca": "hora" },
         { "nome": "Render e upload", "tipoCobranca": "hora" },
         { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+      ]
+    },
+    {
+      "id": "edicao-conteudo",
+      "nome": "Edição de conteúdo",
+      "etapas": [
+        { "nome": "Download", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Decupagem e organização", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Edição", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Color grading", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Motion", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Render", "tipoCobranca": "minuto", "profissionalId": "editor" },
+        { "nome": "Upload", "tipoCobranca": "minuto", "profissionalId": "editor" }
       ]
     }
   ]

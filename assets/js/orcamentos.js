@@ -4,6 +4,8 @@
   const core = window.SparkBudgetCore;
   if (!core) return;
 
+  const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
+  const BUDGET_EXPORT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
   const form = byId("budget-form");
   if (!form) return;
@@ -11,8 +13,13 @@
   const elements = {
     clientName: byId("client-name"),
     contact: byId("client-contact"),
+    startTime: byId("start-time"),
+    endTime: byId("end-time"),
+    venueName: byId("venue-name"),
+    locationLink: byId("location-link"),
+    serviceLocationFields: Array.from(document.querySelectorAll(".service-location-field")),
     projectType: byId("project-type"),
-    format: byId("project-format"),
+    formatInputs: Array.from(document.querySelectorAll(".service-format-input")),
     model: byId("contract-model"),
     desiredDate: byId("desired-date"),
     serviceTitle: byId("service-title"),
@@ -32,6 +39,7 @@
     eventPackagePrice: byId("event-package-price"),
     eventPackageDeliveries: byId("event-package-deliveries"),
     eventSelectedTools: byId("event-selected-tools"),
+    selectedEventPackage: byId("selected-event-package"),
     allPackagesMessage: byId("all-packages-message"),
     eventStageItems: byId("event-stage-items"),
     eventStageTotalMinutes: byId("event-stage-total-minutes"),
@@ -50,18 +58,28 @@
     referenceDetail: byId("reference-detail"),
     serviceValue: byId("service-value"),
     useReference: byId("use-reference"),
+    partnershipLevel: byId("partnership-level"),
     locationFields: byId("location-fields"),
     address: byId("address"),
     distanceKm: byId("distance-km"),
+    travelTime: byId("travel-time"),
     travelFee: byId("travel-fee"),
+    foodFee: byId("food-fee"),
     travelExtras: byId("travel-extras"),
     notes: byId("notes"),
     previewType: byId("preview-type"),
     previewTitle: byId("preview-title"),
     previewDescription: byId("preview-description"),
+    previewClient: byId("preview-client"),
+    previewContact: byId("preview-contact"),
     previewPackageDeliveries: byId("preview-package-deliveries"),
     previewFormat: byId("preview-format"),
     previewDate: byId("preview-date"),
+    previewTime: byId("preview-time"),
+    previewLocation: byId("preview-location"),
+    previewLocationWrap: byId("preview-location-wrap"),
+    previewLocationLink: byId("preview-location-link"),
+    previewTeam: byId("preview-team"),
     previewAttendance: byId("preview-attendance"),
     previewHours: byId("preview-hours"),
     previewServices: byId("preview-services"),
@@ -70,6 +88,10 @@
     previewTotal: byId("preview-total"),
     previewTotalLabel: byId("preview-total-label"),
     sendWhatsapp: byId("send-whatsapp"),
+    generatePdf: byId("generate-pdf"),
+    exportBudget: byId("export-budget"),
+    importBudget: byId("import-budget"),
+    importBudgetFile: byId("import-budget-file"),
     copyMessage: byId("copy-message"),
     clearBudget: byId("clear-budget"),
     feedback: byId("budget-feedback")
@@ -96,6 +118,19 @@
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
+  };
+
+  const formatBrazilianPhone = (value) => {
+    const digits = String(value || "").replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 2) return digits ? `(${digits}` : "";
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  };
+
+  const brazilianWhatsAppNumber = (value) => {
+    const digits = String(value || "").replace(/\D/g, "");
+    return digits.length === 10 || digits.length === 11 ? `55${digits}` : "";
   };
 
   const fillSelect = (select, items, placeholder = "") => {
@@ -130,18 +165,93 @@
     elements.feedback.classList.toggle("is-success", success);
   };
 
+  const partnershipOptions = {
+    novo: { name: "Novo", discount: 0 },
+    indicacao: { name: "Indicação", discount: 0.1 },
+    parceiro: { name: "Parceiro", discount: 0.2 },
+    familia: { name: "Família", discount: 0.3 }
+  };
+
+  const selectedServiceFormats = () => elements.formatInputs
+    .filter((input) => input.checked)
+    .map((input) => {
+      const quantityInput = input.closest(".service-format-option")?.querySelector(".service-format-quantity");
+      return {
+        name: input.value,
+        professionalId: input.dataset.professionalId || "",
+        quantity: quantityInput ? Math.max(1, core.asNumber(quantityInput.value) || 1) : 0
+      };
+    });
+
+  const formatServiceTeam = (formats = selectedServiceFormats()) => formats
+    .map((item) => {
+      if (item.quantity <= 1) return item.name;
+      const pluralNames = { Storiemaker: "Storiemakers", Fotografia: "Fotógrafos", Vídeo: "Videomakers", Edição: "Editores" };
+      return `(${String(item.quantity).padStart(2, "0")}) ${pluralNames[item.name] || item.name}`;
+    })
+    .join(" + ");
+
   const updateFormats = () => {
-    const type = getProjectType(elements.projectType.value);
-    if (!type) {
-      elements.format.innerHTML = '<option value="">Escolha o tipo primeiro</option>';
-      elements.format.disabled = true;
-      return;
-    }
-    elements.format.innerHTML = [
-      '<option value="">Selecione</option>',
-      ...type.formatos.map((format) => `<option value="${escapeHtml(format)}">${escapeHtml(format)}</option>`)
-    ].join("");
-    elements.format.disabled = false;
+    elements.formatInputs.forEach((input) => {
+      const quantityInput = input.closest(".service-format-option")?.querySelector(".service-format-quantity");
+      if (quantityInput) quantityInput.disabled = !input.checked;
+    });
+  };
+
+  const updateServiceLocationFields = () => {
+    const isEditingService = elements.projectType.value === "edicao-conteudo";
+    elements.serviceLocationFields.forEach((field) => {
+      field.hidden = isEditingService;
+    });
+    const inPersonOption = form.querySelector('input[name="attendance"][value="presencial"]');
+    if (inPersonOption) inPersonOption.disabled = isEditingService;
+    if (isEditingService) form.querySelector('input[name="attendance"][value="remoto"]').checked = true;
+  };
+
+  const currentPartnership = () => partnershipOptions[elements.partnershipLevel.value] || partnershipOptions.novo;
+
+  const teamQuantityFor = (professionalId) => {
+    const format = selectedServiceFormats().find((item) => item.professionalId === professionalId);
+    return format?.quantity || 1;
+  };
+
+  const eventPackageProfessionalIds = (eventPackage) => {
+    if (eventPackage?.id === "essencial") return ["fotografo", "storymaker"];
+    if (eventPackage?.id === "spark") return ["fotografo", "videomaker"];
+    return ["fotografo", "videomaker", "storymaker"];
+  };
+
+  const sharedEventStageLines = () => {
+    if (eventStageLines.length) return eventStageLines;
+    const flamePackage = catalog.pacotesEventos.find((eventPackage) => eventPackage.id === "flame") || catalog.pacotesEventos[0];
+    return (flamePackage?.etapas || []).map((stage) => ({
+      name: stage.nome,
+      professionalId: stage.profissionalId,
+      minutes: stage.minutos
+    }));
+  };
+
+  const calculateEventPackageQuote = (eventPackage) => core.calculateBudget({
+    model: "pacote",
+    projectType: "evento",
+    eventPackageId: eventPackage.id,
+    eventPackageQuantity: 1,
+    eventStageLines: sharedEventStageLines()
+      .filter((stage) => eventPackageProfessionalIds(eventPackage).includes(stage.professionalId))
+      .map((stage) => ({
+        ...stage,
+        hourlyRate: getProfessional(stage.professionalId)?.valorHora || 0,
+        quantity: teamQuantityFor(stage.professionalId)
+      })),
+    partnershipDiscount: currentPartnership().discount
+  });
+
+  const updateEventPackageOptionPrices = () => {
+    catalog.pacotesEventos.forEach((eventPackage) => {
+      const price = core.money(calculateEventPackageQuote(eventPackage).reference);
+      const target = elements.eventPackageOptions.querySelector(`[data-event-package-price="${eventPackage.id}"]`);
+      if (target) target.textContent = price;
+    });
   };
 
   const updatePackageScope = () => {
@@ -157,7 +267,7 @@
           <span class="event-package-option-content">
             <strong class="event-package-option-name">${escapeHtml(eventPackage.nome)}</strong>
             <small>${escapeHtml(eventPackage.subtitulo)}</small>
-            <strong class="event-package-option-price">${core.money(eventPackage.preco)}</strong>
+            <strong class="event-package-option-price" data-event-package-price="${eventPackage.id}">${core.money(calculateEventPackageQuote(eventPackage).reference)}</strong>
           </span>
         </label>`)
       .join("");
@@ -172,15 +282,15 @@
         professionalId: professional.id,
         professionalName: professional.nome,
         minutes: core.asNumber(row.querySelector(".event-stage-minutes-input").value),
-        hourlyRate: professional.valorHora
+        hourlyRate: professional.valorHora,
+        quantity: teamQuantityFor(professional.id)
       };
     });
     return eventStageLines;
   };
 
   const renderEventStageLines = () => {
-    elements.eventStageItems.innerHTML = eventStageLines
-      .map((line, index) => {
+    const stageMarkup = (line, index) => {
         const professional = getProfessional(line.professionalId);
         return `
           <div class="event-stage-item" data-event-stage-index="${index}" data-stage-name="${escapeHtml(line.name)}" data-professional-id="${professional.id}">
@@ -193,8 +303,20 @@
               <input class="event-stage-minutes-input" type="number" min="0" step="5" value="${line.minutes}" aria-label="Minutos em ${escapeHtml(line.name)}" />
               <span>min</span>
             </label>
-            <strong class="event-stage-cost">${core.money((line.minutes / 60) * professional.valorHora)}</strong>
+            <strong class="event-stage-cost">${core.money((line.minutes / 60) * professional.valorHora * (line.quantity || 1))}</strong>
           </div>`;
+      };
+
+    elements.eventStageItems.innerHTML = catalog.profissionais
+      .map((professional) => {
+        const stages = eventStageLines
+          .map((line, index) => ({ line, index }))
+          .filter(({ line }) => line.professionalId === professional.id);
+        return `
+          <section class="event-stage-professional">
+            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora)}/hora</span></header>
+            <div class="event-stage-professional-items">${stages.map(({ line, index }) => stageMarkup(line, index)).join("")}</div>
+          </section>`;
       })
       .join("");
   };
@@ -202,11 +324,11 @@
   const loadEventPackage = (packageId, force = false) => {
     const eventPackage = getEventPackage(packageId);
     if (!eventPackage) return;
-    const changed = selectedEventPackageId !== eventPackage.id;
     selectedEventPackageId = eventPackage.id;
 
-    if (changed || force || eventStageLines.length === 0) {
-      eventStageLines = eventPackage.etapas.map((stage) => ({
+    if (force || eventStageLines.length === 0) {
+      const flamePackage = getEventPackage("flame") || eventPackage;
+      eventStageLines = flamePackage.etapas.map((stage) => ({
         name: stage.nome,
         professionalId: stage.profissionalId,
         minutes: stage.minutos
@@ -216,7 +338,7 @@
 
     elements.eventPackageTeam.textContent = `${eventPackage.profissionaisEmCampo} ${eventPackage.profissionaisEmCampo === 1 ? "profissional em campo" : "profissionais em campo"} · ${eventPackage.subtitulo}`;
     elements.eventPackageName.textContent = eventPackage.nome;
-    elements.eventPackagePrice.textContent = core.money(eventPackage.preco);
+    elements.eventPackagePrice.textContent = core.money(calculateEventPackageQuote(eventPackage).reference);
     elements.eventPackageDeliveries.innerHTML = eventPackage.entregas.map((delivery) => `<li>${escapeHtml(delivery)}</li>`).join("");
   };
 
@@ -224,7 +346,7 @@
     elements.eventStageItems.querySelectorAll("[data-event-stage-index]").forEach((row) => {
       const professional = getProfessional(row.dataset.professionalId);
       const minutes = core.asNumber(row.querySelector(".event-stage-minutes-input").value);
-      row.querySelector(".event-stage-cost").textContent = core.money((minutes / 60) * professional.valorHora);
+      row.querySelector(".event-stage-cost").textContent = core.money((minutes / 60) * professional.valorHora * teamQuantityFor(professional.id));
     });
   };
 
@@ -248,8 +370,10 @@
     elements.lineItems.innerHTML = customLines
       .map((line, index) => {
         const isHourly = line.billingType === "hora";
-        const quantityLabel = isHourly ? "Horas" : "Qtd.";
-        const professionalSelect = isHourly
+        const isMinute = line.billingType === "minuto";
+        const isTimeBased = isHourly || isMinute;
+        const quantityLabel = isMinute ? "Minutos" : isHourly ? "Horas" : "Qtd.";
+        const professionalSelect = isTimeBased
           ? professionalOptions(line.professionalId)
           : '<option value="">Custo direto</option>';
         return `
@@ -260,14 +384,14 @@
             </label>
             <label class="field">
               <span>Profissional</span>
-              <select class="line-professional" ${isHourly ? "" : "disabled"}>${professionalSelect}</select>
+              <select class="line-professional" ${isTimeBased ? "" : "disabled"}>${professionalSelect}</select>
             </label>
             <label class="field">
               <span>${quantityLabel}</span>
-              <input class="line-quantity" type="number" min="0" step="${isHourly ? "0.5" : "1"}" value="${line.quantity}" />
+              <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : isHourly ? "0.5" : "1"}" value="${line.quantity}" />
             </label>
             <label class="field">
-              <span>Valor unit.</span>
+              <span>${isMinute ? "Valor/min." : "Valor unit."}</span>
               <input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />
             </label>
             <div class="line-total" aria-label="Total da etapa">${core.money(line.quantity * line.unitValue)}</div>
@@ -281,13 +405,16 @@
     const template = getTemplate(elements.customTemplate.value);
     if (!template) return;
     const defaultProfessional = catalog.profissionais[0];
-    customLines = template.etapas.map((step) => ({
+    customLines = template.etapas.map((step) => {
+      const professional = getProfessional(step.profissionalId) || defaultProfessional;
+      return {
       name: step.nome,
       billingType: step.tipoCobranca,
-      professionalId: defaultProfessional.id,
+      professionalId: professional.id,
       quantity: step.tipoCobranca === "fixo" ? 1 : 0,
-      unitValue: step.tipoCobranca === "fixo" ? 0 : defaultProfessional.valorHora
-    }));
+      unitValue: step.tipoCobranca === "fixo" ? 0 : step.tipoCobranca === "minuto" ? professional.valorHora / 60 : professional.valorHora
+      };
+    });
     renderCustomLines();
     refresh();
   };
@@ -303,7 +430,8 @@
     elements.technicalPanel.hidden = model !== "tecnico";
     elements.customPanel.hidden = model !== "sob-medida";
     elements.pricingBox.hidden = !model || presentingAllPackages;
-    elements.eventSelectedTools.hidden = presentingAllPackages;
+    elements.eventSelectedTools.hidden = false;
+    elements.selectedEventPackage.hidden = presentingAllPackages;
     elements.allPackagesMessage.hidden = !presentingAllPackages;
 
     if (eventPackageMode) {
@@ -330,16 +458,28 @@
     const customInputLines = elements.model.value === "sob-medida" ? readCustomLines() : [];
     const eventPackageMode = isEventPackageMode();
     const eventPackage = eventPackageMode ? getEventPackage() : null;
-    const eventInputLines = eventPackageMode ? readEventStageLines() : [];
+    const sharedEventInputLines = eventPackageMode ? readEventStageLines() : [];
+    const eventInputLines = eventPackage
+      ? sharedEventInputLines.filter((line) => eventPackageProfessionalIds(eventPackage).includes(line.professionalId))
+      : [];
+    const partnership = currentPartnership();
+    const serviceFormats = selectedServiceFormats();
 
     return {
       clientName: elements.clientName.value.trim(),
       contact: elements.contact.value.trim(),
+      startTime: elements.startTime.value,
+      endTime: elements.endTime.value,
+      venueName: elements.venueName.value.trim(),
+      locationLink: elements.locationLink.value.trim(),
       projectType: elements.projectType.value,
       projectTypeName: projectType?.nome || "",
-      format: elements.format.value,
+      format: formatServiceTeam(serviceFormats),
+      serviceFormats,
       model: elements.model.value,
       modelName: model?.nome || "",
+      partnershipName: partnership.name,
+      partnershipDiscount: partnership.discount,
       desiredDate: elements.desiredDate.value,
       serviceTitle: elements.serviceTitle.value.trim(),
       packageTemplateName: getTemplate(elements.packageTemplate.value)?.nome || "",
@@ -351,14 +491,13 @@
       eventPackageTeam: eventPackage
         ? `${eventPackage.profissionaisEmCampo} ${eventPackage.profissionaisEmCampo === 1 ? "profissional" : "profissionais"} · ${eventPackage.subtitulo}`
         : "",
-      eventPackagePrice: eventPackage?.preco,
       eventPackageQuantity: elements.eventPackageQuantity.value,
       eventCoverageHours: eventPackage?.horasCoberturaIncluidas,
       eventPackageDeliveries: eventPackage?.entregas || [],
       allEventPackages: eventPackageMode
         ? catalog.pacotesEventos.map((item) => ({
             name: item.nome,
-            price: item.preco,
+            price: calculateEventPackageQuote(item).reference,
             team: `${item.profissionaisEmCampo} ${item.profissionaisEmCampo === 1 ? "profissional" : "profissionais"} · ${item.subtitulo}`,
             deliveries: item.entregas
           }))
@@ -374,7 +513,9 @@
       attendance,
       address: elements.address.value.trim(),
       distanceKm: elements.distanceKm.value,
+      travelTime: elements.travelTime.value,
       travelFee: elements.travelFee.value,
+      foodFee: elements.foodFee.value,
       travelExtras: elements.travelExtras.value,
       notes: elements.notes.value.trim()
     };
@@ -401,6 +542,8 @@
 
     elements.previewType.textContent = input.projectTypeName || "Produção audiovisual";
     elements.previewTitle.textContent = input.serviceTitle || "Seu orçamento começa aqui";
+    elements.previewClient.textContent = input.clientName || "A definir";
+    elements.previewContact.textContent = input.contact || "A definir";
     elements.previewDescription.textContent = presentingAllPackages
       ? "Essencial, Spark e Flame para o cliente comparar e escolher."
       : eventPackageMode
@@ -416,13 +559,19 @@
         : "";
     elements.previewFormat.textContent = input.format || "A definir";
     elements.previewDate.textContent = core.formatDate(input.desiredDate);
-    elements.previewAttendance.textContent = input.attendance === "presencial"
-      ? input.address || "Presencial · local a definir"
-      : "Remoto";
+    elements.previewTime.textContent = input.startTime || input.endTime
+      ? `${input.startTime || "?"} às ${input.endTime || "?"}`
+      : "A definir";
+    elements.previewLocation.textContent = [input.venueName, input.address].filter(Boolean).join(" · ") || "A definir";
+    const safeLocationLink = /^https?:\/\//i.test(input.locationLink) ? input.locationLink : "";
+    elements.previewLocationWrap.hidden = !safeLocationLink;
+    if (safeLocationLink) elements.previewLocationLink.href = safeLocationLink;
+    elements.previewTeam.textContent = input.format || "A definir";
+    elements.previewAttendance.textContent = input.attendance === "presencial" ? "Presencial" : "Remoto";
     elements.previewHours.textContent = presentingAllPackages
       ? "Após a escolha"
       : eventPackageMode
-        ? `${totals.estimatedMinutes} min`
+        ? `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`
         : `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`;
     elements.previewServicesLabel.textContent = presentingAllPackages ? "Opções de investimento" : "Serviços";
     elements.previewServices.textContent = presentingAllPackages
@@ -437,6 +586,7 @@
     if (!catalog) return;
     updateLineTotals();
     updateEventStageCosts();
+    updateEventPackageOptionPrices();
     const referenceInput = collectInput(false);
     const referenceTotals = core.calculateBudget(referenceInput);
 
@@ -445,17 +595,135 @@
     currentInput = collectInput(true);
     currentTotals = core.calculateBudget(currentInput);
     const eventPackageMode = Boolean(currentInput.eventPackageId);
-    elements.referenceLabel.textContent = eventPackageMode ? "Valor comercial do pacote" : "Valor sugerido pela base";
+    elements.referenceLabel.textContent = eventPackageMode ? "Valor calculado pelas etapas" : "Valor sugerido pela base";
     elements.referenceValue.textContent = core.money(referenceTotals.reference);
     elements.referenceDetail.textContent = eventPackageMode
-      ? `${referenceTotals.quantity} ${referenceTotals.unitLabel} · cobertura de até ${currentInput.eventCoverageHours} h por pacote.`
+      ? `${referenceTotals.quantity} ${referenceTotals.unitLabel} · calculado pelos tempos das etapas${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
       : referenceTotals.estimatedHours > 0
-        ? `${referenceTotals.estimatedHours} h estimadas com a base selecionada.`
+        ? `${referenceTotals.estimatedHours} h estimadas com a base selecionada${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
         : "Informe horas, diárias ou valores nas etapas.";
-    elements.eventStageTotalMinutes.textContent = `${referenceTotals.estimatedMinutes} min`;
+    const sharedHours = sharedEventStageLines().reduce((total, line) => total + (core.asNumber(line.minutes) / 60) * teamQuantityFor(line.professionalId), 0);
+    elements.eventStageTotalMinutes.textContent = `${Math.round(sharedHours * 100) / 100} h`;
     elements.eventTechnicalCost.textContent = core.money(referenceTotals.technicalCost);
+    if (eventPackageMode) elements.eventPackagePrice.textContent = core.money(referenceTotals.unitValue);
     elements.locationFields.hidden = currentInput.attendance !== "presencial";
     renderPreview();
+    saveBudgetCache();
+  };
+
+  const createBudgetSnapshot = () => ({
+    version: BUDGET_EXPORT_VERSION,
+    savedAt: new Date().toISOString(),
+    fields: {
+      clientName: elements.clientName.value,
+      contact: elements.contact.value,
+      startTime: elements.startTime.value,
+      endTime: elements.endTime.value,
+      venueName: elements.venueName.value,
+      address: elements.address.value,
+      locationLink: elements.locationLink.value,
+      projectType: elements.projectType.value,
+      model: elements.model.value,
+      desiredDate: elements.desiredDate.value,
+      serviceTitle: elements.serviceTitle.value,
+      packageTemplate: elements.packageTemplate.value,
+      packageProfessional: elements.packageProfessional.value,
+      packageQuantity: elements.packageQuantity.value,
+      packageHours: elements.packageHours.value,
+      technicalProfessional: elements.technicalProfessional.value,
+      technicalUnit: elements.technicalUnit.value,
+      technicalQuantity: elements.technicalQuantity.value,
+      customTemplate: elements.customTemplate.value,
+      serviceValue: elements.serviceValue.value,
+      partnershipLevel: elements.partnershipLevel.value,
+      distanceKm: elements.distanceKm.value,
+      travelTime: elements.travelTime.value,
+      travelFee: elements.travelFee.value,
+      foodFee: elements.foodFee.value,
+      travelExtras: elements.travelExtras.value,
+      notes: elements.notes.value
+    },
+    attendance: form.querySelector('input[name="attendance"]:checked')?.value || "remoto",
+    serviceFormats: elements.formatInputs.map((input) => ({
+      professionalId: input.dataset.professionalId,
+      checked: input.checked,
+      quantity: input.closest(".service-format-option")?.querySelector(".service-format-quantity")?.value || "1"
+    })),
+    eventQuoteMode: getEventQuoteMode(),
+    eventPackageId: elements.eventPackageOptions.querySelector('input[name="event-package"]:checked')?.value || selectedEventPackageId,
+    eventPackageQuantity: elements.eventPackageQuantity.value,
+    eventStageLines: eventStageLines.length && elements.eventStageItems.querySelector("[data-event-stage-index]") ? readEventStageLines() : eventStageLines,
+    customLines: elements.model.value === "sob-medida" && customLines.length ? readCustomLines() : customLines,
+    manualServiceValue
+  });
+
+  const hasBudgetContent = (snapshot) => {
+    const fields = snapshot.fields || {};
+    return Boolean(fields.clientName || fields.projectType || fields.serviceTitle || fields.notes || snapshot.customLines?.length);
+  };
+
+  const saveBudgetCache = () => {
+    try {
+      const snapshot = createBudgetSnapshot();
+      if (hasBudgetContent(snapshot)) localStorage.setItem(BUDGET_CACHE_KEY, JSON.stringify(snapshot));
+    } catch (error) {
+      // O orçamento continua funcional quando o armazenamento local não está disponível.
+    }
+  };
+
+  const restoreBudgetSnapshot = (snapshot) => {
+    if (!snapshot || snapshot.version !== BUDGET_EXPORT_VERSION || !snapshot.fields) throw new Error("Arquivo de orçamento inválido.");
+    const fields = snapshot.fields;
+    const fieldElements = {
+      clientName: elements.clientName, contact: elements.contact, startTime: elements.startTime, endTime: elements.endTime,
+      venueName: elements.venueName, address: elements.address, locationLink: elements.locationLink, projectType: elements.projectType,
+      model: elements.model, desiredDate: elements.desiredDate, serviceTitle: elements.serviceTitle, packageTemplate: elements.packageTemplate,
+      packageProfessional: elements.packageProfessional, packageQuantity: elements.packageQuantity, packageHours: elements.packageHours,
+      technicalProfessional: elements.technicalProfessional, technicalUnit: elements.technicalUnit, technicalQuantity: elements.technicalQuantity,
+      customTemplate: elements.customTemplate, serviceValue: elements.serviceValue, partnershipLevel: elements.partnershipLevel,
+      distanceKm: elements.distanceKm, travelTime: elements.travelTime, travelFee: elements.travelFee, foodFee: elements.foodFee,
+      travelExtras: elements.travelExtras, notes: elements.notes
+    };
+    Object.entries(fieldElements).forEach(([key, element]) => {
+      if (element && fields[key] !== undefined) element.value = fields[key];
+    });
+    form.querySelector(`input[name="attendance"][value="${snapshot.attendance === "presencial" ? "presencial" : "remoto"}"]`).checked = true;
+    elements.formatInputs.forEach((input) => {
+      const savedFormat = (snapshot.serviceFormats || []).find((item) => item.professionalId === input.dataset.professionalId);
+      input.checked = Boolean(savedFormat?.checked);
+      const quantityInput = input.closest(".service-format-option")?.querySelector(".service-format-quantity");
+      if (quantityInput && savedFormat?.quantity) quantityInput.value = savedFormat.quantity;
+    });
+    form.querySelectorAll('input[name="event-quote-mode"]').forEach((input) => {
+      input.checked = input.value === (snapshot.eventQuoteMode || "escolhido");
+    });
+    selectedEventPackageId = snapshot.eventPackageId || selectedEventPackageId;
+    elements.eventPackageOptions.querySelectorAll('input[name="event-package"]').forEach((input) => {
+      input.checked = input.value === selectedEventPackageId;
+    });
+    elements.eventPackageQuantity.value = snapshot.eventPackageQuantity || "1";
+    eventStageLines = Array.isArray(snapshot.eventStageLines) ? snapshot.eventStageLines : [];
+    customLines = Array.isArray(snapshot.customLines) ? snapshot.customLines : [];
+    manualServiceValue = Boolean(snapshot.manualServiceValue);
+    updateFormats();
+    updateServiceLocationFields();
+    updateModelPanels();
+    if (eventStageLines.length) renderEventStageLines();
+    if (customLines.length) renderCustomLines();
+    updatePackageScope();
+    refresh();
+  };
+
+  const restoreLastBudgetCache = () => {
+    try {
+      const raw = localStorage.getItem(BUDGET_CACHE_KEY);
+      if (!raw) return false;
+      restoreBudgetSnapshot(JSON.parse(raw));
+      return true;
+    } catch (error) {
+      localStorage.removeItem(BUDGET_CACHE_KEY);
+      return false;
+    }
   };
 
   const validateAndBuildMessage = () => {
@@ -469,7 +737,8 @@
     setFeedback("");
     return core.buildWhatsAppMessage(currentInput, currentTotals, {
       name: catalog.empresa.nome,
-      signature: catalog.empresa.assinatura
+      signature: catalog.empresa.assinatura,
+      payment: catalog.empresa.pagamento
     });
   };
 
@@ -488,9 +757,146 @@
     textarea.remove();
   };
 
+  const pdfRow = (label, value) => value ? `<div class="pdf-row"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>` : "";
+
+  const generatePdf = () => {
+    const message = validateAndBuildMessage();
+    if (!message) return;
+
+    const input = currentInput;
+    const totals = currentTotals;
+    const presentingAllPackages = input.model === "pacote" && input.eventQuoteMode === "todos";
+    const payment = catalog.empresa.pagamento || {};
+    const safeLocationLink = /^https?:\/\//i.test(input.locationLink) ? input.locationLink : "";
+    const serviceHours = `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`;
+    const location = [input.venueName, input.address].filter(Boolean).join(" · ");
+    const pdfDescription = String(input.notes || "").trim();
+    const logoUrl = new URL("../assets/img/logo-home.svg", window.location.href).href;
+    const packageOptions = presentingAllPackages
+      ? `<section class="pdf-section"><h2>Opções de investimento</h2>${input.allEventPackages.map((item) => `
+          <article class="pdf-package"><h3>${escapeHtml(item.name)} <strong>${core.money(item.price)}</strong></h3>
+          <p>${escapeHtml(item.team)}</p><ul>${item.deliveries.map((delivery) => `<li>${escapeHtml(delivery)}</li>`).join("")}</ul></article>`).join("")}</section>`
+      : `<section class="pdf-total"><span>Total do investimento</span><strong>${core.money(totals.total)}</strong></section>`;
+    const paymentSection = payment.pixNome || payment.pixChave || payment.cartao
+      ? `<section class="pdf-section pdf-payment"><h2>Condições de pagamento</h2>
+          <div><h3>Pix</h3><p>${payment.pixNome ? `Nome: ${escapeHtml(payment.pixNome)}<br>` : ""}${payment.pixChave ? `Chave Pix: ${escapeHtml(payment.pixChave)}<br>` : ""}${payment.pixBanco ? `Banco: ${escapeHtml(payment.pixBanco)}` : ""}</p></div>
+          ${payment.cartao ? `<div><h3>Cartão de crédito</h3><p>${escapeHtml(payment.cartao)}</p></div>` : ""}
+        </section>`
+      : "";
+    const documentHtml = `<!doctype html>
+      <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Orçamento ${escapeHtml(input.clientName || "SparkFilmes")}</title>
+      <style>
+        @page { size: A4; margin: 14mm; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #101014; background: #f3f1ee; font-family: Arial, Helvetica, sans-serif; font-size: 10.5pt; line-height: 1.5; }
+        .pdf-document { max-width: 182mm; min-height: 267mm; margin: 0 auto; padding: 0 0 16mm; background: white; }
+        .pdf-header { position: relative; min-height: 102mm; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 17mm 16mm 14mm; color: white; background: linear-gradient(135deg, #0d0d0f 0%, #17151a 55%, #5f1730 100%); }
+        .pdf-header::before, .pdf-header::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; pointer-events: none; }
+        .pdf-header::before { width: 115mm; height: 115mm; right: -44mm; top: -61mm; }
+        .pdf-header::after { width: 70mm; height: 70mm; right: -6mm; bottom: -39mm; border-color: rgba(239,40,82,.65); }
+        .pdf-brand, .pdf-cover-copy, .pdf-cover-meta { position: relative; z-index: 1; }
+        .pdf-brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .pdf-header img { width: 145px; max-height: 42px; filter: brightness(0) invert(1); }
+        .pdf-brand p { margin: 0; color: #d9d5db; font-size: 8pt; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+        .pdf-kicker { margin: 18px 0 7px; color: #ff8aa1; font-size: 8pt; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+        h1 { max-width: 135mm; margin: 0; font-size: 29pt; line-height: 1.04; letter-spacing: -.05em; }
+        .pdf-subtitle { margin: 8px 0 0; color: #d6d1d8; font-size: 10pt; font-weight: 700; }
+        .pdf-lead { max-width: 132mm; margin: 12px 0 0; color: #f0ebef; white-space: pre-wrap; }
+        .pdf-cover-meta { display: flex; gap: 26px; margin-top: 18px; }
+        .pdf-cover-meta div { display: grid; gap: 2px; }
+        .pdf-cover-meta span { color: #bcb4bd; font-size: 7.5pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+        .pdf-cover-meta strong { font-size: 10pt; }
+        .pdf-content { padding: 0 16mm; }
+        .pdf-section { margin-top: 24px; break-inside: avoid; }
+        .pdf-section h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 11px; font-size: 10pt; letter-spacing: .12em; text-transform: uppercase; }
+        .pdf-section h2::after { content: ""; height: 1px; flex: 1; background: #dedbd6; }
+        .pdf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .pdf-row { border: 1px solid #e5e1dd; border-radius: 10px; padding: 11px 12px; background: #fbfaf8; }
+        dt { margin-bottom: 2px; color: #77727b; font-size: 7.5pt; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+        dd { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
+        .pdf-link { color: #c91840; font-weight: 700; text-decoration: none; }
+        .pdf-total { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 27px 0 0; border-radius: 14px; padding: 19px 20px; color: white; background: linear-gradient(135deg, #101014, #25232a); break-inside: avoid; box-shadow: 0 10px 26px rgba(16,16,20,.15); }
+        .pdf-total span { font-size: 10pt; font-weight: 700; }
+        .pdf-total strong { color: #ff6483; font-size: 22pt; }
+        .pdf-package { border: 1px solid #dedbd6; border-radius: 12px; margin-top: 10px; padding: 14px; break-inside: avoid; background: #fbfaf8; }
+        .pdf-package h3 { display: flex; justify-content: space-between; gap: 12px; margin: 0; font-size: 11pt; }
+        .pdf-package h3 strong { color: #c91840; white-space: nowrap; }
+        .pdf-package p { margin: 4px 0 8px; color: #66616a; font-size: 9pt; }
+        .pdf-package ul { margin: 0; padding-left: 18px; font-size: 9pt; }
+        .pdf-payment { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; border-top: 1px solid #dedbd6; padding-top: 18px; }
+        .pdf-payment h2 { grid-column: 1 / -1; }
+        .pdf-payment h3 { margin: 0; font-size: 10pt; }
+        .pdf-payment p { margin: 4px 0 0; color: #58545c; font-size: 9pt; }
+        .pdf-payment > div { border: 1px solid #e5e1dd; border-radius: 10px; padding: 11px; background: #fbfaf8; }
+        .pdf-footer { border-top: 1px solid #dedbd6; margin: 30px 16mm 0; padding-top: 12px; color: #77727b; font-size: 8.5pt; text-align: center; }
+      </style></head><body><main class="pdf-document">
+        <header class="pdf-header">
+          <div class="pdf-brand"><img src="${logoUrl}" alt="SparkFilmes"><p>Proposta comercial</p></div>
+          <div class="pdf-cover-copy"><p class="pdf-kicker">Orçamento audiovisual</p><h1>${escapeHtml(input.serviceTitle || "Proposta SparkFilmes")}</h1>
+          <p class="pdf-subtitle">${escapeHtml(input.projectTypeName || "Produção audiovisual")} · ${escapeHtml(input.modelName || "")}</p>
+          ${pdfDescription ? `<p class="pdf-lead">${escapeHtml(pdfDescription)}</p>` : ""}</div>
+          <div class="pdf-cover-meta"><div><span>Cliente</span><strong>${escapeHtml(input.clientName || "SparkFilmes")}</strong></div><div><span>Emitido em</span><strong>${core.formatDate(new Date().toISOString().slice(0, 10))}</strong></div></div>
+        </header>
+        <div class="pdf-content"><section class="pdf-section"><h2>Cliente</h2><dl class="pdf-grid">${pdfRow("Cliente", input.clientName)}${pdfRow("Contato", input.contact)}</dl></section>
+        <section class="pdf-section"><h2>Informações do serviço</h2><dl class="pdf-grid">
+          ${pdfRow("Data", input.desiredDate ? core.formatDate(input.desiredDate) : "")}${pdfRow("Horário", input.startTime || input.endTime ? `${input.startTime || ""}${input.startTime && input.endTime ? " às " : ""}${input.endTime || ""}` : "")}
+          ${pdfRow("Atendimento", input.attendance === "presencial" ? "Presencial" : "Remoto")}${pdfRow("Equipe", input.format)}
+          ${totals.estimatedHours > 0 ? pdfRow("Tempo estimado", serviceHours) : ""}${pdfRow("Local", location)}
+          ${safeLocationLink ? `<div class="pdf-row"><dt>Localização</dt><dd><a class="pdf-link" href="${escapeHtml(safeLocationLink)}">Abrir mapa</a></dd></div>` : ""}
+        </dl></section>
+        ${packageOptions}
+        ${paymentSection}</div>
+        <footer class="pdf-footer">${escapeHtml(catalog.empresa.assinatura || "SparkFilmes — histórias com linguagem de cinema.")}</footer>
+      </main><script>window.onload = () => window.print();<\/script></body></html>`;
+
+    const pdfWindow = window.open("", "_blank");
+    if (!pdfWindow) {
+      setFeedback("Não foi possível abrir o PDF. Verifique se o navegador bloqueou a nova janela.");
+      return;
+    }
+    pdfWindow.opener = null;
+    pdfWindow.document.open();
+    pdfWindow.document.write(documentHtml);
+    pdfWindow.document.close();
+    setFeedback("Documento aberto. Na janela de impressão, escolha Salvar como PDF.", true);
+  };
+
+  const exportBudget = () => {
+    const snapshot = createBudgetSnapshot();
+    const content = JSON.stringify(snapshot, null, 2);
+    const blob = new Blob([content], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const date = new Date().toISOString().slice(0, 10);
+    const client = (snapshot.fields.clientName || "orcamento").trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "orcamento";
+    link.href = url;
+    link.download = `sparkfilmes-${client}-${date}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    setFeedback("Orçamento exportado em JSON.", true);
+  };
+
+  const importBudget = async (file) => {
+    if (!file) return;
+    try {
+      const snapshot = JSON.parse(await file.text());
+      restoreBudgetSnapshot(snapshot);
+      saveBudgetCache();
+      setFeedback("Orçamento importado e salvo neste navegador.", true);
+    } catch (error) {
+      setFeedback("Não foi possível importar este arquivo. Escolha um orçamento exportado pela SparkFilmes.");
+    } finally {
+      elements.importBudgetFile.value = "";
+    }
+  };
+
   const bindEvents = () => {
     elements.projectType.addEventListener("change", () => {
       updateFormats();
+      updateServiceLocationFields();
       if (elements.projectType.value === "evento") {
         elements.model.value = "pacote";
         form.querySelector('input[name="attendance"][value="presencial"]').checked = true;
@@ -500,6 +906,20 @@
         elements.serviceTitle.value = getEventQuoteMode() === "todos"
           ? "Opções de cobertura de evento"
           : eventPackage?.nome || "Cobertura de evento";
+      } else if (elements.projectType.value === "edicao-conteudo") {
+        elements.model.value = "sob-medida";
+        elements.customTemplate.value = "edicao-conteudo";
+        form.querySelector('input[name="attendance"][value="remoto"]').checked = true;
+        elements.venueName.value = "";
+        elements.address.value = "";
+        elements.locationLink.value = "";
+        elements.formatInputs.forEach((input) => {
+          input.checked = input.dataset.professionalId === "editor";
+        });
+        updateFormats();
+        manualServiceValue = false;
+        updateModelPanels();
+        loadTemplateLines();
       } else {
         updateModelPanels();
       }
@@ -514,7 +934,7 @@
 
     elements.eventPackageOptions.addEventListener("change", (event) => {
       if (!event.target.matches('input[name="event-package"]')) return;
-      loadEventPackage(event.target.value, true);
+      loadEventPackage(event.target.value);
       if (getEventQuoteMode() === "escolhido") {
         elements.serviceTitle.value = getEventPackage()?.nome || "Cobertura de evento";
       }
@@ -570,7 +990,8 @@
       if (event.target.matches(".line-professional")) {
         const row = event.target.closest("[data-line-index]");
         const professional = getProfessional(event.target.value);
-        row.querySelector(".line-rate").value = core.roundMoney(professional.valorHora);
+        const rate = row.dataset.billingType === "minuto" ? professional.valorHora / 60 : professional.valorHora;
+        row.querySelector(".line-rate").value = core.roundMoney(rate);
       }
       refresh();
     });
@@ -579,6 +1000,23 @@
 
     elements.serviceValue.addEventListener("input", () => {
       manualServiceValue = true;
+      refresh();
+    });
+
+    elements.contact.addEventListener("input", () => {
+      elements.contact.value = formatBrazilianPhone(elements.contact.value);
+    });
+
+    elements.formatInputs.forEach((input) => {
+      input.addEventListener("change", () => {
+        updateFormats();
+        manualServiceValue = false;
+        refresh();
+      });
+    });
+
+    elements.partnershipLevel.addEventListener("change", () => {
+      manualServiceValue = false;
       refresh();
     });
 
@@ -600,10 +1038,20 @@
     elements.sendWhatsapp.addEventListener("click", () => {
       const message = validateAndBuildMessage();
       if (!message) return;
-      const url = `https://wa.me/${catalog.empresa.whatsapp}?text=${encodeURIComponent(message)}`;
+      const clientWhatsApp = brazilianWhatsAppNumber(elements.contact.value);
+      const recipient = clientWhatsApp || catalog.empresa.whatsapp;
+      const url = `https://wa.me/${recipient}?text=${encodeURIComponent(message)}`;
       window.open(url, "_blank", "noopener,noreferrer");
-      setFeedback("WhatsApp aberto com o orçamento preenchido.", true);
+      setFeedback(clientWhatsApp ? "WhatsApp do cliente aberto com o orçamento preenchido." : "WhatsApp da SparkFilmes aberto para aprovação do orçamento.", true);
     });
+
+    elements.generatePdf.addEventListener("click", generatePdf);
+
+    elements.exportBudget.addEventListener("click", exportBudget);
+
+    elements.importBudget.addEventListener("click", () => elements.importBudgetFile.click());
+
+    elements.importBudgetFile.addEventListener("change", () => importBudget(elements.importBudgetFile.files?.[0]));
 
     elements.copyMessage.addEventListener("click", async () => {
       const message = validateAndBuildMessage();
@@ -618,8 +1066,13 @@
 
     elements.clearBudget.addEventListener("click", () => {
       form.reset();
-      elements.format.innerHTML = '<option value="">Escolha o tipo primeiro</option>';
-      elements.format.disabled = true;
+      try {
+        localStorage.removeItem(BUDGET_CACHE_KEY);
+      } catch (error) {
+        // O formulário ainda pode ser limpo quando o armazenamento local não estiver disponível.
+      }
+      updateFormats();
+      updateServiceLocationFields();
       elements.desiredDate.min = localIsoDate();
       customLines = [];
       eventStageLines = [];
@@ -653,9 +1106,12 @@
       loadEventPackage(selectedEventPackageId, true);
       elements.desiredDate.min = localIsoDate();
 
+      updateFormats();
+      updateServiceLocationFields();
       updatePackageScope();
       bindEvents();
-      refresh();
+      if (restoreLastBudgetCache()) setFeedback("Último orçamento recuperado deste navegador.", true);
+      else refresh();
     } catch (error) {
       setFeedback("Não foi possível carregar a base de serviços. Abra o site por um servidor local ou pelo GitHub Pages.");
       console.error("Erro ao carregar catálogo de serviços:", error);

@@ -36,14 +36,15 @@
       quantity = positive(isEventPackage ? input.eventPackageQuantity : input.packageQuantity) || 1;
       if (isEventPackage) {
         const stageLines = Array.isArray(input.eventStageLines) ? input.eventStageLines : [];
-        unitValue = positive(input.eventPackagePrice);
-        reference = quantity * unitValue;
         stageLines.forEach((line) => {
           const minutes = positive(line.minutes);
-          estimatedMinutes += minutes * quantity;
-          estimatedHours += (minutes / 60) * quantity;
-          technicalCost += (minutes / 60) * positive(line.hourlyRate) * quantity;
+          const stageQuantity = positive(line.quantity) || 1;
+          estimatedMinutes += minutes * stageQuantity * quantity;
+          estimatedHours += (minutes / 60) * stageQuantity * quantity;
+          technicalCost += (minutes / 60) * positive(line.hourlyRate) * stageQuantity * quantity;
         });
+        reference = technicalCost;
+        unitValue = quantity ? reference / quantity : 0;
       } else {
         const hoursPerPackage = positive(input.hoursPerPackage);
         const hourlyRate = positive(input.hourlyRate);
@@ -69,6 +70,7 @@
         const lineQuantity = positive(line.quantity);
         const lineUnitValue = positive(line.unitValue);
         if (line.billingType === "hora") estimatedHours += lineQuantity;
+        if (line.billingType === "minuto") estimatedHours += lineQuantity / 60;
         return total + lineQuantity * lineUnitValue;
       }, 0);
       quantity = lines.length;
@@ -78,17 +80,28 @@
 
     if (!input.eventPackageId) estimatedMinutes = estimatedHours * 60;
 
+    const referenceBeforeDiscount = reference;
+    const discountRate = Math.min(0.3, Math.max(0, asNumber(input.partnershipDiscount)));
+    const discountAmount = referenceBeforeDiscount * discountRate;
+    reference -= discountAmount;
+    if (model === "pacote") unitValue = quantity ? reference / quantity : 0;
+
     const services = Number.isFinite(Number(input.serviceValue))
       ? positive(input.serviceValue)
       : reference;
     const travelFee = input.attendance === "presencial" ? positive(input.travelFee) : 0;
+    const foodFee = input.attendance === "presencial" ? positive(input.foodFee) : 0;
     const travelExtras = input.attendance === "presencial" ? positive(input.travelExtras) : 0;
-    const travel = travelFee + travelExtras;
+    const travel = travelFee + foodFee + travelExtras;
 
     return {
       reference: roundMoney(reference),
+      referenceBeforeDiscount: roundMoney(referenceBeforeDiscount),
+      discountRate,
+      discountAmount: roundMoney(discountAmount),
       services: roundMoney(services),
       travelFee: roundMoney(travelFee),
+      foodFee: roundMoney(foodFee),
       travelExtras: roundMoney(travelExtras),
       travel: roundMoney(travel),
       total: roundMoney(services + travel),
@@ -135,23 +148,31 @@
     if (input.model === "sob-medida" && (!Array.isArray(input.lines) || input.lines.length === 0)) {
       errors.push("Adicione ao menos uma etapa ao projeto sob medida.");
     }
-    if (input.attendance === "presencial" && !String(input.address || "").trim()) {
-      errors.push("Informe o local da gravação presencial.");
-    }
     return errors;
   };
 
   const buildWhatsAppMessage = (input = {}, totals = calculateBudget(input), company = {}) => {
     const presentingAllEventPackages = input.model === "pacote" && input.eventQuoteMode === "todos";
+    const serviceInformation = [
+      `*Data:* ${formatDate(input.desiredDate)}`,
+      input.startTime || input.endTime ? `*Horário:* ${input.startTime || "a definir"} às ${input.endTime || "a definir"}` : "",
+      input.venueName ? `*Nome do local:* ${input.venueName}` : "",
+      input.address ? `*Endereço:* ${input.address}` : "",
+      input.locationLink ? `*Localização:* ${input.locationLink}` : ""
+    ].filter(Boolean);
     const lines = [
-      `*Orçamento ${company.name || "SparkFilmes"} 🎬*`,
+      `*Orçamento ${company.name || "SparkFilmes"} 🔥*`,
       "",
       `*Cliente:* ${input.clientName || "-"}`,
       `*Contato:* ${input.contact || "Não informado"}`,
       "",
-      `🎬 *${input.serviceTitle || "Serviço audiovisual"}*`,
+      "*Informações do serviço*",
+      "",
+      ...serviceInformation,
+      "",
+      `🔥 *${input.serviceTitle || "Serviço audiovisual"}*`,
       `${input.projectTypeName || "Produção audiovisual"} · ${input.modelName || "Sob consulta"}`,
-      `*Formato:* ${input.format || "A definir"}`
+      `*Formato e equipe:* ${input.format || "A definir"}`
     ];
 
     if (presentingAllEventPackages) {
@@ -183,27 +204,24 @@
       lines.push(`*Carga estimada:* aproximadamente ${totals.estimatedHours} horas`);
       lines.push(`*Valor unitário:* ${money(totals.unitValue)}`);
     } else {
-      lines.push(`*Escopo:* ${totals.quantity} ${totals.unitLabel} · aproximadamente ${totals.estimatedHours} horas`);
+      lines.push(`*Tempo estimado de serviço:* aproximadamente ${totals.estimatedHours} horas`);
     }
 
-    lines.push(`*Data desejada:* ${formatDate(input.desiredDate)}`);
-    if (input.attendance === "presencial") {
-      lines.push(`*Local:* ${input.address || "A definir"}`);
-      if (positive(input.distanceKm) > 0) lines.push(`*Distância informada:* ${positive(input.distanceKm)} km`);
-    } else {
-      lines.push("*Atendimento:* Remoto");
-    }
+    lines.push(`*Atendimento:* ${input.attendance === "presencial" ? "Presencial" : "Remoto"}`);
 
     if (presentingAllEventPackages) {
-      lines.push("", "*Investimento:* conforme o pacote escolhido");
-      if (input.attendance === "presencial" && totals.travel > 0) lines.push(`*Deslocamento e extras:* ${money(totals.travel)}`);
     } else {
-      lines.push("", `*Serviços:* ${money(totals.services)}`);
-      if (input.attendance === "presencial") lines.push(`*Deslocamento e extras:* ${money(totals.travel)}`);
-      lines.push(`*Total estimado:* ${money(totals.total)}`);
+      lines.push("", `*Total:* ${money(totals.total)}`);
     }
 
     if (String(input.notes || "").trim()) lines.push("", `*Observações:* ${String(input.notes).trim()}`);
+    if (company.payment) {
+      lines.push("", "*Condições de pagamento*", "", "*Pix*");
+      if (company.payment.pixNome) lines.push(`Nome: ${company.payment.pixNome}`);
+      if (company.payment.pixChave) lines.push(`Chave Pix: ${company.payment.pixChave}`);
+      if (company.payment.pixBanco) lines.push(`Banco: ${company.payment.pixBanco}`);
+      if (company.payment.cartao) lines.push("", `*Cartão de crédito:* ${company.payment.cartao}`);
+    }
     lines.push("", company.signature || "SparkFilmes — histórias com linguagem de cinema.");
     return lines.join("\n");
   };
