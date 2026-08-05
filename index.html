@@ -8,16 +8,24 @@
       name="description"
       content="Produção audiovisual profissional para empresas, redes sociais, cursos e eventos. Planejamento, captação e edição com a SparkFilmes."
     />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="SparkFilmes" />
+    <meta property="og:locale" content="pt_BR" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="SparkFilmes | Produção audiovisual para empresas" />
     <meta
       property="og:description"
       content="Vídeos profissionais para empresas que querem transmitir autoridade e vender mais."
     />
-    <meta property="og:url" content="https://sparkfilmes.com/" />
-    <meta property="og:image" content="https://sparkfilmes.com/assets/img/og-image.svg" />
+    <meta property="og:url" content="https://sparkfilmes.com.br/" />
+    <meta property="og:site_name" content="SparkFilmes" />
+    <meta property="og:image" content="https://sparkfilmes.com.br/assets/img/og-image.svg" />
+    <meta property="og:image:alt" content="SparkFilmes — produção audiovisual para empresas" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="canonical" href="https://sparkfilmes.com/" />
+    <meta name="twitter:title" content="SparkFilmes | Produção audiovisual para empresas" />
+    <meta name="twitter:description" content="Vídeos profissionais para empresas, redes sociais, cursos e eventos." />
+    <meta name="twitter:image" content="https://sparkfilmes.com.br/assets/img/og-image.svg" />
+    <link rel="canonical" href="https://sparkfilmes.com.br/" />
     <link rel="icon" type="image/svg+xml" href="assets/img/logo-favicon-spark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,6 +34,36 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/style.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://sparkfilmes.com.br/#organization",
+            "name": "SparkFilmes",
+            "url": "https://sparkfilmes.com.br/",
+            "logo": "https://sparkfilmes.com.br/assets/img/logo-quadrada.svg",
+            "description": "Produtora audiovisual especializada em vídeos comerciais, reels, cursos online e cobertura de eventos.",
+            "telephone": "+55 31 99942-7901",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+55 31 99942-7901",
+              "contactType": "sales",
+              "availableLanguage": "Portuguese"
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://sparkfilmes.com.br/#website",
+            "url": "https://sparkfilmes.com.br/",
+            "name": "SparkFilmes",
+            "inLanguage": "pt-BR",
+            "publisher": { "@id": "https://sparkfilmes.com.br/#organization" }
+          }
+        ]
+      }
+    </script>
   </head>
   <body data-base-path="." data-whatsapp-number="5531999427901">
     <!-- Trocar data-whatsapp-number pelo numero oficial no formato internacional, ex: 5511999999999 -->
@@ -43,7 +81,7 @@
 
         <nav class="site-nav home-site-nav" id="menu-principal" aria-label="Menu principal">
           <a href="portfolio/index.html">Portfólio</a>
-          <a href="#servicos">Serviços</a>
+          <a href="servicos/index.html">Serviços</a>
           <a href="clientes/index.html">Área do cliente</a>
           <a class="btn btn-small btn-login" href="area-interna/index.html">Área interna</a>
           <a class="btn btn-small btn-primary" href="#form-orcamento">Orçamento</a>
@@ -213,7 +251,11 @@
           <p>&copy; <span data-current-year></span> SparkFilmes. Todos os direitos reservados.</p>
           <p>Vídeo comercial com linguagem cinematográfica.</p>
         </div>
-        <nav class="footer-access" aria-label="Acessos reservados">
+        <nav class="footer-access" aria-label="Links do site">
+          <a href="servicos/index.html">Serviços</a>
+          <a href="portfolio/index.html">Portfólio</a>
+          <a href="cobertura-eventos/index.html">Case de evento</a>
+          <a href="contato/index.html">Contato</a>
           <a href="clientes/index.html">Área do cliente</a>
           <a href="area-interna/index.html">Área da equipe</a>
         </nav>

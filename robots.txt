@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /area-interna/
+Disallow: /orcamentos/
+Disallow: /data/clientes/
+Disallow: /data/servicos.json
 
-Sitemap: https://seuusuario.github.io/sparkfilmes/sitemap.xml
+Sitemap: https://sparkfilmes.com.br/sitemap.xml
