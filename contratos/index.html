@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Contratos | SparkFilmes</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/logo-favicon-spark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/interno.css" />
+    <link rel="stylesheet" href="../assets/css/contratos.css" />
+  </head>
+  <body class="internal-body contracts-body" data-requires-auth="true">
+    <header class="internal-header">
+      <a class="internal-brand" href="../area-interna/" aria-label="Voltar à área interna">
+        <img src="../assets/img/logo-home.svg" alt="SparkFilmes" />
+      </a>
+      <nav aria-label="Navegação interna">
+        <a href="../area-interna/">Área interna</a>
+        <a href="../orcamentos/">Orçamentos</a>
+        <button type="button" data-logout>Sair</button>
+      </nav>
+    </header>
+
+    <main class="contracts-page">
+      <header class="contracts-intro">
+        <div>
+          <p class="internal-eyebrow">Documentos internos</p>
+          <h1>Monte contratos completos para cada produção.</h1>
+          <p>Comece por um dos modelos, preencha do zero ou aproveite os dados de um orçamento fechado.</p>
+        </div>
+        <a class="internal-button internal-button-quiet contracts-intro-action" href="../orcamentos/">Abrir orçamentos</a>
+      </header>
+
+      <div class="contracts-layout">
+        <form class="contracts-form" id="contract-form" novalidate>
+          <section class="form-section contracts-section" aria-labelledby="contract-parties-heading">
+            <div class="section-number">01</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2 id="contract-parties-heading">Modelo e partes</h2>
+                <p>Defina a base do documento e identifique corretamente quem contrata e quem presta o serviço.</p>
+              </header>
+
+              <div class="field-grid field-grid-2">
+                <label class="field">
+                  <span>Modelo de contrato <b>*</b></span>
+                  <select id="contract-template" data-path="template">
+                    <option value="eventos">Fotografia e filmagem de eventos</option>
+                    <option value="conteudos">Produção de conteúdos</option>
+                    <option value="institucional">Produção de vídeo institucional</option>
+                    <option value="personalizado">Contrato personalizado</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Número ou referência interna</span>
+                  <input id="contract-number" data-path="meta.number" type="text" maxlength="60" placeholder="Ex.: SF-2026-014" />
+                </label>
+              </div>
+
+              <p class="contracts-template-info" id="contract-template-description" aria-live="polite">Use o modelo de eventos para coberturas pontuais com equipe e entregas posteriores.</p>
+
+              <div class="contracts-subsection">
+                <header class="contracts-subsection-head">
+                  <div>
+                    <p class="mini-eyebrow">Contratante</p>
+                    <h3>Dados do cliente</h3>
+                  </div>
+                  <span>Parte que contrata o serviço</span>
+                </header>
+
+                <div class="field-grid field-grid-3">
+                  <label class="field">
+                    <span>Pessoa física ou jurídica <b>*</b></span>
+                    <select id="client-party-type" data-path="client.type">
+                      <option value="pj">Pessoa jurídica</option>
+                      <option value="pf">Pessoa física</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Nome completo ou razão social <b>*</b></span>
+                    <input id="client-name" data-path="client.name" type="text" maxlength="160" autocomplete="organization" placeholder="Ex.: Empresa Exemplo Ltda." />
+                  </label>
+                  <label class="field">
+                    <span>Nome fantasia</span>
+                    <input id="client-trade-name" data-path="client.tradeName" type="text" maxlength="160" placeholder="Se aplicável" />
+                  </label>
+                  <label class="field">
+                    <span>CPF ou CNPJ <b>*</b></span>
+                    <input id="client-tax-id" data-path="client.document" type="text" inputmode="numeric" maxlength="30" placeholder="000.000.000-00" />
+                  </label>
+                  <label class="field">
+                    <span>Inscrição estadual</span>
+                    <input id="client-state-registration" data-path="client.stateRegistration" type="text" maxlength="50" placeholder="Se aplicável" />
+                  </label>
+                  <label class="field">
+                    <span>E-mail <b>*</b></span>
+                    <input id="client-email" data-path="client.email" type="email" autocomplete="email" maxlength="160" placeholder="contato@empresa.com.br" />
+                  </label>
+                  <label class="field">
+                    <span>Telefone / WhatsApp</span>
+                    <input id="client-phone" data-path="client.phone" type="tel" autocomplete="tel" maxlength="40" placeholder="(31) 99999-9999" />
+                  </label>
+                  <label class="field">
+                    <span>Representante legal</span>
+                    <input id="client-representative" data-path="client.representative" type="text" maxlength="160" placeholder="Nome de quem assina" />
+                  </label>
+                  <label class="field">
+                    <span>CPF do representante</span>
+                    <input id="client-representative-document" data-path="client.representativeDocument" type="text" inputmode="numeric" maxlength="30" placeholder="000.000.000-00" />
+                  </label>
+                </div>
+
+                <fieldset class="contracts-address" aria-labelledby="client-address-legend">
+                  <legend id="client-address-legend">Endereço do contratante</legend>
+                  <div class="field-grid field-grid-3">
+                    <label class="field">
+                      <span>CEP</span>
+                      <input id="client-address-zip" data-path="client.address.zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="12" placeholder="00000-000" />
+                    </label>
+                    <label class="field field-span-2">
+                      <span>Logradouro</span>
+                      <input id="client-address-street" data-path="client.address.street" type="text" autocomplete="street-address" maxlength="160" placeholder="Rua, avenida, praça..." />
+                    </label>
+                    <label class="field">
+                      <span>Número</span>
+                      <input id="client-address-number" data-path="client.address.number" type="text" maxlength="30" placeholder="123" />
+                    </label>
+                    <label class="field">
+                      <span>Complemento</span>
+                      <input id="client-address-complement" data-path="client.address.complement" type="text" maxlength="100" placeholder="Sala, bloco, apto..." />
+                    </label>
+                    <label class="field">
+                      <span>Bairro</span>
+                      <input id="client-address-neighborhood" data-path="client.address.neighborhood" type="text" maxlength="100" placeholder="Bairro" />
+                    </label>
+                    <label class="field field-span-2">
+                      <span>Cidade</span>
+                      <input id="client-address-city" data-path="client.address.city" type="text" autocomplete="address-level2" maxlength="100" placeholder="Cidade" />
+                    </label>
+                    <label class="field">
+                      <span>UF</span>
+                      <input id="client-address-state" data-path="client.address.state" type="text" autocomplete="address-level1" maxlength="2" placeholder="MG" />
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+
+              <div class="contracts-subsection">
+                <header class="contracts-subsection-head">
+                  <div>
+                    <p class="mini-eyebrow">Contratada</p>
+                    <h3>Dados da SparkFilmes</h3>
+                  </div>
+                  <span>Parte que executa o serviço</span>
+                </header>
+
+                <div class="field-grid field-grid-3">
+                  <label class="field">
+                    <span>Razão social <b>*</b></span>
+                    <input id="contractor-legal-name" data-path="contractor.legalName" type="text" maxlength="160" placeholder="Razão social da contratada" />
+                  </label>
+                  <label class="field">
+                    <span>Nome fantasia</span>
+                    <input id="contractor-trade-name" data-path="contractor.tradeName" type="text" maxlength="160" placeholder="SparkFilmes" />
+                  </label>
+                  <label class="field">
+                    <span>CNPJ <b>*</b></span>
+                    <input id="contractor-cnpj" data-path="contractor.document" type="text" inputmode="numeric" maxlength="30" placeholder="00.000.000/0001-00" />
+                  </label>
+                  <label class="field">
+                    <span>E-mail</span>
+                    <input id="contractor-email" data-path="contractor.email" type="email" maxlength="160" placeholder="contato@sparkfilmes.com.br" />
+                  </label>
+                  <label class="field">
+                    <span>Telefone</span>
+                    <input id="contractor-phone" data-path="contractor.phone" type="tel" maxlength="40" placeholder="(31) 99999-9999" />
+                  </label>
+                  <label class="field">
+                    <span>Representante legal <b>*</b></span>
+                    <input id="contractor-representative" data-path="contractor.representative" type="text" maxlength="160" placeholder="Nome de quem assina pela contratada" />
+                  </label>
+                  <label class="field">
+                    <span>CPF do representante</span>
+                    <input id="contractor-representative-document" data-path="contractor.representativeDocument" type="text" inputmode="numeric" maxlength="30" placeholder="000.000.000-00" />
+                  </label>
+                </div>
+
+                <fieldset class="contracts-address" aria-labelledby="contractor-address-legend">
+                  <legend id="contractor-address-legend">Endereço da contratada</legend>
+                  <div class="field-grid field-grid-3">
+                    <label class="field">
+                      <span>CEP</span>
+                      <input id="contractor-address-zip" data-path="contractor.address.zip" type="text" inputmode="numeric" maxlength="12" placeholder="00000-000" />
+                    </label>
+                    <label class="field field-span-2">
+                      <span>Logradouro</span>
+                      <input id="contractor-address-street" data-path="contractor.address.street" type="text" maxlength="160" placeholder="Rua, avenida, praça..." />
+                    </label>
+                    <label class="field">
+                      <span>Número</span>
+                      <input id="contractor-address-number" data-path="contractor.address.number" type="text" maxlength="30" placeholder="123" />
+                    </label>
+                    <label class="field">
+                      <span>Complemento</span>
+                      <input id="contractor-address-complement" data-path="contractor.address.complement" type="text" maxlength="100" placeholder="Sala, bloco, apto..." />
+                    </label>
+                    <label class="field">
+                      <span>Bairro</span>
+                      <input id="contractor-address-neighborhood" data-path="contractor.address.neighborhood" type="text" maxlength="100" placeholder="Bairro" />
+                    </label>
+                    <label class="field field-span-2">
+                      <span>Cidade</span>
+                      <input id="contractor-address-city" data-path="contractor.address.city" type="text" maxlength="100" placeholder="Cidade" />
+                    </label>
+                    <label class="field">
+                      <span>UF</span>
+                      <input id="contractor-address-state" data-path="contractor.address.state" type="text" maxlength="2" placeholder="MG" />
+                    </label>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section contracts-section" aria-labelledby="contract-project-heading">
+            <div class="section-number">02</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2 id="contract-project-heading">Projeto, escopo e entregas</h2>
+                <p>Registre o que será produzido, onde acontecerá e quem fará parte da operação.</p>
+              </header>
+
+              <div class="field-grid field-grid-3">
+                <label class="field field-span-2">
+                  <span>Título do projeto <b>*</b></span>
+                  <input id="project-title" data-path="project.title" type="text" maxlength="180" placeholder="Ex.: Cobertura do evento de lançamento" />
+                </label>
+                <label class="field">
+                  <span>Categoria</span>
+                  <select id="project-category" data-path="project.category">
+                    <option value="">Selecione</option>
+                    <option value="evento">Evento</option>
+                    <option value="conteudo">Conteúdo para canais digitais</option>
+                    <option value="institucional">Vídeo institucional</option>
+                    <option value="campanha">Campanha</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </label>
+                <label class="field field-span-2">
+                  <span>Resumo / objeto do projeto <b>*</b></span>
+                  <textarea id="project-summary" data-path="project.summary" rows="4" maxlength="1600" placeholder="Descreva de forma objetiva a produção contratada."></textarea>
+                </label>
+                <label class="field">
+                  <span>Data principal</span>
+                  <input id="project-date" data-path="project.date" type="date" />
+                </label>
+                <label class="field">
+                  <span>Horário de início</span>
+                  <input id="project-start-time" data-path="project.startTime" type="time" />
+                </label>
+                <label class="field">
+                  <span>Horário de término</span>
+                  <input id="project-end-time" data-path="project.endTime" type="time" />
+                </label>
+                <label class="field">
+                  <span>Prazo final de entrega</span>
+                  <input id="project-delivery-date" data-path="project.deliveryDate" type="date" />
+                </label>
+                <label class="field">
+                  <span>Validade desta proposta</span>
+                  <input id="project-expiry" data-path="project.expiry" type="date" />
+                </label>
+                <label class="field">
+                  <span>Rodadas de alterações incluídas</span>
+                  <input id="project-revisions" data-path="project.revisions" type="number" min="0" max="99" step="1" placeholder="Ex.: 2" />
+                </label>
+                <label class="field">
+                  <span>Uso / cessão de direitos</span>
+                  <select id="project-rights" data-path="project.rights">
+                    <option value="">Definir no contrato</option>
+                    <option value="licenca">Licença de uso conforme escopo</option>
+                    <option value="cessao">Cessão patrimonial conforme escopo</option>
+                    <option value="interno">Uso interno do contratante</option>
+                    <option value="campanha">Uso em campanha definida</option>
+                  </select>
+                </label>
+                <label class="field field-span-2">
+                  <span>Observações sobre direitos de uso</span>
+                  <input id="project-rights-notes" data-path="project.rightsNotes" type="text" maxlength="500" placeholder="Ex.: uso digital por 12 meses em canais próprios." />
+                </label>
+              </div>
+
+              <fieldset class="contracts-address contracts-project-location" aria-labelledby="project-location-legend">
+                <legend id="project-location-legend">Local da produção</legend>
+                <div class="field-grid field-grid-3">
+                  <label class="field">
+                    <span>Formato</span>
+                    <select id="project-location-type" data-path="project.location.type">
+                      <option value="presencial">Presencial</option>
+                      <option value="remoto">Remoto</option>
+                      <option value="hibrido">Híbrido</option>
+                    </select>
+                  </label>
+                  <label class="field">
+                    <span>Nome do local</span>
+                    <input id="project-location-name" data-path="project.location.name" type="text" maxlength="160" placeholder="Ex.: Espaço Aurora" />
+                  </label>
+                  <label class="field">
+                    <span>Cidade / UF</span>
+                    <input id="project-location-city" data-path="project.location.city" type="text" maxlength="120" placeholder="Belo Horizonte/MG" />
+                  </label>
+                  <label class="field field-span-2">
+                    <span>Endereço</span>
+                    <input id="project-location-address" data-path="project.location.address" type="text" maxlength="240" placeholder="Rua, número, bairro..." />
+                  </label>
+                  <label class="field">
+                    <span>Link de localização</span>
+                    <input id="project-location-link" data-path="project.location.link" type="url" maxlength="500" placeholder="https://maps.google.com/..." />
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="contracts-repeat-section" aria-labelledby="contract-team-heading">
+                <header class="contracts-repeat-head">
+                  <div>
+                    <p class="mini-eyebrow">Operação</p>
+                    <h3 id="contract-team-heading">Equipe e funções</h3>
+                    <p>Inclua as pessoas ou funções previstas para a produção.</p>
+                  </div>
+                  <button class="internal-button internal-button-quiet contracts-add-button" id="add-contract-team" type="button">+ Adicionar equipe</button>
+                </header>
+                <div class="contracts-repeat-list" id="contract-team-list" aria-live="polite"></div>
+                <p class="contracts-empty-state" data-contract-team-empty>Nenhuma função adicionada. Você pode registrar equipe, freelancer, locação ou apoio técnico.</p>
+              </div>
+
+              <div class="contracts-repeat-section" aria-labelledby="contract-deliveries-heading">
+                <header class="contracts-repeat-head">
+                  <div>
+                    <p class="mini-eyebrow">Resultado</p>
+                    <h3 id="contract-deliveries-heading">Entregas incluídas</h3>
+                    <p>Liste cada entrega, quantidade e prazo que fazem parte do acordo.</p>
+                  </div>
+                  <button class="internal-button internal-button-quiet contracts-add-button" id="add-contract-delivery" type="button">+ Adicionar entrega</button>
+                </header>
+                <div class="contracts-repeat-list" id="contract-deliveries-list" aria-live="polite"></div>
+                <p class="contracts-empty-state" data-contract-deliveries-empty>Nenhuma entrega adicionada. Inclua arquivos, vídeos, fotos, versões, formatos e links de entrega.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section contracts-section" aria-labelledby="contract-commercial-heading">
+            <div class="section-number">03</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2 id="contract-commercial-heading">Condições comerciais</h2>
+                <p>Organize o investimento, a vigência e cada parcela combinada.</p>
+              </header>
+
+              <div class="field-grid field-grid-3">
+                <label class="field">
+                  <span>Tipo de contratação <b>*</b></span>
+                  <select id="commercial-type" data-path="commercial.type">
+                    <option value="projeto">Projeto fechado</option>
+                    <option value="diaria">Diária</option>
+                    <option value="pacote">Pacote</option>
+                    <option value="recorrente">Prestação recorrente</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Valor total dos serviços <b>*</b></span>
+                  <span class="currency-input"><i>R$</i><input id="commercial-total" data-path="commercial.total" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" /></span>
+                </label>
+                <label class="field">
+                  <span>Moeda</span>
+                  <select id="commercial-currency" data-path="commercial.currency">
+                    <option value="BRL">Real brasileiro (R$)</option>
+                    <option value="USD">Dólar americano (US$)</option>
+                    <option value="EUR">Euro (€)</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Início da vigência</span>
+                  <input id="commercial-vigency-start" data-path="commercial.vigencyStart" type="date" />
+                </label>
+                <label class="field">
+                  <span>Fim da vigência</span>
+                  <input id="commercial-vigency-end" data-path="commercial.vigencyEnd" type="date" />
+                </label>
+                <label class="field">
+                  <span>Renovação</span>
+                  <select id="commercial-renewal" data-path="commercial.renewal">
+                    <option value="nao-se-aplica">Não se aplica</option>
+                    <option value="mediante-aditivo">Mediante aditivo</option>
+                    <option value="automatica">Automática, se acordada</option>
+                    <option value="novo-contrato">Novo contrato</option>
+                  </select>
+                </label>
+                <label class="field field-span-2">
+                  <span>Condição complementar de renovação</span>
+                  <input id="commercial-renewal-notes" data-path="commercial.renewalNotes" type="text" maxlength="500" placeholder="Ex.: a renovação depende de aceite escrito com 15 dias de antecedência." />
+                </label>
+                <label class="field">
+                  <span>Observação comercial</span>
+                  <input id="commercial-notes" data-path="commercial.notes" type="text" maxlength="500" placeholder="Ex.: despesas reembolsáveis não inclusas." />
+                </label>
+              </div>
+
+              <div class="contracts-repeat-section" aria-labelledby="contract-payments-heading">
+                <header class="contracts-repeat-head">
+                  <div>
+                    <p class="mini-eyebrow">Pagamento</p>
+                    <h3 id="contract-payments-heading">Parcelas e vencimentos</h3>
+                    <p>Divida o valor em sinal, etapas, recorrências ou parcela única.</p>
+                  </div>
+                  <button class="internal-button internal-button-quiet contracts-add-button" id="add-contract-payment" type="button">+ Adicionar parcela</button>
+                </header>
+                <div class="contracts-repeat-list" id="contract-payments-list" aria-live="polite"></div>
+                <p class="contracts-empty-state" data-contract-payments-empty>Nenhuma parcela adicionada. Registre ao menos uma condição de pagamento antes de finalizar.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section contracts-section" aria-labelledby="contract-clauses-heading">
+            <div class="section-number">04</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2 id="contract-clauses-heading">Condições e cláusulas</h2>
+                <p>Os textos seguem os modelos enviados e permanecem editáveis para adequação a cada projeto.</p>
+              </header>
+
+              <div class="contracts-terms-grid">
+                <label class="field">
+                  <span>Prazo de entrega (dias corridos)</span>
+                  <input id="clause-delivery-days" data-path="clauses.deliveryDays" type="number" min="0" max="999" step="1" placeholder="Ex.: 15" />
+                </label>
+                <label class="field">
+                  <span>Prazo para solicitar alterações (dias)</span>
+                  <input id="clause-revision-days" data-path="clauses.revisionDays" type="number" min="0" max="999" step="1" placeholder="Ex.: 7" />
+                </label>
+                <label class="field">
+                  <span>Antecedência para remarcação (dias)</span>
+                  <input id="clause-reschedule-days" data-path="clauses.rescheduleDays" type="number" min="0" max="999" step="1" placeholder="Ex.: 7" />
+                </label>
+                <label class="field">
+                  <span>Antecedência para cancelamento (dias)</span>
+                  <input id="clause-cancellation-days" data-path="clauses.cancellationDays" type="number" min="0" max="999" step="1" placeholder="Ex.: 15" />
+                </label>
+                <label class="field">
+                  <span>Multa por atraso (%)</span>
+                  <input id="clause-late-fee" data-path="clauses.lateFeePercent" type="number" min="0" max="100" step="0.01" placeholder="Ex.: 5" />
+                </label>
+                <label class="field">
+                  <span>Juros de mora ao mês (%)</span>
+                  <input id="clause-late-interest" data-path="clauses.lateInterestPercent" type="number" min="0" max="100" step="0.01" placeholder="Ex.: 1" />
+                </label>
+                <label class="field">
+                  <span>Prazo de inadimplência para resolução (dias)</span>
+                  <input id="clause-default-days" data-path="clauses.defaultDays" type="number" min="0" max="999" step="1" placeholder="Ex.: 45" />
+                </label>
+                <label class="field">
+                  <span>Multa rescisória (%)</span>
+                  <input id="clause-termination-fee" data-path="clauses.terminationFeePercent" type="number" min="0" max="100" step="0.01" placeholder="Ex.: 20" />
+                </label>
+                <label class="field">
+                  <span>Índice de correção</span>
+                  <input id="clause-adjustment-index" data-path="clauses.adjustmentIndex" type="text" maxlength="80" placeholder="Ex.: IGP-M/FGV" />
+                </label>
+              </div>
+
+              <div class="contracts-clause-list">
+                <label class="field">
+                  <span>Cláusula de objeto</span>
+                  <textarea id="clause-object" data-path="clauses.object" rows="4" maxlength="2400" placeholder="Descreva o objeto do contrato."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de escopo e itens adicionais</span>
+                  <textarea id="clause-scope" data-path="clauses.scope" rows="4" maxlength="2400" placeholder="Defina o que está ou não incluído no escopo."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de alterações e aprovações</span>
+                  <textarea id="clause-changes" data-path="clauses.changes" rows="4" maxlength="2400" placeholder="Defina como alterações e aprovações serão tratadas."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de uso de imagem e direitos</span>
+                  <textarea id="clause-rights" data-path="clauses.rights" rows="4" maxlength="2400" placeholder="Defina a licença ou cessão de uso do material."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de cancelamento e remarcação</span>
+                  <textarea id="clause-cancellation" data-path="clauses.cancellation" rows="4" maxlength="2400" placeholder="Defina as condições de cancelamento e remarcação."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de inadimplemento</span>
+                  <textarea id="clause-default" data-path="clauses.default" rows="4" maxlength="2400" placeholder="Defina as consequências de atraso ou falta de pagamento."></textarea>
+                </label>
+                <label class="field">
+                  <span>Cláusula de confidencialidade</span>
+                  <textarea id="clause-confidentiality" data-path="clauses.confidentiality" rows="4" maxlength="2400" placeholder="Defina as informações que devem permanecer confidenciais."></textarea>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section contracts-section" aria-labelledby="contract-signatures-heading">
+            <div class="section-number">05</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2 id="contract-signatures-heading">Assinaturas e foro</h2>
+                <p>Escolha a cidade, a data e inclua testemunhas quando forem necessárias ao processo de assinatura.</p>
+              </header>
+
+              <div class="field-grid field-grid-3">
+                <label class="field">
+                  <span>Cidade de assinatura <b>*</b></span>
+                  <input id="signature-city" data-path="signatures.city" type="text" maxlength="120" placeholder="Ex.: Belo Horizonte/MG" />
+                </label>
+                <label class="field">
+                  <span>Data de assinatura</span>
+                  <input id="signature-date" data-path="signatures.date" type="date" />
+                </label>
+                <label class="field">
+                  <span>Foro competente <b>*</b></span>
+                  <input id="signature-forum" data-path="signatures.forum" type="text" maxlength="160" placeholder="Ex.: Comarca de Belo Horizonte/MG" />
+                </label>
+              </div>
+
+              <div class="contracts-witnesses" aria-labelledby="contract-witnesses-heading">
+                <header class="contracts-subsection-head">
+                  <div>
+                    <p class="mini-eyebrow">Opcional</p>
+                    <h3 id="contract-witnesses-heading">Testemunhas</h3>
+                  </div>
+                  <span>Preencha se o modelo de assinatura exigir</span>
+                </header>
+                <div class="field-grid field-grid-2">
+                  <fieldset class="contracts-witness-card">
+                    <legend>Testemunha 1</legend>
+                    <div class="field-grid">
+                      <label class="field">
+                        <span>Nome completo</span>
+                        <input id="witness-one-name" data-path="witnesses.0.name" type="text" maxlength="160" placeholder="Nome completo" />
+                      </label>
+                      <label class="field">
+                        <span>CPF</span>
+                        <input id="witness-one-document" data-path="witnesses.0.document" type="text" inputmode="numeric" maxlength="30" placeholder="000.000.000-00" />
+                      </label>
+                      <label class="field">
+                        <span>E-mail</span>
+                        <input id="witness-one-email" data-path="witnesses.0.email" type="email" maxlength="160" placeholder="email@exemplo.com" />
+                      </label>
+                    </div>
+                  </fieldset>
+                  <fieldset class="contracts-witness-card">
+                    <legend>Testemunha 2</legend>
+                    <div class="field-grid">
+                      <label class="field">
+                        <span>Nome completo</span>
+                        <input id="witness-two-name" data-path="witnesses.1.name" type="text" maxlength="160" placeholder="Nome completo" />
+                      </label>
+                      <label class="field">
+                        <span>CPF</span>
+                        <input id="witness-two-document" data-path="witnesses.1.document" type="text" inputmode="numeric" maxlength="30" placeholder="000.000.000-00" />
+                      </label>
+                      <label class="field">
+                        <span>E-mail</span>
+                        <input id="witness-two-email" data-path="witnesses.1.email" type="email" maxlength="160" placeholder="email@exemplo.com" />
+                      </label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <footer class="contracts-actions-card" aria-labelledby="contract-actions-heading">
+            <div>
+              <p class="internal-eyebrow">Finalização</p>
+              <h2 id="contract-actions-heading">Revise e prepare o documento.</h2>
+              <p>Você pode guardar este rascunho em JSON, levar a estrutura para outro editor ou imprimir a prévia em PDF.</p>
+            </div>
+            <div class="contracts-action-grid">
+              <button class="internal-button internal-button-quiet" id="contract-import" type="button">Importar JSON</button>
+              <button class="internal-button internal-button-quiet" id="contract-export-json" type="button">Exportar JSON</button>
+              <button class="internal-button internal-button-quiet" id="contract-export-html" type="button">Exportar HTML</button>
+              <button class="internal-button internal-button-primary" id="contract-print" type="button">Imprimir / salvar em PDF</button>
+              <button class="text-button contracts-reset-button" id="contract-reset" type="button">Começar contrato em branco</button>
+            </div>
+            <input id="contract-import-file" type="file" accept="application/json,.json" hidden />
+            <p class="contracts-feedback" id="contract-feedback" role="status" aria-live="polite"></p>
+            <div class="contracts-notices">
+              <p><strong>Privacidade:</strong> os dados ficam neste navegador enquanto você trabalha. Exporte o arquivo apenas em dispositivos confiáveis.</p>
+              <p><strong>Revisão jurídica:</strong> este é um rascunho operacional baseado nos modelos enviados. Revise campos, cláusulas e assinaturas com assessoria jurídica antes de usar ou assinar.</p>
+            </div>
+          </footer>
+        </form>
+
+        <aside class="contracts-preview-wrap" aria-label="Prévia do contrato">
+          <div class="contracts-preview-panel">
+            <header class="contracts-preview-chrome">
+              <div>
+                <span class="contracts-preview-kicker">Prévia viva</span>
+                <h2>Contrato em construção</h2>
+              </div>
+              <span class="contracts-preview-status" id="contract-preview-status">Rascunho</span>
+            </header>
+            <div class="contract-document" id="contract-preview" aria-live="polite" tabindex="-1">
+              <div class="contract-document-placeholder" data-contract-preview-empty>
+                <span aria-hidden="true">✦</span>
+                <h3>Seu contrato aparecerá aqui.</h3>
+                <p>Preencha as informações ao lado ou importe um rascunho para gerar a prévia completa.</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <template id="contract-team-template">
+      <article class="contracts-repeat-row" data-repeat-item="team">
+        <label class="field"><span>Função</span><input data-item-path="role" type="text" maxlength="120" placeholder="Ex.: Videomaker" /></label>
+        <label class="field"><span>Profissional / fornecedor</span><input data-item-path="name" type="text" maxlength="160" placeholder="Nome ou empresa" /></label>
+        <label class="field"><span>Quantidade</span><input data-item-path="quantity" type="number" min="1" step="1" value="1" /></label>
+        <button class="contracts-remove-button" type="button" data-remove-item aria-label="Remover integrante">×</button>
+      </article>
+    </template>
+
+    <template id="contract-delivery-template">
+      <article class="contracts-repeat-row contracts-delivery-row" data-repeat-item="delivery">
+        <label class="field"><span>Entrega</span><input data-item-path="description" type="text" maxlength="240" placeholder="Ex.: Vídeo institucional" /></label>
+        <label class="field"><span>Quantidade / formato</span><input data-item-path="quantity" type="text" maxlength="120" placeholder="Ex.: 1 vídeo em 4K" /></label>
+        <label class="field"><span>Prazo</span><input data-item-path="deadline" type="text" maxlength="120" placeholder="Ex.: até 15 dias" /></label>
+        <button class="contracts-remove-button" type="button" data-remove-item aria-label="Remover entrega">×</button>
+      </article>
+    </template>
+
+    <template id="contract-payment-template">
+      <article class="contracts-repeat-row contracts-payment-row" data-repeat-item="payment">
+        <label class="field"><span>Descrição</span><input data-item-path="description" type="text" maxlength="160" placeholder="Ex.: Sinal de reserva" /></label>
+        <label class="field"><span>Vencimento</span><input data-item-path="dueDate" type="date" /></label>
+        <label class="field"><span>Valor</span><input data-item-path="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0,00" /></label>
+        <label class="field"><span>Condição</span><input data-item-path="condition" type="text" maxlength="160" placeholder="Ex.: via PIX" /></label>
+        <button class="contracts-remove-button" type="button" data-remove-item aria-label="Remover parcela">×</button>
+      </article>
+    </template>
+
+    <script src="../assets/js/internal-auth.js"></script>
+    <script src="../assets/js/contratos-core.js"></script>
+    <script src="../assets/js/contratos.js"></script>
+  </body>
+</html>

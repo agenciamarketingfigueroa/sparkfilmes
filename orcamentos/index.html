@@ -18,6 +18,7 @@
       </a>
       <nav aria-label="Navegação interna">
         <a href="../area-interna/">Área interna</a>
+        <a href="../contratos/">Contratos</a>
         <button type="button" data-logout>Sair</button>
       </nav>
     </header>
@@ -313,6 +314,159 @@
               </label>
             </div>
           </section>
+
+          <section class="form-section contract-data-section">
+            <div class="section-number">06</div>
+            <div class="section-content">
+              <header class="form-section-head">
+                <h2>Dados para contrato <small>(opcional)</small></h2>
+                <p>Preencha somente se a proposta for aprovada. Esses dados serão levados para a minuta, onde ainda poderão ser revisados.</p>
+              </header>
+              <details class="contract-details" id="contract-details">
+                <summary>Adicionar informações contratuais</summary>
+                <div class="contract-details-content">
+                  <div class="contract-details-note">
+                    <strong>Uso interno e revisão jurídica</strong>
+                    <span>Os dados ficam apenas neste navegador durante a transferência. Revise a minuta antes de assinar.</span>
+                  </div>
+
+                  <div class="field-grid field-grid-2">
+                    <label class="field">
+                      <span>Modelo de contrato sugerido</span>
+                      <select id="contract-template">
+                        <option value="">Definir na ferramenta de contratos</option>
+                        <option value="eventos">Fotografia e filmagem de eventos</option>
+                        <option value="conteudos">Produção de conteúdos</option>
+                        <option value="institucional">Vídeo institucional</option>
+                        <option value="personalizado">Audiovisual personalizado</option>
+                      </select>
+                    </label>
+                    <div class="field">
+                      <span>Tipo de contratante</span>
+                      <div class="segmented-control" role="group" aria-label="Tipo de contratante">
+                        <label><input type="radio" name="contract-party-type" value="juridica" checked /><span>Pessoa jurídica</span></label>
+                        <label><input type="radio" name="contract-party-type" value="fisica" /><span>Pessoa física</span></label>
+                      </div>
+                    </div>
+                    <label class="field">
+                      <span>Razão social ou nome completo</span>
+                      <input id="contract-client-legal-name" type="text" maxlength="140" placeholder="Ex.: Empresa Exemplo Ltda." />
+                    </label>
+                    <label class="field">
+                      <span>CPF ou CNPJ</span>
+                      <input id="contract-client-document" type="text" inputmode="numeric" maxlength="22" placeholder="Somente para a minuta" />
+                    </label>
+                    <label class="field">
+                      <span>Representante legal <small>(se aplicável)</small></span>
+                      <input id="contract-client-representative" type="text" maxlength="120" placeholder="Nome do responsável pela empresa" />
+                    </label>
+                    <label class="field">
+                      <span>CPF do representante <small>(opcional)</small></span>
+                      <input id="contract-client-representative-document" type="text" inputmode="numeric" maxlength="18" />
+                    </label>
+                    <label class="field">
+                      <span>E-mail para contrato</span>
+                      <input id="contract-client-email" type="email" maxlength="120" placeholder="cliente@empresa.com" />
+                    </label>
+                    <label class="field">
+                      <span>CEP</span>
+                      <input id="contract-client-zip" type="text" inputmode="numeric" maxlength="10" placeholder="00000-000" />
+                    </label>
+                    <label class="field">
+                      <span>Endereço do contratante</span>
+                      <input id="contract-client-address" type="text" maxlength="160" placeholder="Rua, avenida ou praça" />
+                    </label>
+                    <label class="field">
+                      <span>Número e complemento</span>
+                      <input id="contract-client-address-number" type="text" maxlength="80" placeholder="123, sala 4" />
+                    </label>
+                    <label class="field">
+                      <span>Bairro</span>
+                      <input id="contract-client-neighborhood" type="text" maxlength="80" />
+                    </label>
+                    <label class="field">
+                      <span>Cidade / UF</span>
+                      <input id="contract-client-city-state" type="text" maxlength="80" placeholder="Contagem/MG" />
+                    </label>
+                  </div>
+
+                  <div class="contract-details-divider"><span>Entrega e pagamento</span></div>
+                  <div class="field-grid field-grid-2">
+                    <label class="field">
+                      <span>Prazo de entrega</span>
+                      <input id="contract-delivery-date" type="date" />
+                    </label>
+                    <label class="field">
+                      <span>Rodadas de ajustes incluídas</span>
+                      <input id="contract-revisions" type="number" min="0" step="1" placeholder="Ex.: 2" />
+                    </label>
+                    <label class="field">
+                      <span>Forma de pagamento</span>
+                      <select id="contract-payment-method">
+                        <option value="">A definir</option>
+                        <option value="PIX">PIX</option>
+                        <option value="Transferência bancária">Transferência bancária</option>
+                        <option value="Cartão">Cartão</option>
+                        <option value="Boleto">Boleto</option>
+                        <option value="Outro">Outro</option>
+                      </select>
+                    </label>
+                    <label class="field">
+                      <span>Condição de pagamento</span>
+                      <input id="contract-payment-description" type="text" maxlength="120" placeholder="Ex.: 50% na aprovação e 50% na entrega" />
+                    </label>
+                    <label class="field money-field">
+                      <span>Valor de entrada <small>(opcional)</small></span>
+                      <span class="currency-input"><i>R$</i><input id="contract-entry-value" type="number" min="0" step="0.01" placeholder="0,00" /></span>
+                    </label>
+                    <label class="field">
+                      <span>Vencimento da entrada</span>
+                      <input id="contract-entry-date" type="date" />
+                    </label>
+                    <label class="field">
+                      <span>Quantidade de parcelas após a entrada</span>
+                      <input id="contract-installments" type="number" min="0" step="1" placeholder="Ex.: 2" />
+                    </label>
+                    <label class="field">
+                      <span>1º vencimento das parcelas</span>
+                      <input id="contract-installment-first-date" type="date" />
+                    </label>
+                    <label class="field">
+                      <span>Início da vigência <small>(para recorrência)</small></span>
+                      <input id="contract-validity-start" type="date" />
+                    </label>
+                    <label class="field">
+                      <span>Fim da vigência <small>(para recorrência)</small></span>
+                      <input id="contract-validity-end" type="date" />
+                    </label>
+                    <div class="field field-span-2">
+                      <span>Tipo de cobrança</span>
+                      <div class="segmented-control" role="group" aria-label="Tipo de cobrança do contrato">
+                        <label><input type="radio" name="contract-billing-type" value="unica" checked /><span>Valor único</span></label>
+                        <label><input type="radio" name="contract-billing-type" value="recorrente" /><span>Recorrente</span></label>
+                      </div>
+                    </div>
+                    <label class="field field-span-2">
+                      <span>Direitos de uso e observações de escopo</span>
+                      <textarea id="contract-rights-use" rows="3" maxlength="900" placeholder="Ex.: Uso nas redes sociais da contratante por prazo indeterminado."></textarea>
+                    </label>
+                    <label class="field field-span-2">
+                      <span>Condições de cancelamento ou remarcação</span>
+                      <textarea id="contract-cancellation" rows="3" maxlength="900" placeholder="Ex.: Em caso de remarcação com antecedência de 15 dias, a data será reagendada conforme disponibilidade."></textarea>
+                    </label>
+                    <label class="field">
+                      <span>Cidade de assinatura</span>
+                      <input id="contract-signature-city" type="text" maxlength="80" placeholder="Ex.: Contagem/MG" />
+                    </label>
+                    <label class="field">
+                      <span>Foro sugerido</span>
+                      <input id="contract-forum" type="text" maxlength="100" placeholder="Ex.: Comarca de Contagem/MG" />
+                    </label>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </section>
         </form>
 
         <aside class="budget-preview" aria-live="polite">
@@ -353,6 +507,7 @@
           <div class="preview-actions">
             <button class="internal-button internal-button-primary" id="send-whatsapp" type="button">Abrir WhatsApp</button>
             <button class="internal-button internal-button-quiet" id="generate-pdf" type="button">Gerar PDF</button>
+            <button class="internal-button internal-button-quiet" id="create-contract" type="button">Criar contrato</button>
             <button class="internal-button internal-button-quiet" id="export-budget" type="button">Exportar orçamento</button>
             <button class="internal-button internal-button-quiet" id="import-budget" type="button">Importar orçamento</button>
             <button class="internal-button internal-button-quiet" id="copy-message" type="button">Copiar mensagem</button>

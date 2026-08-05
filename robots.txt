@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /area-interna/
 Disallow: /orcamentos/
+Disallow: /contratos/
 Disallow: /data/clientes/
 Disallow: /data/servicos.json
 

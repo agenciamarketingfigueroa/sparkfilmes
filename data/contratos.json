@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "modelos": [
+    {
+      "id": "eventos",
+      "nome": "Fotografia e filmagem de eventos",
+      "descricao": "Para cobertura de eventos com fotografia, captação de vídeo, equipe e entregas posteriores."
+    },
+    {
+      "id": "conteudos",
+      "nome": "Produção de conteúdos",
+      "descricao": "Para produção recorrente ou pontual de conteúdos para canais digitais, campanhas e comunicação."
+    },
+    {
+      "id": "institucional",
+      "nome": "Produção de vídeo institucional",
+      "descricao": "Para vídeos institucionais, comerciais ou de marca, incluindo pré-produção, produção e pós-produção."
+    },
+    {
+      "id": "personalizado",
+      "nome": "Contrato personalizado",
+      "descricao": "Modelo flexível para outros serviços audiovisuais, formações de equipe e escopos especiais."
+    }
+  ],
+  "termosPadrao": {
+    "multaAtrasoPercentual": 5,
+    "jurosMensaisPercentual": 1,
+    "diasAtrasoParaResolucao": 45,
+    "multaRescisoriaPercentual": 20,
+    "indiceCorrecao": "IGP-M/FGV",
+    "clausulas": {
+      "objeto": "O objeto, o escopo, as entregas, os prazos e os valores aplicáveis serão definidos na proposta ou no quadro-resumo deste contrato.",
+      "escopo": "Qualquer atividade, diária, profissional, equipamento, deslocamento ou entrega não descrita expressamente no escopo dependerá de aprovação prévia e poderá ser objeto de orçamento complementar.",
+      "alteracoes": "Alterações que impactem o escopo, o cronograma, as entregas ou a equipe deverão ser acordadas por escrito entre as partes.",
+      "aprovacoes": "O contratante deverá encaminhar informações, materiais, aprovações e retornos necessários em tempo hábil para a execução do cronograma acordado.",
+      "direitosDeUso": "As condições de cessão ou licença de uso dos materiais produzidos serão definidas no quadro-resumo, respeitados os direitos de terceiros, de imagem e autorais aplicáveis.",
+      "cancelamento": "Em caso de cancelamento ou remarcação, as partes observarão as condições definidas no quadro-resumo e os custos já assumidos para a execução do projeto.",
+      "inadimplemento": "O atraso no pagamento poderá implicar multa, juros e correção monetária nos parâmetros informados neste contrato, sem prejuízo das demais medidas cabíveis.",
+      "confidencialidade": "As partes comprometem-se a preservar a confidencialidade das informações não públicas obtidas em razão deste contrato, salvo autorização por escrito ou obrigação legal.",
+      "foro": "As partes definirão o foro competente no quadro-resumo do contrato."
+    }
+  }
+}

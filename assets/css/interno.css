@@ -1158,6 +1158,112 @@ h3 {
   margin-top: 1.2rem;
 }
 
+.form-section-head h2 small {
+  color: var(--muted);
+  font-family: "Manrope", sans-serif;
+  font-size: 0.68em;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.contract-details {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #fbfaf8;
+}
+
+.contract-details > summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 0.9rem 3.2rem 0.9rem 1rem;
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.contract-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.contract-details > summary::after {
+  content: "+";
+  position: absolute;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--brand-dark);
+  background: rgba(239, 40, 82, 0.09);
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.contract-details[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.contract-details[open] > summary::after {
+  content: "−";
+}
+
+.contract-details-content {
+  padding: 1rem;
+}
+
+.contract-details-note {
+  display: grid;
+  gap: 0.25rem;
+  border-left: 3px solid var(--brand);
+  margin-bottom: 1.1rem;
+  padding: 0.1rem 0 0.1rem 0.85rem;
+}
+
+.contract-details-note strong {
+  color: var(--brand-dark);
+  font-size: 0.74rem;
+}
+
+.contract-details-note span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.contract-details-divider {
+  position: relative;
+  margin: 1.35rem 0 1rem;
+  text-align: center;
+}
+
+.contract-details-divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.contract-details-divider span {
+  position: relative;
+  z-index: 1;
+  padding: 0 0.65rem;
+  color: var(--muted);
+  background: #fbfaf8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* Prévia */
 .budget-preview {
   position: sticky;

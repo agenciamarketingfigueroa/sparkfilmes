@@ -6,6 +6,8 @@
 
   const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
   const BUDGET_EXPORT_VERSION = 1;
+  const CONTRACT_DRAFT_KEY = "sparkfilmes-contract-draft";
+  const CONTRACT_DRAFT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
   const form = byId("budget-form");
   if (!form) return;
@@ -67,6 +69,32 @@
     foodFee: byId("food-fee"),
     travelExtras: byId("travel-extras"),
     notes: byId("notes"),
+    contractDetails: byId("contract-details"),
+    contractTemplate: byId("contract-template"),
+    contractClientLegalName: byId("contract-client-legal-name"),
+    contractClientDocument: byId("contract-client-document"),
+    contractClientRepresentative: byId("contract-client-representative"),
+    contractClientRepresentativeDocument: byId("contract-client-representative-document"),
+    contractClientEmail: byId("contract-client-email"),
+    contractClientZip: byId("contract-client-zip"),
+    contractClientAddress: byId("contract-client-address"),
+    contractClientAddressNumber: byId("contract-client-address-number"),
+    contractClientNeighborhood: byId("contract-client-neighborhood"),
+    contractClientCityState: byId("contract-client-city-state"),
+    contractDeliveryDate: byId("contract-delivery-date"),
+    contractRevisions: byId("contract-revisions"),
+    contractPaymentMethod: byId("contract-payment-method"),
+    contractPaymentDescription: byId("contract-payment-description"),
+    contractEntryValue: byId("contract-entry-value"),
+    contractEntryDate: byId("contract-entry-date"),
+    contractInstallments: byId("contract-installments"),
+    contractInstallmentFirstDate: byId("contract-installment-first-date"),
+    contractValidityStart: byId("contract-validity-start"),
+    contractValidityEnd: byId("contract-validity-end"),
+    contractRightsUse: byId("contract-rights-use"),
+    contractCancellation: byId("contract-cancellation"),
+    contractSignatureCity: byId("contract-signature-city"),
+    contractForum: byId("contract-forum"),
     previewType: byId("preview-type"),
     previewTitle: byId("preview-title"),
     previewDescription: byId("preview-description"),
@@ -89,6 +117,7 @@
     previewTotalLabel: byId("preview-total-label"),
     sendWhatsapp: byId("send-whatsapp"),
     generatePdf: byId("generate-pdf"),
+    createContract: byId("create-contract"),
     exportBudget: byId("export-budget"),
     importBudget: byId("import-budget"),
     importBudgetFile: byId("import-budget-file"),
@@ -131,6 +160,84 @@
   const brazilianWhatsAppNumber = (value) => {
     const digits = String(value || "").replace(/\D/g, "");
     return digits.length === 10 || digits.length === 11 ? `55${digits}` : "";
+  };
+
+  const selectedRadioValue = (name, fallback = "") =>
+    form.querySelector('input[name="' + name + '"]:checked')?.value || fallback;
+
+  const readContractData = () => {
+    const readValue = (element) => String(element?.value || "").trim();
+    return {
+      templateId: readValue(elements.contractTemplate),
+      clientType: selectedRadioValue("contract-party-type", "juridica") === "fisica" ? "pf" : "pj",
+      clientLegalName: readValue(elements.contractClientLegalName),
+      clientDocument: readValue(elements.contractClientDocument),
+      clientRepresentative: readValue(elements.contractClientRepresentative),
+      clientRepresentativeDocument: readValue(elements.contractClientRepresentativeDocument),
+      clientEmail: readValue(elements.contractClientEmail),
+      clientZip: readValue(elements.contractClientZip),
+      clientAddress: readValue(elements.contractClientAddress),
+      clientAddressNumber: readValue(elements.contractClientAddressNumber),
+      clientNeighborhood: readValue(elements.contractClientNeighborhood),
+      clientCityState: readValue(elements.contractClientCityState),
+      deliveryDate: readValue(elements.contractDeliveryDate),
+      revisions: readValue(elements.contractRevisions),
+      paymentMethod: readValue(elements.contractPaymentMethod),
+      paymentDescription: readValue(elements.contractPaymentDescription),
+      entryValue: readValue(elements.contractEntryValue),
+      entryDate: readValue(elements.contractEntryDate),
+      installments: readValue(elements.contractInstallments),
+      installmentFirstDate: readValue(elements.contractInstallmentFirstDate),
+      billingType: selectedRadioValue("contract-billing-type", "unica"),
+      validityStart: readValue(elements.contractValidityStart),
+      validityEnd: readValue(elements.contractValidityEnd),
+      rightsUse: readValue(elements.contractRightsUse),
+      cancellation: readValue(elements.contractCancellation),
+      signatureCity: readValue(elements.contractSignatureCity),
+      forum: readValue(elements.contractForum)
+    };
+  };
+
+  const suggestedContractTemplate = (projectType) => {
+    if (projectType === "evento" || projectType === "fotografia") return "eventos";
+    if (projectType === "institucional") return "institucional";
+    if (["social", "campanha", "podcast", "motion", "edicao-conteudo"].includes(projectType)) return "conteudos";
+    return "personalizado";
+  };
+
+  const createContractDraft = () => {
+    currentInput = collectInput(true);
+    currentTotals = core.calculateBudget(currentInput);
+    const errors = core.validateBudget(currentInput);
+    if (errors.length) {
+      setFeedback(errors.map((error) => "• " + error).join("\n"));
+      return;
+    }
+    if (currentInput.projectType === "evento" && currentInput.eventQuoteMode === "todos") {
+      setFeedback("Escolha um pacote de evento antes de criar o contrato. A opção com os três pacotes ainda não define um escopo único.");
+      return;
+    }
+
+    const contract = readContractData();
+    if (!contract.templateId) contract.templateId = suggestedContractTemplate(currentInput.projectType);
+    const draft = {
+      version: CONTRACT_DRAFT_VERSION,
+      createdAt: new Date().toISOString(),
+      sourceBudget: {
+        input: currentInput,
+        totals: currentTotals,
+        quotedAt: new Date().toISOString(),
+        catalogVersion: catalog?.meta?.versao || null
+      },
+      contract
+    };
+
+    try {
+      sessionStorage.setItem(CONTRACT_DRAFT_KEY, JSON.stringify(draft));
+      window.location.assign("../contratos/?origem=orcamento");
+    } catch (error) {
+      setFeedback("Não foi possível preparar o contrato neste navegador. Verifique se o armazenamento da sessão está disponível.");
+    }
   };
 
   const fillSelect = (select, items, placeholder = "") => {
@@ -1046,6 +1153,8 @@
     });
 
     elements.generatePdf.addEventListener("click", generatePdf);
+
+    elements.createContract.addEventListener("click", createContractDraft);
 
     elements.exportBudget.addEventListener("click", exportBudget);
 
