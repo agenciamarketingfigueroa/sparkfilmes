@@ -148,23 +148,28 @@ const initWhatsAppForm = () => {
     const now = new Date().toLocaleDateString("pt-BR");
 
     const lines = [
-      "*Novo briefing SparkFilmes*",
+      "*Olá, SparkFilmes!*",
+      "Gostaria de conversar sobre um projeto.",
+      "",
       `Data: ${now}`,
       "",
       `Nome: ${data.get("nome") || "-"}`,
-      `Empresa/Nicho: ${data.get("marca") || "-"}`,
-      `Objetivo: ${data.get("objetivo") || "-"}`,
-      `Serviço: ${data.get("servico") || "-"}`,
-      `Prazo: ${data.get("prazo") || "-"}`,
-      "",
-      `Detalhes: ${data.get("detalhes") || "-"}`,
-      "",
-      "Quero receber proposta personalizada."
+      `Tipo de projeto: ${data.get("servico") || "-"}`
     ];
+
+    const prazo = String(data.get("prazo") || "").trim();
+    const detalhes = String(data.get("detalhes") || "").trim();
+    if (prazo) lines.push(`Data/Prazo: ${prazo}`);
+    if (detalhes) lines.push("", `Detalhes: ${detalhes}`);
+
+    lines.push(
+      "",
+      "Podemos conversar sobre as possibilidades?"
+    );
 
     const url = buildWhatsAppUrl(lines.join("\n"));
     window.open(url, "_blank", "noopener,noreferrer");
-    setFeedback("Abrindo WhatsApp com seu briefing preenchido.");
+    setFeedback("Abrindo o WhatsApp com a sua mensagem.");
   });
 };
 
@@ -693,4 +698,3 @@ const init = async () => {
 };
 
 init();
-
