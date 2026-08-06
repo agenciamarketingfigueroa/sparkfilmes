@@ -457,6 +457,17 @@
     });
   };
 
+  const normalizeCustomTimeLine = (line) => line?.billingType === "hora"
+    ? {
+        ...line,
+        billingType: "minuto",
+        quantity: core.asNumber(line.quantity) * 60,
+        unitValue: core.asNumber(line.unitValue) / 60
+      }
+    : line?.billingType === "fixo"
+      ? line
+      : { ...line, billingType: "minuto" };
+
   const readCustomLines = () => {
     customLines = Array.from(elements.lineItems.querySelectorAll("[data-line-index]")).map((row) => ({
       name: row.querySelector(".line-name").value.trim() || "Etapa sem nome",
@@ -469,6 +480,7 @@
   };
 
   const renderCustomLines = () => {
+    customLines = customLines.map(normalizeCustomTimeLine);
     if (customLines.length === 0) {
       elements.lineItems.innerHTML = '<div class="empty-configuration">Nenhuma etapa adicionada.</div>';
       return;
@@ -513,12 +525,13 @@
     const defaultProfessional = catalog.profissionais[0];
     customLines = template.etapas.map((step) => {
       const professional = getProfessional(step.profissionalId) || defaultProfessional;
+      const isFixed = step.tipoCobranca === "fixo";
       return {
-      name: step.nome,
-      billingType: step.tipoCobranca,
-      professionalId: professional.id,
-      quantity: step.tipoCobranca === "fixo" ? 1 : 0,
-      unitValue: step.tipoCobranca === "fixo" ? 0 : professional.valorHora / 60
+        name: step.nome,
+        billingType: isFixed ? "fixo" : "minuto",
+        professionalId: professional.id,
+        quantity: isFixed ? 1 : 0,
+        unitValue: isFixed ? 0 : professional.valorHora / 60
       };
     });
     renderCustomLines();
@@ -773,15 +786,6 @@
       // O orçamento continua funcional quando o armazenamento local não está disponível.
     }
   };
-
-  const normalizeCustomTimeLine = (line) => line?.billingType === "hora"
-    ? {
-        ...line,
-        billingType: "minuto",
-        quantity: core.asNumber(line.quantity) * 60,
-        unitValue: core.asNumber(line.unitValue) / 60
-      }
-    : line;
 
   const migrateBudgetSnapshot = (snapshot) => {
     if (!snapshot || !snapshot.fields || ![1, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
