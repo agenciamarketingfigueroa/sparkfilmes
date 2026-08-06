@@ -458,13 +458,17 @@
   };
 
   const readCustomLines = () => {
-    customLines = Array.from(elements.lineItems.querySelectorAll("[data-line-index]")).map((row) => ({
-      name: row.querySelector(".line-name").value.trim() || "Etapa sem nome",
-      billingType: row.dataset.billingType,
-      professionalId: row.querySelector(".line-professional").value,
-      quantity: core.asNumber(row.querySelector(".line-quantity").value),
-      unitValue: core.asNumber(row.querySelector(".line-rate").value)
-    }));
+    customLines = Array.from(elements.lineItems.querySelectorAll("[data-line-index]")).map((row) => {
+      const billingType = row.dataset.billingType;
+      const rate = core.asNumber(row.querySelector(".line-rate").value);
+      return {
+        name: row.querySelector(".line-name").value.trim() || "Etapa sem nome",
+        billingType,
+        professionalId: row.querySelector(".line-professional").value,
+        quantity: core.asNumber(row.querySelector(".line-quantity").value),
+        unitValue: billingType === "minuto" ? rate / 60 : rate
+      };
+    });
     return customLines;
   };
 
@@ -480,6 +484,8 @@
         const isMinute = line.billingType === "minuto";
         const isTimeBased = isHourly || isMinute;
         const quantityLabel = isMinute ? "Minutos" : isHourly ? "Horas" : "Qtd.";
+        const lineTotal = line.quantity * line.unitValue;
+        const displayedRate = isMinute ? line.unitValue * 60 : line.unitValue;
         const professionalSelect = isTimeBased
           ? professionalOptions(line.professionalId)
           : '<option value="">Custo direto</option>';
@@ -498,10 +504,10 @@
               <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : isHourly ? "0.5" : "1"}" value="${line.quantity}" />
             </label>
             <label class="field">
-              <span>${isMinute ? "Valor/min." : "Valor unit."}</span>
-              <input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />
+              <span>${isTimeBased ? "Valor/hora." : "Valor unit."}</span>
+              <input class="line-rate" type="number" min="0" step="0.01" value="${isMinute ? displayedRate : core.roundMoney(displayedRate)}" />
             </label>
-            <div class="line-total" aria-label="Total da etapa">${core.money(line.quantity * line.unitValue)}</div>
+            <div class="line-total" aria-label="Total da etapa">${core.money(lineTotal)}</div>
             <button class="remove-line" type="button" data-remove-line="${index}" aria-label="Remover ${escapeHtml(line.name)}">×</button>
           </div>`;
       })
@@ -515,11 +521,15 @@
     customLines = template.etapas.map((step) => {
       const professional = getProfessional(step.profissionalId) || defaultProfessional;
       return {
-      name: step.nome,
-      billingType: step.tipoCobranca,
-      professionalId: professional.id,
-      quantity: step.tipoCobranca === "fixo" ? 1 : 0,
-      unitValue: step.tipoCobranca === "fixo" ? 0 : step.tipoCobranca === "minuto" ? professional.valorHora / 60 : professional.valorHora
+        name: step.nome,
+        billingType: step.tipoCobranca,
+        professionalId: professional.id,
+        quantity: step.tipoCobranca === "fixo" ? 1 : 0,
+        unitValue: step.tipoCobranca === "fixo"
+          ? 0
+          : step.tipoCobranca === "minuto"
+            ? professional.valorHora / 60
+            : professional.valorHora
       };
     });
     renderCustomLines();
@@ -632,7 +642,8 @@
     elements.lineItems.querySelectorAll("[data-line-index]").forEach((row) => {
       const quantity = core.asNumber(row.querySelector(".line-quantity").value);
       const rate = core.asNumber(row.querySelector(".line-rate").value);
-      row.querySelector(".line-total").textContent = core.money(quantity * rate);
+      const billedQuantity = row.dataset.billingType === "minuto" ? quantity / 60 : quantity;
+      row.querySelector(".line-total").textContent = core.money(billedQuantity * rate);
     });
   };
 
@@ -1097,8 +1108,9 @@
       if (event.target.matches(".line-professional")) {
         const row = event.target.closest("[data-line-index]");
         const professional = getProfessional(event.target.value);
-        const rate = row.dataset.billingType === "minuto" ? professional.valorHora / 60 : professional.valorHora;
-        row.querySelector(".line-rate").value = core.roundMoney(rate);
+        row.querySelector(".line-rate").value = row.dataset.billingType === "minuto"
+          ? professional.valorHora
+          : core.roundMoney(professional.valorHora);
       }
       refresh();
     });

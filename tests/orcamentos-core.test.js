@@ -84,6 +84,25 @@ assert.equal(customBudget.reference, 371.23);
 assert.equal(customBudget.travel, 125);
 assert.equal(customBudget.total, 496.23);
 
+const storedMinuteRate = rate("editor") / 60;
+const beforeHourlyDisplay = core.calculateBudget({
+  model: "sob-medida",
+  lines: [{ billingType: "minuto", quantity: 90, unitValue: storedMinuteRate }],
+  attendance: "remoto"
+});
+const shownHourlyRate = storedMinuteRate * 60;
+const afterHourlyDisplay = core.calculateBudget({
+  model: "sob-medida",
+  lines: [{ billingType: "minuto", quantity: 90, unitValue: shownHourlyRate / 60 }],
+  attendance: "remoto"
+});
+assert.equal(shownHourlyRate, rate("editor"));
+assert.equal(beforeHourlyDisplay.reference, 77.93);
+assert.equal(beforeHourlyDisplay.estimatedHours, 1.5);
+assert.equal(afterHourlyDisplay.reference, beforeHourlyDisplay.reference);
+assert.equal(afterHourlyDisplay.services, beforeHourlyDisplay.services);
+assert.equal(afterHourlyDisplay.total, beforeHourlyDisplay.total);
+
 const validInput = {
   clientName: "Cliente Teste",
   projectTypeName: "Conteúdo para redes sociais",
