@@ -62,8 +62,8 @@
       quantity = positive(input.technicalMinutes);
       const hourlyRate = positive(input.hourlyRate);
       estimatedMinutes = quantity;
-      unitValue = hourlyRate / 60;
-      reference = quantity * unitValue;
+      unitValue = hourlyRate;
+      reference = (quantity / 60) * unitValue;
       technicalCost = reference;
       unitLabel = quantity === 1 ? "minuto" : "minutos";
     } else {
@@ -73,7 +73,10 @@
         const lineUnitValue = positive(line.unitValue);
         if (line.billingType === "hora") estimatedMinutes += lineQuantity * 60;
         if (line.billingType === "minuto") estimatedMinutes += lineQuantity;
-        return total + lineQuantity * lineUnitValue;
+        const lineTotal = line.billingType === "minuto"
+          ? (lineQuantity / 60) * lineUnitValue
+          : lineQuantity * lineUnitValue;
+        return total + lineTotal;
       }, 0);
       quantity = lines.length;
       unitLabel = quantity === 1 ? "etapa" : "etapas";

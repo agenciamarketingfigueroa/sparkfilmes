@@ -5,7 +5,7 @@
   if (!core) return;
 
   const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
-  const BUDGET_EXPORT_VERSION = 2;
+  const BUDGET_EXPORT_VERSION = 3;
   const CONTRACT_DRAFT_KEY = "sparkfilmes-contract-draft";
   const CONTRACT_DRAFT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
@@ -403,7 +403,7 @@
           <div class="event-stage-item" data-event-stage-index="${index}" data-stage-name="${escapeHtml(line.name)}" data-professional-id="${professional.id}">
             <div class="event-stage-name">
               <strong>${escapeHtml(line.name)}</strong>
-              <small>${core.money(professional.valorHora / 60)}/min</small>
+              <small>${core.money(professional.valorHora)}/hora</small>
             </div>
             <span class="event-stage-role">${escapeHtml(professional.nome)}</span>
             <label class="event-stage-minutes">
@@ -421,7 +421,7 @@
           .filter(({ line }) => line.professionalId === professional.id);
         return `
           <section class="event-stage-professional">
-            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora / 60)}/min</span></header>
+            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora)}/hora</span></header>
             <div class="event-stage-professional-items">${stages.map(({ line, index }) => stageMarkup(line, index)).join("")}</div>
           </section>`;
       })
@@ -462,7 +462,7 @@
         ...line,
         billingType: "minuto",
         quantity: core.asNumber(line.quantity) * 60,
-        unitValue: core.asNumber(line.unitValue) / 60
+        unitValue: core.asNumber(line.unitValue)
       }
     : line?.billingType === "fixo"
       ? line
@@ -509,10 +509,10 @@
               <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : "1"}" value="${line.quantity}" />
             </label>
             <label class="field">
-              <span>${isMinute ? "Valor/min." : "Valor unit."}</span>
-              <input class="line-rate" type="number" min="0" step="0.0001" value="${Math.round(line.unitValue * 10000) / 10000}" />
+              <span>${isMinute ? "Valor/hora" : "Valor unit."}</span>
+              <input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />
             </label>
-            <div class="line-total" aria-label="Total da etapa">${core.money(line.quantity * line.unitValue)}</div>
+            <div class="line-total" aria-label="Total da etapa">${core.money(isMinute ? (line.quantity / 60) * line.unitValue : line.quantity * line.unitValue)}</div>
             <button class="remove-line" type="button" data-remove-line="${index}" aria-label="Remover ${escapeHtml(line.name)}">×</button>
           </div>`;
       })
@@ -531,7 +531,7 @@
         billingType: isFixed ? "fixo" : "minuto",
         professionalId: professional.id,
         quantity: isFixed ? 1 : 0,
-        unitValue: isFixed ? 0 : professional.valorHora / 60
+        unitValue: isFixed ? 0 : professional.valorHora
       };
     });
     renderCustomLines();
@@ -643,7 +643,8 @@
     elements.lineItems.querySelectorAll("[data-line-index]").forEach((row) => {
       const quantity = core.asNumber(row.querySelector(".line-quantity").value);
       const rate = core.asNumber(row.querySelector(".line-rate").value);
-      row.querySelector(".line-total").textContent = core.money(quantity * rate);
+      const total = row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate;
+      row.querySelector(".line-total").textContent = core.money(total);
     });
   };
 
@@ -788,7 +789,7 @@
   };
 
   const migrateBudgetSnapshot = (snapshot) => {
-    if (!snapshot || !snapshot.fields || ![1, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
+    if (!snapshot || !snapshot.fields || ![1, 2, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
       throw new Error("Arquivo de orçamento inválido.");
     }
 
@@ -806,7 +807,15 @@
       ...snapshot,
       version: BUDGET_EXPORT_VERSION,
       fields,
-      customLines: Array.isArray(snapshot.customLines) ? snapshot.customLines.map(normalizeCustomTimeLine) : []
+      customLines: Array.isArray(snapshot.customLines)
+        ? snapshot.customLines.map((line) => {
+            const normalizedLine = normalizeCustomTimeLine(line);
+            if (line?.billingType === "minuto" && snapshot.version < BUDGET_EXPORT_VERSION) {
+              normalizedLine.unitValue = core.asNumber(line.unitValue) * 60;
+            }
+            return normalizedLine;
+          })
+        : []
     };
   };
 
@@ -1110,7 +1119,7 @@
         billingType: "minuto",
         professionalId: professional.id,
         quantity: 0,
-        unitValue: professional.valorHora / 60
+        unitValue: professional.valorHora
       });
       renderCustomLines();
       refresh();
@@ -1129,8 +1138,7 @@
       if (event.target.matches(".line-professional")) {
         const row = event.target.closest("[data-line-index]");
         const professional = getProfessional(event.target.value);
-        const rate = row.dataset.billingType === "minuto" ? professional.valorHora / 60 : professional.valorHora;
-        row.querySelector(".line-rate").value = core.roundMoney(rate);
+        row.querySelector(".line-rate").value = core.roundMoney(professional.valorHora);
       }
       refresh();
     });

@@ -76,11 +76,12 @@ assert.equal(technicalBudget.reference, 1757.07);
 assert.equal(technicalBudget.estimatedHours, 16);
 assert.equal(technicalBudget.estimatedMinutes, 960);
 assert.equal(technicalBudget.unitLabel, "minutos");
+assert.equal(technicalBudget.unitValue, core.roundMoney(rate("fotografo")));
 
 const customBudget = core.calculateBudget({
   model: "sob-medida",
   lines: [
-    { billingType: "minuto", quantity: 120, unitValue: rate("videomaker") / 60 },
+    { billingType: "minuto", quantity: 120, unitValue: rate("videomaker") },
     { billingType: "fixo", quantity: 1, unitValue: 150 }
   ],
   attendance: "presencial",
