@@ -1,7 +1,7 @@
 {
   "meta": {
-    "versao": 2,
-    "atualizadoEm": "2026-08-03",
+    "versao": 3,
+    "atualizadoEm": "2026-08-06",
     "fonte": "Base de Cálculo de Custos Gerais (Orçamentos).xlsx e Orçamento Sparkfilmes - Jacqueline.pdf",
     "observacao": "Valores de referência calculados pela planilha. Revise antes de enviar cada orçamento."
   },
@@ -100,7 +100,7 @@
   ],
   "modelosContratacao": [
     { "id": "pacote", "nome": "Pacote fechado" },
-    { "id": "tecnico", "nome": "Diária" },
+    { "id": "tecnico", "nome": "Tempo técnico" },
     { "id": "sob-medida", "nome": "Projeto sob medida" }
   ],
   "pacotesEventos": [
@@ -194,12 +194,12 @@
       "id": "leve",
       "nome": "Projeto leve",
       "etapas": [
-        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
-        { "nome": "Gravação", "tipoCobranca": "hora" },
-        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
-        { "nome": "Edição", "tipoCobranca": "hora" },
-        { "nome": "Áudio", "tipoCobranca": "hora" },
-        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "minuto" },
+        { "nome": "Gravação", "tipoCobranca": "minuto" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "minuto" },
+        { "nome": "Edição", "tipoCobranca": "minuto" },
+        { "nome": "Áudio", "tipoCobranca": "minuto" },
+        { "nome": "Render e upload", "tipoCobranca": "minuto" },
         { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
       ]
     },
@@ -207,15 +207,15 @@
       "id": "medio",
       "nome": "Projeto médio",
       "etapas": [
-        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
-        { "nome": "Gravação", "tipoCobranca": "hora" },
-        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
-        { "nome": "Organização de material (decupagem)", "tipoCobranca": "hora" },
-        { "nome": "Edição", "tipoCobranca": "hora" },
-        { "nome": "Color", "tipoCobranca": "hora" },
-        { "nome": "Motion", "tipoCobranca": "hora" },
-        { "nome": "Áudio", "tipoCobranca": "hora" },
-        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "minuto" },
+        { "nome": "Gravação", "tipoCobranca": "minuto" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "minuto" },
+        { "nome": "Organização de material (decupagem)", "tipoCobranca": "minuto" },
+        { "nome": "Edição", "tipoCobranca": "minuto" },
+        { "nome": "Color", "tipoCobranca": "minuto" },
+        { "nome": "Motion", "tipoCobranca": "minuto" },
+        { "nome": "Áudio", "tipoCobranca": "minuto" },
+        { "nome": "Render e upload", "tipoCobranca": "minuto" },
         { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
       ]
     },
@@ -223,17 +223,17 @@
       "id": "completo",
       "nome": "Projeto completo",
       "etapas": [
-        { "nome": "Reunião de briefing", "tipoCobranca": "hora" },
-        { "nome": "Criação de roteiro", "tipoCobranca": "hora" },
-        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "hora" },
+        { "nome": "Reunião de briefing", "tipoCobranca": "minuto" },
+        { "nome": "Criação de roteiro", "tipoCobranca": "minuto" },
+        { "nome": "Deslocamento + montagem (início)", "tipoCobranca": "minuto" },
         { "nome": "Diária de alimentação", "tipoCobranca": "fixo" },
-        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "hora" },
-        { "nome": "Organização de material", "tipoCobranca": "hora" },
-        { "nome": "Edição", "tipoCobranca": "hora" },
-        { "nome": "Color", "tipoCobranca": "hora" },
-        { "nome": "Motion", "tipoCobranca": "hora" },
-        { "nome": "Áudio", "tipoCobranca": "hora" },
-        { "nome": "Render e upload", "tipoCobranca": "hora" },
+        { "nome": "Deslocamento + montagem (retorno)", "tipoCobranca": "minuto" },
+        { "nome": "Organização de material", "tipoCobranca": "minuto" },
+        { "nome": "Edição", "tipoCobranca": "minuto" },
+        { "nome": "Color", "tipoCobranca": "minuto" },
+        { "nome": "Motion", "tipoCobranca": "minuto" },
+        { "nome": "Áudio", "tipoCobranca": "minuto" },
+        { "nome": "Render e upload", "tipoCobranca": "minuto" },
         { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
       ]
     },

@@ -14,6 +14,11 @@
   const roundMoney = (value) => Math.round((asNumber(value) + Number.EPSILON) * 100) / 100;
   const money = (value) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(asNumber(value));
+  const formatHours = (value) => {
+    const hours = Math.round(positive(value) * 100) / 100;
+    const formatted = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(hours);
+    return `${formatted} ${hours === 1 ? "hora" : "horas"}`;
+  };
 
   const formatDate = (isoDate) => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(isoDate || ""))) return "A definir";
@@ -40,37 +45,34 @@
           const minutes = positive(line.minutes);
           const stageQuantity = positive(line.quantity) || 1;
           estimatedMinutes += minutes * stageQuantity * quantity;
-          estimatedHours += (minutes / 60) * stageQuantity * quantity;
           technicalCost += (minutes / 60) * positive(line.hourlyRate) * stageQuantity * quantity;
         });
         reference = technicalCost;
         unitValue = quantity ? reference / quantity : 0;
       } else {
-        const hoursPerPackage = positive(input.hoursPerPackage);
+        const minutesPerPackage = positive(input.minutesPerPackage);
         const hourlyRate = positive(input.hourlyRate);
-        estimatedHours = quantity * hoursPerPackage;
-        unitValue = hoursPerPackage * hourlyRate;
+        estimatedMinutes = quantity * minutesPerPackage;
+        unitValue = (minutesPerPackage / 60) * hourlyRate;
         reference = quantity * unitValue;
         technicalCost = reference;
       }
       unitLabel = quantity === 1 ? "pacote" : "pacotes";
     } else if (model === "tecnico") {
-      quantity = positive(input.technicalQuantity);
-      const hoursPerDay = positive(input.hoursPerDay) || 8;
+      quantity = positive(input.technicalMinutes);
       const hourlyRate = positive(input.hourlyRate);
-      const isDaily = input.technicalUnit === "diaria";
-      estimatedHours = quantity * (isDaily ? hoursPerDay : 1);
-      unitValue = hourlyRate * (isDaily ? hoursPerDay : 1);
+      estimatedMinutes = quantity;
+      unitValue = hourlyRate / 60;
       reference = quantity * unitValue;
       technicalCost = reference;
-      unitLabel = isDaily ? (quantity === 1 ? "diária" : "diárias") : quantity === 1 ? "hora" : "horas";
+      unitLabel = quantity === 1 ? "minuto" : "minutos";
     } else {
       const lines = Array.isArray(input.lines) ? input.lines : [];
       reference = lines.reduce((total, line) => {
         const lineQuantity = positive(line.quantity);
         const lineUnitValue = positive(line.unitValue);
-        if (line.billingType === "hora") estimatedHours += lineQuantity;
-        if (line.billingType === "minuto") estimatedHours += lineQuantity / 60;
+        if (line.billingType === "hora") estimatedMinutes += lineQuantity * 60;
+        if (line.billingType === "minuto") estimatedMinutes += lineQuantity;
         return total + lineQuantity * lineUnitValue;
       }, 0);
       quantity = lines.length;
@@ -78,7 +80,7 @@
       technicalCost = reference;
     }
 
-    if (!input.eventPackageId) estimatedMinutes = estimatedHours * 60;
+    estimatedHours = estimatedMinutes / 60;
 
     const referenceBeforeDiscount = reference;
     const discountRate = Math.min(0.3, Math.max(0, asNumber(input.partnershipDiscount)));
@@ -139,11 +141,11 @@
     if (input.model === "pacote" && input.projectType === "evento" && input.eventQuoteMode !== "todos" && (!Array.isArray(input.eventStageLines) || input.eventStageLines.every((line) => positive(line.minutes) <= 0))) {
       errors.push("Informe o tempo previsto em pelo menos uma etapa do evento.");
     }
-    if (input.model === "pacote" && input.projectType !== "evento" && positive(input.hoursPerPackage) <= 0) {
-      errors.push("Informe as horas estimadas por pacote.");
+    if (input.model === "pacote" && input.projectType !== "evento" && positive(input.minutesPerPackage) <= 0) {
+      errors.push("Informe os minutos estimados por pacote.");
     }
-    if (input.model === "tecnico" && positive(input.technicalQuantity) <= 0) {
-      errors.push("Informe a quantidade de horas ou diárias.");
+    if (input.model === "tecnico" && positive(input.technicalMinutes) <= 0) {
+      errors.push("Informe a duração do trabalho técnico em minutos.");
     }
     if (input.model === "sob-medida" && (!Array.isArray(input.lines) || input.lines.length === 0)) {
       errors.push("Adicione ao menos uma etapa ao projeto sob medida.");
@@ -197,14 +199,12 @@
       lines.push(`*Valor por pacote:* ${money(totals.unitValue)}`);
     } else if (input.model === "pacote") {
       lines.push(`*Quantidade:* ${totals.quantity} ${totals.unitLabel}`);
-      lines.push(`*Produção estimada:* aproximadamente ${totals.estimatedHours} horas`);
+      lines.push(`*Produção estimada:* aproximadamente ${formatHours(totals.estimatedHours)}`);
       lines.push(`*Valor de referência por pacote:* ${money(totals.unitValue)}`);
     } else if (input.model === "tecnico") {
-      lines.push(`*Quantidade:* ${totals.quantity} ${totals.unitLabel}`);
-      lines.push(`*Carga estimada:* aproximadamente ${totals.estimatedHours} horas`);
-      lines.push(`*Valor unitário:* ${money(totals.unitValue)}`);
+      lines.push(`*Carga estimada:* aproximadamente ${formatHours(totals.estimatedHours)}`);
     } else {
-      lines.push(`*Tempo estimado de serviço:* aproximadamente ${totals.estimatedHours} horas`);
+      lines.push(`*Tempo estimado de serviço:* aproximadamente ${formatHours(totals.estimatedHours)}`);
     }
 
     lines.push(`*Atendimento:* ${input.attendance === "presencial" ? "Presencial" : "Remoto"}`);
@@ -226,5 +226,5 @@
     return lines.join("\n");
   };
 
-  return { asNumber, calculateBudget, validateBudget, buildWhatsAppMessage, money, formatDate, roundMoney };
+  return { asNumber, calculateBudget, validateBudget, buildWhatsAppMessage, money, formatDate, formatHours, roundMoney };
 });

@@ -6,6 +6,9 @@ const catalogUrl = new URL("../data/servicos.json", import.meta.url);
 const catalog = JSON.parse(await Deno.readTextFile(catalogUrl));
 const rate = (id) => catalog.profissionais.find((item) => item.id === id).valorHora;
 
+assert.equal(core.formatHours(1), "1 hora");
+assert.equal(core.formatHours(1.5), "1,5 horas");
+
 assert.deepEqual(
   catalog.pacotesEventos.map((item) => item.nome),
   ["Plano Essencial", "Plano Spark", "Plano Flame"]
@@ -14,16 +17,21 @@ assert.deepEqual(
   catalog.pacotesEventos.map((item) => item.etapas.reduce((total, stage) => total + stage.minutos, 0)),
   [240, 480, 720]
 );
+assert.equal(
+  catalog.templates.flatMap((template) => template.etapas).filter((stage) => stage.tipoCobranca === "hora").length,
+  0
+);
 
 const packageBudget = core.calculateBudget({
   model: "pacote",
   packageQuantity: 2,
-  hoursPerPackage: 16,
+  minutesPerPackage: 960,
   hourlyRate: rate("videomaker"),
   attendance: "remoto"
 });
 assert.equal(packageBudget.reference, 3539.69);
 assert.equal(packageBudget.estimatedHours, 32);
+assert.equal(packageBudget.estimatedMinutes, 1920);
 assert.equal(packageBudget.total, 3539.69);
 
 const sparkPackage = catalog.pacotesEventos.find((item) => item.id === "spark");
@@ -58,22 +66,21 @@ const partnerEventBudget = core.calculateBudget({
 assert.equal(partnerEventBudget.reference, core.roundMoney(expectedEventCost * 0.8));
 assert.equal(partnerEventBudget.discountAmount, core.roundMoney(expectedEventCost * 0.2));
 
-const dailyBudget = core.calculateBudget({
+const technicalBudget = core.calculateBudget({
   model: "tecnico",
-  technicalUnit: "diaria",
-  technicalQuantity: 2,
-  hoursPerDay: 8,
+  technicalMinutes: 960,
   hourlyRate: rate("fotografo"),
   attendance: "remoto"
 });
-assert.equal(dailyBudget.reference, 1757.07);
-assert.equal(dailyBudget.estimatedHours, 16);
-assert.equal(dailyBudget.unitLabel, "diárias");
+assert.equal(technicalBudget.reference, 1757.07);
+assert.equal(technicalBudget.estimatedHours, 16);
+assert.equal(technicalBudget.estimatedMinutes, 960);
+assert.equal(technicalBudget.unitLabel, "minutos");
 
 const customBudget = core.calculateBudget({
   model: "sob-medida",
   lines: [
-    { billingType: "hora", quantity: 2, unitValue: rate("videomaker") },
+    { billingType: "minuto", quantity: 120, unitValue: rate("videomaker") / 60 },
     { billingType: "fixo", quantity: 1, unitValue: 150 }
   ],
   attendance: "presencial",
@@ -81,6 +88,8 @@ const customBudget = core.calculateBudget({
   travelExtras: 25
 });
 assert.equal(customBudget.reference, 371.23);
+assert.equal(customBudget.estimatedHours, 2);
+assert.equal(customBudget.estimatedMinutes, 120);
 assert.equal(customBudget.travel, 125);
 assert.equal(customBudget.total, 496.23);
 
@@ -88,21 +97,24 @@ const validInput = {
   clientName: "Cliente Teste",
   projectTypeName: "Conteúdo para redes sociais",
   model: "tecnico",
-  modelName: "Diária ou hora técnica",
+  modelName: "Tempo técnico",
   format: "Vertical 9:16",
   serviceTitle: "Captação de conteúdo",
   desiredDate: "2099-08-30",
-  technicalQuantity: 1,
-  technicalUnit: "diaria",
+  technicalMinutes: 480,
+  hourlyRate: rate("fotografo"),
   attendance: "remoto"
 };
 assert.deepEqual(core.validateBudget(validInput), []);
 assert.deepEqual(core.validateBudget({ ...validInput, attendance: "presencial", address: "" }), []);
 
-const message = core.buildWhatsAppMessage(validInput, dailyBudget, catalog.empresa);
+const messageTotals = core.calculateBudget(validInput);
+const message = core.buildWhatsAppMessage(validInput, messageTotals, catalog.empresa);
 assert.match(message, /Orçamento SparkFilmes/);
 assert.match(message, /Cliente Teste/);
-assert.match(message, /R\$\s1\.757,07/);
+assert.match(message, /R\$\s878,53/);
+assert.match(message, /aproximadamente 8 horas/);
+assert.doesNotMatch(message, /minutos/);
 
 const eventInput = {
   ...validInput,

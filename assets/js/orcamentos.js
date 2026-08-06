@@ -5,7 +5,7 @@
   if (!core) return;
 
   const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
-  const BUDGET_EXPORT_VERSION = 1;
+  const BUDGET_EXPORT_VERSION = 2;
   const CONTRACT_DRAFT_KEY = "sparkfilmes-contract-draft";
   const CONTRACT_DRAFT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
@@ -30,7 +30,7 @@
     packageTemplate: byId("package-template"),
     packageProfessional: byId("package-professional"),
     packageQuantity: byId("package-quantity"),
-    packageHours: byId("package-hours"),
+    packageMinutes: byId("package-minutes"),
     packageScope: byId("package-scope"),
     eventPackagePanel: byId("event-package-panel"),
     genericPackagePanel: byId("generic-package-panel"),
@@ -49,7 +49,7 @@
     technicalPanel: byId("technical-panel"),
     technicalProfessional: byId("technical-professional"),
     technicalUnit: byId("technical-unit"),
-    technicalQuantity: byId("technical-quantity"),
+    technicalMinutes: byId("technical-minutes"),
     customPanel: byId("custom-panel"),
     customTemplate: byId("custom-template"),
     lineItems: byId("line-items"),
@@ -403,7 +403,7 @@
           <div class="event-stage-item" data-event-stage-index="${index}" data-stage-name="${escapeHtml(line.name)}" data-professional-id="${professional.id}">
             <div class="event-stage-name">
               <strong>${escapeHtml(line.name)}</strong>
-              <small>${core.money(professional.valorHora)}/hora</small>
+              <small>${core.money(professional.valorHora / 60)}/min</small>
             </div>
             <span class="event-stage-role">${escapeHtml(professional.nome)}</span>
             <label class="event-stage-minutes">
@@ -421,7 +421,7 @@
           .filter(({ line }) => line.professionalId === professional.id);
         return `
           <section class="event-stage-professional">
-            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora)}/hora</span></header>
+            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora / 60)}/min</span></header>
             <div class="event-stage-professional-items">${stages.map(({ line, index }) => stageMarkup(line, index)).join("")}</div>
           </section>`;
       })
@@ -476,10 +476,9 @@
 
     elements.lineItems.innerHTML = customLines
       .map((line, index) => {
-        const isHourly = line.billingType === "hora";
         const isMinute = line.billingType === "minuto";
-        const isTimeBased = isHourly || isMinute;
-        const quantityLabel = isMinute ? "Minutos" : isHourly ? "Horas" : "Qtd.";
+        const isTimeBased = isMinute;
+        const quantityLabel = isMinute ? "Minutos" : "Qtd.";
         const professionalSelect = isTimeBased
           ? professionalOptions(line.professionalId)
           : '<option value="">Custo direto</option>';
@@ -495,11 +494,11 @@
             </label>
             <label class="field">
               <span>${quantityLabel}</span>
-              <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : isHourly ? "0.5" : "1"}" value="${line.quantity}" />
+              <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : "1"}" value="${line.quantity}" />
             </label>
             <label class="field">
               <span>${isMinute ? "Valor/min." : "Valor unit."}</span>
-              <input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />
+              <input class="line-rate" type="number" min="0" step="0.0001" value="${Math.round(line.unitValue * 10000) / 10000}" />
             </label>
             <div class="line-total" aria-label="Total da etapa">${core.money(line.quantity * line.unitValue)}</div>
             <button class="remove-line" type="button" data-remove-line="${index}" aria-label="Remover ${escapeHtml(line.name)}">×</button>
@@ -519,7 +518,7 @@
       billingType: step.tipoCobranca,
       professionalId: professional.id,
       quantity: step.tipoCobranca === "fixo" ? 1 : 0,
-      unitValue: step.tipoCobranca === "fixo" ? 0 : step.tipoCobranca === "minuto" ? professional.valorHora / 60 : professional.valorHora
+      unitValue: step.tipoCobranca === "fixo" ? 0 : professional.valorHora / 60
       };
     });
     renderCustomLines();
@@ -591,7 +590,7 @@
       serviceTitle: elements.serviceTitle.value.trim(),
       packageTemplateName: getTemplate(elements.packageTemplate.value)?.nome || "",
       packageQuantity: elements.packageQuantity.value,
-      hoursPerPackage: elements.packageHours.value,
+      minutesPerPackage: elements.packageMinutes.value,
       eventPackageId: eventPackage?.id || "",
       eventQuoteMode: eventPackageMode ? getEventQuoteMode() : "escolhido",
       eventPackageName: eventPackage?.nome || "",
@@ -613,8 +612,7 @@
       hourlyRate: elements.model.value === "tecnico" ? technicalProfessional?.valorHora : packageProfessional?.valorHora,
       professionalName: elements.model.value === "tecnico" ? technicalProfessional?.nome : packageProfessional?.nome,
       technicalUnit: elements.technicalUnit.value,
-      technicalQuantity: elements.technicalQuantity.value,
-      hoursPerDay: catalog?.parametros.horasPorDiaria || 8,
+      technicalMinutes: elements.technicalMinutes.value,
       lines: customInputLines,
       serviceValue: includeManualValue ? Number(elements.serviceValue.value) : undefined,
       attendance,
@@ -642,9 +640,9 @@
     const eventPackageMode = Boolean(input.eventPackageId);
     const presentingAllPackages = eventPackageMode && input.eventQuoteMode === "todos";
     const modelDescription = {
-      pacote: `${totals.quantity} ${totals.unitLabel} · aproximadamente ${totals.estimatedHours} horas`,
-      tecnico: `${totals.quantity} ${totals.unitLabel} · aproximadamente ${totals.estimatedHours} horas`,
-      "sob-medida": `${totals.quantity} ${totals.unitLabel} · aproximadamente ${totals.estimatedHours} horas`
+      pacote: `${totals.quantity} ${totals.unitLabel} · aproximadamente ${core.formatHours(totals.estimatedHours)}`,
+      tecnico: `Aproximadamente ${core.formatHours(totals.estimatedHours)} de trabalho`,
+      "sob-medida": `${totals.quantity} ${totals.unitLabel} · aproximadamente ${core.formatHours(totals.estimatedHours)}`
     };
 
     elements.previewType.textContent = input.projectTypeName || "Produção audiovisual";
@@ -654,7 +652,7 @@
     elements.previewDescription.textContent = presentingAllPackages
       ? "Essencial, Spark e Flame para o cliente comparar e escolher."
       : eventPackageMode
-        ? `${input.eventPackageTeam} · até ${input.eventCoverageHours} horas de cobertura · ${totals.estimatedMinutes} minutos de trabalho interno`
+        ? `${input.eventPackageTeam} · até ${input.eventCoverageHours} horas de cobertura`
       : input.model
         ? modelDescription[input.model]
         : "Preencha os dados ao lado para montar a estimativa.";
@@ -677,9 +675,7 @@
     elements.previewAttendance.textContent = input.attendance === "presencial" ? "Presencial" : "Remoto";
     elements.previewHours.textContent = presentingAllPackages
       ? "Após a escolha"
-      : eventPackageMode
-        ? `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`
-        : `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`;
+      : core.formatHours(totals.estimatedHours);
     elements.previewServicesLabel.textContent = presentingAllPackages ? "Opções de investimento" : "Serviços";
     elements.previewServices.textContent = presentingAllPackages
       ? `${core.money(Math.min(...input.allEventPackages.map((item) => item.price)))} a ${core.money(Math.max(...input.allEventPackages.map((item) => item.price)))}`
@@ -706,11 +702,11 @@
     elements.referenceValue.textContent = core.money(referenceTotals.reference);
     elements.referenceDetail.textContent = eventPackageMode
       ? `${referenceTotals.quantity} ${referenceTotals.unitLabel} · calculado pelos tempos das etapas${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
-      : referenceTotals.estimatedHours > 0
-        ? `${referenceTotals.estimatedHours} h estimadas com a base selecionada${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
-        : "Informe horas, diárias ou valores nas etapas.";
-    const sharedHours = sharedEventStageLines().reduce((total, line) => total + (core.asNumber(line.minutes) / 60) * teamQuantityFor(line.professionalId), 0);
-    elements.eventStageTotalMinutes.textContent = `${Math.round(sharedHours * 100) / 100} h`;
+      : referenceTotals.estimatedMinutes > 0
+        ? `${referenceTotals.estimatedMinutes} minutos estimados com a base selecionada${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
+        : "Informe minutos ou valores nas etapas.";
+    const sharedMinutes = sharedEventStageLines().reduce((total, line) => total + core.asNumber(line.minutes) * teamQuantityFor(line.professionalId), 0);
+    elements.eventStageTotalMinutes.textContent = `${Math.round(sharedMinutes * 100) / 100} min`;
     elements.eventTechnicalCost.textContent = core.money(referenceTotals.technicalCost);
     if (eventPackageMode) elements.eventPackagePrice.textContent = core.money(referenceTotals.unitValue);
     elements.locationFields.hidden = currentInput.attendance !== "presencial";
@@ -736,10 +732,10 @@
       packageTemplate: elements.packageTemplate.value,
       packageProfessional: elements.packageProfessional.value,
       packageQuantity: elements.packageQuantity.value,
-      packageHours: elements.packageHours.value,
+      packageMinutes: elements.packageMinutes.value,
       technicalProfessional: elements.technicalProfessional.value,
       technicalUnit: elements.technicalUnit.value,
-      technicalQuantity: elements.technicalQuantity.value,
+      technicalMinutes: elements.technicalMinutes.value,
       customTemplate: elements.customTemplate.value,
       serviceValue: elements.serviceValue.value,
       partnershipLevel: elements.partnershipLevel.value,
@@ -778,15 +774,47 @@
     }
   };
 
-  const restoreBudgetSnapshot = (snapshot) => {
-    if (!snapshot || snapshot.version !== BUDGET_EXPORT_VERSION || !snapshot.fields) throw new Error("Arquivo de orçamento inválido.");
+  const normalizeCustomTimeLine = (line) => line?.billingType === "hora"
+    ? {
+        ...line,
+        billingType: "minuto",
+        quantity: core.asNumber(line.quantity) * 60,
+        unitValue: core.asNumber(line.unitValue) / 60
+      }
+    : line;
+
+  const migrateBudgetSnapshot = (snapshot) => {
+    if (!snapshot || !snapshot.fields || ![1, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
+      throw new Error("Arquivo de orçamento inválido.");
+    }
+
+    const fields = { ...snapshot.fields };
+    if (snapshot.version === 1) {
+      fields.packageMinutes = core.asNumber(fields.packageHours) * 60;
+      const technicalMultiplier = fields.technicalUnit === "diaria"
+        ? (catalog?.parametros.horasPorDiaria || 8) * 60
+        : 60;
+      fields.technicalMinutes = core.asNumber(fields.technicalQuantity) * technicalMultiplier;
+    }
+    fields.technicalUnit = "minuto";
+
+    return {
+      ...snapshot,
+      version: BUDGET_EXPORT_VERSION,
+      fields,
+      customLines: Array.isArray(snapshot.customLines) ? snapshot.customLines.map(normalizeCustomTimeLine) : []
+    };
+  };
+
+  const restoreBudgetSnapshot = (rawSnapshot) => {
+    const snapshot = migrateBudgetSnapshot(rawSnapshot);
     const fields = snapshot.fields;
     const fieldElements = {
       clientName: elements.clientName, contact: elements.contact, startTime: elements.startTime, endTime: elements.endTime,
       venueName: elements.venueName, address: elements.address, locationLink: elements.locationLink, projectType: elements.projectType,
       model: elements.model, desiredDate: elements.desiredDate, serviceTitle: elements.serviceTitle, packageTemplate: elements.packageTemplate,
-      packageProfessional: elements.packageProfessional, packageQuantity: elements.packageQuantity, packageHours: elements.packageHours,
-      technicalProfessional: elements.technicalProfessional, technicalUnit: elements.technicalUnit, technicalQuantity: elements.technicalQuantity,
+      packageProfessional: elements.packageProfessional, packageQuantity: elements.packageQuantity, packageMinutes: elements.packageMinutes,
+      technicalProfessional: elements.technicalProfessional, technicalUnit: elements.technicalUnit, technicalMinutes: elements.technicalMinutes,
       customTemplate: elements.customTemplate, serviceValue: elements.serviceValue, partnershipLevel: elements.partnershipLevel,
       distanceKm: elements.distanceKm, travelTime: elements.travelTime, travelFee: elements.travelFee, foodFee: elements.foodFee,
       travelExtras: elements.travelExtras, notes: elements.notes
@@ -875,7 +903,7 @@
     const presentingAllPackages = input.model === "pacote" && input.eventQuoteMode === "todos";
     const payment = catalog.empresa.pagamento || {};
     const safeLocationLink = /^https?:\/\//i.test(input.locationLink) ? input.locationLink : "";
-    const serviceHours = `${totals.estimatedHours} ${totals.estimatedHours === 1 ? "hora" : "horas"}`;
+    const serviceHours = core.formatHours(totals.estimatedHours);
     const location = [input.venueName, input.address].filter(Boolean).join(" · ");
     const pdfDescription = String(input.notes || "").trim();
     const logoUrl = new URL("../assets/img/logo-home.svg", window.location.href).href;
@@ -1075,10 +1103,10 @@
       const professional = catalog.profissionais[0];
       customLines.push({
         name: "Nova etapa",
-        billingType: "hora",
+        billingType: "minuto",
         professionalId: professional.id,
         quantity: 0,
-        unitValue: professional.valorHora
+        unitValue: professional.valorHora / 60
       });
       renderCustomLines();
       refresh();
