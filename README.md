@@ -42,9 +42,10 @@ http://localhost:8080/area-interna/
 ```
 
 A ferramenta usa `data/servicos.json` como base de profissionais, valores-hora,
-tipos de produção e etapas. Ela calcula pacotes, diárias/horas técnicas e projetos
-sob medida, permitindo ajustar o valor final antes de copiar ou abrir a mensagem
-no WhatsApp oficial da SparkFilmes.
+tipos de produção e etapas. Toda duração é preenchida internamente em minutos; a
+carga é convertida para horas apenas na prévia e nos documentos apresentados ao
+cliente. O valor final pode ser ajustado antes de copiar ou abrir a mensagem no
+WhatsApp oficial da SparkFilmes.
 
 Ao selecionar `Cobertura de evento`, são carregados os pacotes oficiais Essencial,
 Spark e Flame. Cada pacote possui equipe, entregas, preço comercial e campos de
