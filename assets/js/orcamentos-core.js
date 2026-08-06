@@ -15,9 +15,12 @@
   const money = (value) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(asNumber(value));
   const formatHours = (value) => {
-    const hours = Math.round(positive(value) * 100) / 100;
-    const formatted = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(hours);
-    return `${formatted} ${hours === 1 ? "hora" : "horas"}`;
+    const totalMinutes = Math.round(positive(value) * 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    if (hours === 0) return `${minutes} ${minutes === 1 ? "minuto" : "minutos"}`;
+    if (minutes === 0) return `${hours} ${hours === 1 ? "hora" : "horas"}`;
+    return `${hours} ${hours === 1 ? "hora" : "horas"} e ${minutes} ${minutes === 1 ? "minuto" : "minutos"}`;
   };
 
   const formatDate = (isoDate) => {

@@ -7,7 +7,8 @@ const catalog = JSON.parse(await Deno.readTextFile(catalogUrl));
 const rate = (id) => catalog.profissionais.find((item) => item.id === id).valorHora;
 
 assert.equal(core.formatHours(1), "1 hora");
-assert.equal(core.formatHours(1.5), "1,5 horas");
+assert.equal(core.formatHours(1.5), "1 hora e 30 minutos");
+assert.equal(core.formatHours(1.92), "1 hora e 55 minutos");
 
 assert.deepEqual(
   catalog.pacotesEventos.map((item) => item.nome),

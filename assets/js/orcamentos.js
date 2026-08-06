@@ -1213,6 +1213,11 @@
         const professional = getProfessional(event.target.value);
         row.querySelector(".line-rate").value = core.roundMoney(professional.valorHora);
       }
+      if (event.target.matches(".line-insalubridade-level")) {
+        const row = event.target.closest("[data-line-index]");
+        const level = INSALUBRIDADE_LEVELS.find((item) => item.id === event.target.value) || INSALUBRIDADE_LEVELS[0];
+        row.querySelector(".line-insalubridade-rate").value = `${Math.round(level.rate * 100)}%`;
+      }
       refresh();
     });
 
