@@ -69,6 +69,7 @@
     } else {
       const lines = Array.isArray(input.lines) ? input.lines : [];
       reference = lines.reduce((total, line) => {
+        if (line.billingType === "insalubridade") return total;
         const lineQuantity = positive(line.quantity);
         const lineUnitValue = positive(line.unitValue);
         if (line.billingType === "hora") estimatedMinutes += lineQuantity * 60;
@@ -78,6 +79,10 @@
           : lineQuantity * lineUnitValue;
         return total + lineTotal;
       }, 0);
+      const insalubridadeRate = lines
+        .filter((line) => line.billingType === "insalubridade")
+        .reduce((total, line) => total + positive(line.quantity), 0);
+      reference += reference * insalubridadeRate;
       quantity = lines.length;
       unitLabel = quantity === 1 ? "etapa" : "etapas";
       technicalCost = reference;

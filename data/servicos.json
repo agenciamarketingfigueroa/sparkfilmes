@@ -200,7 +200,7 @@
         { "nome": "Edição", "tipoCobranca": "minuto" },
         { "nome": "Áudio", "tipoCobranca": "minuto" },
         { "nome": "Render e upload", "tipoCobranca": "minuto" },
-        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "insalubridade" }
       ]
     },
     {
@@ -216,7 +216,7 @@
         { "nome": "Motion", "tipoCobranca": "minuto" },
         { "nome": "Áudio", "tipoCobranca": "minuto" },
         { "nome": "Render e upload", "tipoCobranca": "minuto" },
-        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "insalubridade" }
       ]
     },
     {
@@ -234,7 +234,7 @@
         { "nome": "Motion", "tipoCobranca": "minuto" },
         { "nome": "Áudio", "tipoCobranca": "minuto" },
         { "nome": "Render e upload", "tipoCobranca": "minuto" },
-        { "nome": "Taxa de insalubridade", "tipoCobranca": "fixo" }
+        { "nome": "Taxa de insalubridade", "tipoCobranca": "insalubridade" }
       ]
     },
     {

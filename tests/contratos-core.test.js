@@ -93,6 +93,7 @@ const fromBudget = core.createContractFromBudget({
       eventPackageDeliveries: ["Filme-resumo", "Galeria de fotos"],
       format: "Horizontal 16:9",
       attendance: "presencial",
+      lines: [{ name: "Taxa de insalubridade", billingType: "insalubridade", insalubridadeNivel: "m2", internalOnly: true }],
     },
     totals: { total: 4500, services: 4200, travel: 300 },
   },
@@ -128,6 +129,8 @@ assert.equal(fromBudget.commercial.total, 4500);
 assert.equal(fromBudget.commercial.payments[0].amount, 2250);
 assert.equal(fromBudget.commercial.payments.reduce((total, payment) => total + payment.amount, 0), 4500);
 assert.equal(fromBudget.signatures.city, "São Paulo");
+
+assert.doesNotMatch(JSON.stringify(fromBudget), /insalubridade|M2/i);
 
 assert.equal(core.formatDate("2099-08-05"), "05/08/2099");
 assert.equal(core.formatDate("2099-08-05", { long: true }), "5 de agosto de 2099");

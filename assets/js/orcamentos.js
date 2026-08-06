@@ -205,6 +205,13 @@
     return "personalizado";
   };
 
+  const publicBudgetInput = (input) => ({
+    ...input,
+    lines: Array.isArray(input.lines)
+      ? input.lines.filter((line) => line?.billingType !== "insalubridade" && !line?.internalOnly)
+      : []
+  });
+
   const createContractDraft = () => {
     currentInput = collectInput(true);
     currentTotals = core.calculateBudget(currentInput);
@@ -224,7 +231,7 @@
       version: CONTRACT_DRAFT_VERSION,
       createdAt: new Date().toISOString(),
       sourceBudget: {
-        input: currentInput,
+        input: publicBudgetInput(currentInput),
         totals: currentTotals,
         quotedAt: new Date().toISOString(),
         catalogVersion: catalog?.meta?.versao || null
@@ -457,27 +464,65 @@
     });
   };
 
-  const normalizeCustomTimeLine = (line) => line?.billingType === "hora"
-    ? {
+  const INSALUBRIDADE_LEVELS = [
+    { id: "m0", rate: 0 },
+    { id: "m1", rate: 0.1 },
+    { id: "m2", rate: 0.2 },
+    { id: "m3", rate: 0.3 }
+  ];
+
+  const isInsalubridadeLine = (line) =>
+    line?.billingType === "insalubridade" || String(line?.name || "").trim().toLowerCase() === "taxa de insalubridade";
+
+  const customLineTotal = (line) => line?.billingType === "minuto"
+    ? (core.asNumber(line.quantity) / 60) * core.asNumber(line.unitValue)
+    : core.asNumber(line.quantity) * core.asNumber(line.unitValue);
+
+  const insalubridadeBase = (lines) => lines
+    .filter((line) => line?.billingType !== "insalubridade")
+    .reduce((total, line) => total + customLineTotal(line), 0);
+
+  const normalizeCustomTimeLine = (line) => {
+    if (isInsalubridadeLine(line)) {
+      const level = INSALUBRIDADE_LEVELS.find((item) => item.id === line?.insalubridadeNivel)
+        || INSALUBRIDADE_LEVELS.find((item) => item.rate === core.asNumber(line?.quantity))
+        || INSALUBRIDADE_LEVELS[0];
+      return {
+        ...line,
+        billingType: "insalubridade",
+        insalubridadeNivel: level.id,
+        quantity: level.rate,
+        unitValue: 0,
+        internalOnly: true
+      };
+    }
+    if (line?.billingType === "hora") {
+      return {
         ...line,
         billingType: "minuto",
         quantity: core.asNumber(line.quantity) * 60,
         unitValue: core.asNumber(line.unitValue)
-      }
-    : line?.billingType === "fixo"
-      ? line
-      : { ...line, billingType: "minuto" };
+      };
+    }
+    if (line?.billingType === "fixo") return line;
+    return { ...line, billingType: "minuto" };
+  };
 
   const readCustomLines = () => {
     customLines = Array.from(elements.lineItems.querySelectorAll("[data-line-index]")).map((row) => {
       const billingType = row.dataset.billingType;
-      const rate = core.asNumber(row.querySelector(".line-rate").value);
+      const isInsalubridade = billingType === "insalubridade";
+      const rate = isInsalubridade ? 0 : core.asNumber(row.querySelector(".line-rate").value);
+      const level = isInsalubridade
+        ? INSALUBRIDADE_LEVELS.find((item) => item.id === row.querySelector(".line-insalubridade-level").value) || INSALUBRIDADE_LEVELS[0]
+        : null;
       return {
         name: row.querySelector(".line-name").value.trim() || "Etapa sem nome",
         billingType,
         professionalId: row.querySelector(".line-professional").value,
-        quantity: core.asNumber(row.querySelector(".line-quantity").value),
-        unitValue: billingType === "minuto" ? rate / 60 : rate
+        quantity: isInsalubridade ? level.rate : core.asNumber(row.querySelector(".line-quantity").value),
+        unitValue: rate,
+        ...(isInsalubridade ? { insalubridadeNivel: level.id, internalOnly: true } : {})
       };
     });
     return customLines;
@@ -493,15 +538,16 @@
     elements.lineItems.innerHTML = customLines
       .map((line, index) => {
         const isMinute = line.billingType === "minuto";
-<<<<<<< HEAD
-        const isTimeBased = isHourly || isMinute;
-        const quantityLabel = isMinute ? "Minutos" : isHourly ? "Horas" : "Qtd.";
-        const lineTotal = line.quantity * line.unitValue;
-        const displayedRate = isMinute ? line.unitValue * 60 : line.unitValue;
-=======
+        const isInsalubridade = line.billingType === "insalubridade";
         const isTimeBased = isMinute;
-        const quantityLabel = isMinute ? "Minutos" : "Qtd.";
->>>>>>> 02973ca0b850b7b78b04dbad2991c959c118d8f7
+        const quantityLabel = isInsalubridade ? "Nível" : isMinute ? "Minutos" : "Qtd.";
+        const lineTotal = isInsalubridade ? insalubridadeBase(customLines) * line.quantity : customLineTotal(line);
+        const levelOptions = INSALUBRIDADE_LEVELS
+          .map((level) => `<option value="${level.id}" ${line.insalubridadeNivel === level.id ? "selected" : ""}>${level.id.toUpperCase()}</option>`)
+          .join("");
+        const quantityControl = isInsalubridade
+          ? `<select class="line-insalubridade-level">${levelOptions}</select>`
+          : `<input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : "1"}" value="${line.quantity}" />`;
         const professionalSelect = isTimeBased
           ? professionalOptions(line.professionalId)
           : '<option value="">Custo direto</option>';
@@ -517,20 +563,15 @@
             </label>
             <label class="field">
               <span>${quantityLabel}</span>
-              <input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : "1"}" value="${line.quantity}" />
+              ${quantityControl}
             </label>
             <label class="field">
-<<<<<<< HEAD
-              <span>${isTimeBased ? "Valor/hora." : "Valor unit."}</span>
-              <input class="line-rate" type="number" min="0" step="0.01" value="${isMinute ? displayedRate : core.roundMoney(displayedRate)}" />
+              <span>${isMinute ? "Valor/hora." : isInsalubridade ? "Base da taxa" : "Valor unit."}</span>
+              ${isInsalubridade
+                ? `<input class="line-insalubridade-rate" type="text" value="${Math.round(line.quantity * 100)}%" readonly />`
+                : `<input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />`}
             </label>
             <div class="line-total" aria-label="Total da etapa">${core.money(lineTotal)}</div>
-=======
-              <span>${isMinute ? "Valor/hora" : "Valor unit."}</span>
-              <input class="line-rate" type="number" min="0" step="0.01" value="${core.roundMoney(line.unitValue)}" />
-            </label>
-            <div class="line-total" aria-label="Total da etapa">${core.money(isMinute ? (line.quantity / 60) * line.unitValue : line.quantity * line.unitValue)}</div>
->>>>>>> 02973ca0b850b7b78b04dbad2991c959c118d8f7
             <button class="remove-line" type="button" data-remove-line="${index}" aria-label="Remover ${escapeHtml(line.name)}">×</button>
           </div>`;
       })
@@ -544,23 +585,14 @@
     customLines = template.etapas.map((step) => {
       const professional = getProfessional(step.profissionalId) || defaultProfessional;
       const isFixed = step.tipoCobranca === "fixo";
+      const isInsalubridade = step.tipoCobranca === "insalubridade";
       return {
         name: step.nome,
-<<<<<<< HEAD
-        billingType: step.tipoCobranca,
+        billingType: isInsalubridade ? "insalubridade" : isFixed ? "fixo" : "minuto",
         professionalId: professional.id,
-        quantity: step.tipoCobranca === "fixo" ? 1 : 0,
-        unitValue: step.tipoCobranca === "fixo"
-          ? 0
-          : step.tipoCobranca === "minuto"
-            ? professional.valorHora / 60
-            : professional.valorHora
-=======
-        billingType: isFixed ? "fixo" : "minuto",
-        professionalId: professional.id,
-        quantity: isFixed ? 1 : 0,
-        unitValue: isFixed ? 0 : professional.valorHora
->>>>>>> 02973ca0b850b7b78b04dbad2991c959c118d8f7
+        quantity: isInsalubridade ? 0 : isFixed ? 1 : 0,
+        unitValue: isFixed || isInsalubridade ? 0 : professional.valorHora,
+        ...(isInsalubridade ? { insalubridadeNivel: "m0", internalOnly: true } : {})
       };
     });
     renderCustomLines();
@@ -669,16 +701,23 @@
   };
 
   const updateLineTotals = () => {
-    elements.lineItems.querySelectorAll("[data-line-index]").forEach((row) => {
-      const quantity = core.asNumber(row.querySelector(".line-quantity").value);
-      const rate = core.asNumber(row.querySelector(".line-rate").value);
-<<<<<<< HEAD
-      const billedQuantity = row.dataset.billingType === "minuto" ? quantity / 60 : quantity;
-      row.querySelector(".line-total").textContent = core.money(billedQuantity * rate);
-=======
-      const total = row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate;
+    const rows = Array.from(elements.lineItems.querySelectorAll("[data-line-index]"));
+    const base = rows
+      .filter((row) => row.dataset.billingType !== "insalubridade")
+      .reduce((total, row) => {
+        const quantity = core.asNumber(row.querySelector(".line-quantity").value);
+        const rate = core.asNumber(row.querySelector(".line-rate").value);
+        return total + (row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate);
+      }, 0);
+    rows.forEach((row) => {
+      const isInsalubridade = row.dataset.billingType === "insalubridade";
+      const level = isInsalubridade
+        ? INSALUBRIDADE_LEVELS.find((item) => item.id === row.querySelector(".line-insalubridade-level").value) || INSALUBRIDADE_LEVELS[0]
+        : null;
+      const quantity = isInsalubridade ? level.rate : core.asNumber(row.querySelector(".line-quantity").value);
+      const rate = isInsalubridade ? base : core.asNumber(row.querySelector(".line-rate").value);
+      const total = isInsalubridade ? rate * quantity : row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate;
       row.querySelector(".line-total").textContent = core.money(total);
->>>>>>> 02973ca0b850b7b78b04dbad2991c959c118d8f7
     });
   };
 
@@ -917,7 +956,7 @@
       return "";
     }
     setFeedback("");
-    return core.buildWhatsAppMessage(currentInput, currentTotals, {
+    return core.buildWhatsAppMessage(publicBudgetInput(currentInput), currentTotals, {
       name: catalog.empresa.nome,
       signature: catalog.empresa.assinatura,
       payment: catalog.empresa.pagamento
@@ -945,7 +984,7 @@
     const message = validateAndBuildMessage();
     if (!message) return;
 
-    const input = currentInput;
+    const input = publicBudgetInput(currentInput);
     const totals = currentTotals;
     const presentingAllPackages = input.model === "pacote" && input.eventQuoteMode === "todos";
     const payment = catalog.empresa.pagamento || {};
@@ -1172,13 +1211,7 @@
       if (event.target.matches(".line-professional")) {
         const row = event.target.closest("[data-line-index]");
         const professional = getProfessional(event.target.value);
-<<<<<<< HEAD
-        row.querySelector(".line-rate").value = row.dataset.billingType === "minuto"
-          ? professional.valorHora
-          : core.roundMoney(professional.valorHora);
-=======
         row.querySelector(".line-rate").value = core.roundMoney(professional.valorHora);
->>>>>>> 02973ca0b850b7b78b04dbad2991c959c118d8f7
       }
       refresh();
     });

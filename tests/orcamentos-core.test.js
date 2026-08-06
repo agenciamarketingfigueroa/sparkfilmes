@@ -94,24 +94,25 @@ assert.equal(customBudget.estimatedMinutes, 120);
 assert.equal(customBudget.travel, 125);
 assert.equal(customBudget.total, 496.23);
 
-const storedMinuteRate = rate("editor") / 60;
-const beforeHourlyDisplay = core.calculateBudget({
+const minuteBudget = core.calculateBudget({
   model: "sob-medida",
-  lines: [{ billingType: "minuto", quantity: 90, unitValue: storedMinuteRate }],
+  lines: [{ billingType: "minuto", quantity: 90, unitValue: rate("editor") }],
   attendance: "remoto"
 });
-const shownHourlyRate = storedMinuteRate * 60;
-const afterHourlyDisplay = core.calculateBudget({
+assert.equal(minuteBudget.reference, 77.93);
+assert.equal(minuteBudget.estimatedHours, 1.5);
+
+const insalubridadeBudget = core.calculateBudget({
   model: "sob-medida",
-  lines: [{ billingType: "minuto", quantity: 90, unitValue: shownHourlyRate / 60 }],
+  lines: [
+    { billingType: "minuto", quantity: 60, unitValue: rate("editor") },
+    { billingType: "insalubridade", quantity: 0.2, unitValue: 0, internalOnly: true }
+  ],
   attendance: "remoto"
 });
-assert.equal(shownHourlyRate, rate("editor"));
-assert.equal(beforeHourlyDisplay.reference, 77.93);
-assert.equal(beforeHourlyDisplay.estimatedHours, 1.5);
-assert.equal(afterHourlyDisplay.reference, beforeHourlyDisplay.reference);
-assert.equal(afterHourlyDisplay.services, beforeHourlyDisplay.services);
-assert.equal(afterHourlyDisplay.total, beforeHourlyDisplay.total);
+assert.equal(insalubridadeBudget.reference, 62.34);
+assert.equal(insalubridadeBudget.estimatedHours, 1);
+assert.equal(insalubridadeBudget.estimatedMinutes, 60);
 
 const validInput = {
   clientName: "Cliente Teste",
@@ -127,6 +128,13 @@ const validInput = {
 };
 assert.deepEqual(core.validateBudget(validInput), []);
 assert.deepEqual(core.validateBudget({ ...validInput, attendance: "presencial", address: "" }), []);
+
+const internalRateMessage = core.buildWhatsAppMessage({
+  ...validInput,
+  model: "sob-medida",
+  lines: [{ name: "Taxa de insalubridade", billingType: "insalubridade", quantity: 0.2, unitValue: 0, insalubridadeNivel: "m2", internalOnly: true }]
+}, insalubridadeBudget, catalog.empresa);
+assert.doesNotMatch(internalRateMessage, /insalubridade|M[0-3]/i);
 
 const messageTotals = core.calculateBudget(validInput);
 const message = core.buildWhatsAppMessage(validInput, messageTotals, catalog.empresa);
