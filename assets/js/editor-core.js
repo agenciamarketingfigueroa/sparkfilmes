@@ -97,6 +97,110 @@
     return normalizeSegments(result, duration);
   };
 
+  const mergeRanges = (ranges, duration, options = {}) => {
+    const limit = Number.isFinite(Number(duration))
+      ? Math.max(0, Number(duration))
+      : 0;
+    if (!limit) return [];
+
+    const settings = options && typeof options === "object" ? options : {};
+    const gap = Number.isFinite(Number(settings.gap))
+      ? Math.max(0, Number(settings.gap))
+      : 0;
+    const padding = Number.isFinite(Number(settings.padding))
+      ? Math.max(0, Number(settings.padding))
+      : 0;
+
+    return (Array.isArray(ranges) ? ranges : [])
+      .map((range) => {
+        const rawStart = Number(range?.start);
+        const rawEnd = Number(range?.end);
+        if (
+          !Number.isFinite(rawStart) || !Number.isFinite(rawEnd) ||
+          rawEnd < rawStart
+        ) {
+          return null;
+        }
+        return {
+          start: clamp(rawStart - padding, 0, limit),
+          end: clamp(rawEnd + padding, 0, limit),
+        };
+      })
+      .filter((range) => range && range.end > range.start)
+      .sort((a, b) => a.start - b.start || a.end - b.end)
+      .reduce((merged, range) => {
+        const previous = merged[merged.length - 1];
+        if (!previous || range.start > previous.end + gap) {
+          merged.push({ ...range });
+        } else {
+          previous.end = Math.max(previous.end, range.end);
+        }
+        return merged;
+      }, []);
+  };
+
+  const stableSegmentsFromRanges = (
+    baseSegments,
+    badRanges,
+    duration,
+    minSegmentDuration = 0.35,
+  ) => {
+    const limit = Number.isFinite(Number(duration))
+      ? Math.max(0, Number(duration))
+      : 0;
+    const minimum = Number.isFinite(Number(minSegmentDuration))
+      ? Math.max(0, Number(minSegmentDuration))
+      : 0.35;
+    if (!limit) return [];
+
+    const exclusions = Array.isArray(badRanges) ? badRanges : [];
+    return (Array.isArray(baseSegments) ? baseSegments : [])
+      .map((segment, sourceIndex) => ({
+        segment,
+        sourceIndex,
+        start: clamp(segment?.start, 0, limit),
+        end: clamp(segment?.end, 0, limit),
+      }))
+      .filter(({ segment, start, end }) => segment && end > start)
+      .sort((a, b) => a.start - b.start || a.sourceIndex - b.sourceIndex)
+      .flatMap(({ segment, start, end }) => {
+        const relevantRanges = mergeRanges(
+          exclusions.filter((range) =>
+            range?.clipId === undefined || range.clipId === null ||
+            range.clipId === segment.clipId
+          ),
+          limit,
+        ).filter((range) => range.end > start && range.start < end);
+
+        const fragments = [];
+        let cursor = start;
+        relevantRanges.forEach((range) => {
+          const cutStart = Math.max(start, range.start);
+          const cutEnd = Math.min(end, range.end);
+          if (cutStart > cursor) fragments.push([cursor, cutStart]);
+          cursor = Math.max(cursor, cutEnd);
+        });
+        if (cursor < end) fragments.push([cursor, end]);
+
+        return fragments
+          .filter(([fragmentStart, fragmentEnd]) =>
+            fragmentEnd - fragmentStart + Number.EPSILON >= minimum &&
+            fragmentEnd > fragmentStart
+          )
+          .map(([fragmentStart, fragmentEnd], fragmentIndex) => {
+            const fragment = {
+              ...segment,
+              start: fragmentStart,
+              end: fragmentEnd,
+            };
+            if (fragmentIndex > 0 && segment.id) {
+              fragment.id = `${segment.id}-stable-${fragmentIndex + 1}`;
+            }
+            return fragment;
+          });
+      });
+  };
+
   const speedAt = (segment, progress) => {
     const value = String(segment?.speed || "1");
     const position = clamp(progress, 0, 1);
@@ -255,6 +359,8 @@
     normalizeSegments,
     splitSegments,
     subtractRanges,
+    mergeRanges,
+    stableSegmentsFromRanges,
     speedAt,
     segmentOutputDuration,
     outputDuration,

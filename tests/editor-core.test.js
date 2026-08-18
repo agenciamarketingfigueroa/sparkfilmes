@@ -32,6 +32,72 @@ assert.equal(core.outputDuration([{ start: 0, end: 10, speed: "2" }]), 5);
 assert.equal(core.findSegmentIndex(subtracted, 5), 1);
 assert.equal(core.findSegmentIndex(subtracted, 2.5), -1);
 
+const rangesToMerge = [
+  { start: 3.12, end: 4 },
+  { start: 2, end: 3 },
+  { start: -1, end: 0.2 },
+  { start: 9.8, end: 11 },
+  { start: 7, end: 6 },
+];
+const rangesSnapshot = structuredClone(rangesToMerge);
+assert.deepEqual(
+  core.mergeRanges(rangesToMerge, 10, { gap: 0.15, padding: 0.05 }),
+  [
+    { start: 0, end: 0.25 },
+    { start: 1.95, end: 4.05 },
+    { start: 9.75, end: 10 },
+  ],
+);
+assert.deepEqual(rangesToMerge, rangesSnapshot);
+
+const baseSegments = [
+  {
+    id: "segment-a",
+    start: 0,
+    end: 5,
+    clipId: "take-a",
+    speed: "1",
+    motion: "none",
+  },
+  {
+    id: "segment-b",
+    start: 5,
+    end: 10,
+    clipId: "take-b",
+    speed: "1.25",
+    motion: "zoom-in",
+  },
+];
+const baseSegmentsSnapshot = structuredClone(baseSegments);
+const badRanges = [
+  { start: 1, end: 2, clipId: "take-a" },
+  { start: 3, end: 4.7, clipId: "take-a" },
+  { start: 6, end: 9, clipId: "take-b" },
+];
+const stableSegments = core.stableSegmentsFromRanges(
+  baseSegments,
+  badRanges,
+  10,
+  0.5,
+);
+assert.deepEqual(
+  stableSegments.map(({ start, end, clipId }) => ({ start, end, clipId })),
+  [
+    { start: 0, end: 1, clipId: "take-a" },
+    { start: 2, end: 3, clipId: "take-a" },
+    { start: 5, end: 6, clipId: "take-b" },
+    { start: 9, end: 10, clipId: "take-b" },
+  ],
+);
+assert.equal(stableSegments[1].id, "segment-a-stable-2");
+assert.equal(stableSegments[2].speed, "1.25");
+assert.equal(stableSegments[2].motion, "zoom-in");
+assert.deepEqual(baseSegments, baseSegmentsSnapshot);
+assert.deepEqual(
+  core.stableSegmentsFromRanges(baseSegments, badRanges, 10, 0.5),
+  stableSegments,
+);
+
 const multiClip = core.normalizeSegments([
   { start: 0, end: 3, clipId: "take-a" },
   { start: 3, end: 8, clipId: "take-b" },

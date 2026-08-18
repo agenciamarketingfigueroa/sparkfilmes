@@ -25,8 +25,37 @@
       target.addEventListener("error", onError, { once: true });
     });
 
+  const waitForMediaEvent = (target, events, timeout = 30000) =>
+    new Promise((resolve, reject) => {
+      const names = Array.isArray(events) ? events : [events];
+      const timer = globalThis.setTimeout(() => {
+        cleanup();
+        reject(new Error("O celular demorou demais para liberar o vídeo."));
+      }, timeout);
+      const cleanup = () => {
+        globalThis.clearTimeout(timer);
+        names.forEach((name) => target.removeEventListener(name, onDone));
+        target.removeEventListener("error", onError);
+      };
+      const onDone = () => {
+        cleanup();
+        resolve();
+      };
+      const onError = () => {
+        cleanup();
+        reject(
+          new Error("O navegador não conseguiu abrir este formato de vídeo."),
+        );
+      };
+      names.forEach((name) =>
+        target.addEventListener(name, onDone, { once: true })
+      );
+      target.addEventListener("error", onError, { once: true });
+    });
+
   const elements = {
     dropzone: $("#editor-dropzone"),
+    dropzoneStatus: $("#dropzone-status"),
     workspace: $("#editor-workspace"),
     videoInput: $("#video-input"),
     chooseVideo: $("#choose-video"),
@@ -38,6 +67,8 @@
     video: $("#source-video"),
     voiceover: $("#voiceover-audio"),
     canvas: $("#preview-canvas"),
+    videoStage: $("#video-stage"),
+    previewQuality: $("#preview-quality"),
     stageEmpty: $("#stage-empty"),
     togglePlay: $("#toggle-play"),
     currentTime: $("#current-time"),
@@ -58,6 +89,14 @@
     projectType: $("#project-type"),
     projectNiche: $("#project-niche"),
     applyRecipe: $("#apply-recipe"),
+    analyzeTakes: $("#analyze-takes"),
+    avoidShaky: $("#avoid-shaky"),
+    smartAnalysis: $("#smart-analysis"),
+    analysisSummary: $("#analysis-summary"),
+    analysisDetail: $("#analysis-detail"),
+    analysisApproved: $("#analysis-approved"),
+    analysisRemoved: $("#analysis-removed"),
+    analysisMusic: $("#analysis-music"),
     flowAddVideos: $("#flow-add-videos"),
     flowTakesSummary: $("#flow-takes-summary"),
     transitionStyle: $("#transition-style"),
@@ -123,7 +162,7 @@
     audioBuffer: null,
     audioSamples: null,
     audio: null,
-    format: "9:16",
+    format: "original",
     fit: "contain",
     brightness: 0,
     contrast: 0,
@@ -135,7 +174,7 @@
     niche: "",
     transitionStyle: "auto",
     captionsEnabled: false,
-    soundtrackMode: "none",
+    soundtrackMode: "auto",
     musicUrl: "",
     musicVolume: 0.32,
     voiceoverUrl: "",
@@ -154,6 +193,9 @@
     chunks: [],
     mimeType: "",
     transcriber: null,
+    analysis: [],
+    qualityRanges: [],
+    analyzing: false,
     renderFrameId: 0,
   };
 
@@ -168,6 +210,12 @@
   const setStatus = (message = "", type = "") => {
     elements.status.textContent = message;
     elements.status.className = `editor-status${type ? ` is-${type}` : ""}`;
+    if (elements.dropzoneStatus) {
+      elements.dropzoneStatus.textContent = message;
+      elements.dropzoneStatus.className = `dropzone-status${
+        type ? ` is-${type}` : ""
+      }`;
+    }
   };
 
   const setBusy = (button, busy, label) => {
@@ -299,6 +347,12 @@
     height -= height % 2;
     elements.canvas.width = Math.max(2, width);
     elements.canvas.height = Math.max(2, height);
+    const portrait = height > width;
+    elements.videoStage.classList.toggle("is-portrait", portrait);
+    elements.videoStage.classList.toggle("is-landscape", !portrait);
+    elements.canvas.style.aspectRatio = `${width} / ${height}`;
+    const formatLabel = state.format === "original" ? "Original" : state.format;
+    elements.previewQuality.textContent = `${formatLabel} · quadro completo`;
     drawPreview();
   };
 
@@ -438,7 +492,7 @@
     const time = globalTime();
     const index = core.findSegmentIndex(state.segments, time);
     const segment = index >= 0 ? state.segments[index] : selectedSegment();
-    const zoom = motionScale(segment, time);
+    const zoom = state.fit === "cover" ? motionScale(segment, time) : 1;
     const scale =
       (state.fit === "cover"
         ? Math.max(canvasWidth / videoWidth, canvasHeight / videoHeight)
@@ -669,6 +723,16 @@
       }%`;
       elements.silenceMarkers.appendChild(marker);
     });
+    state.qualityRanges.forEach((range) => {
+      const marker = document.createElement("span");
+      marker.className = "quality-marker";
+      marker.style.left = `${(range.start / state.duration) * 100}%`;
+      marker.style.width = `${
+        ((range.end - range.start) / state.duration) * 100
+      }%`;
+      marker.title = "Trecho instável detectado";
+      elements.silenceMarkers.appendChild(marker);
+    });
     renderCaptionMarkers();
     const kept = core.outputDuration(state.segments);
     elements.keptDuration.textContent = core.formatTime(kept);
@@ -852,6 +916,9 @@
     state.selectedSegmentId = state.segments[0].id;
     state.silenceRanges = [];
     state.captions = [];
+    state.analysis = [];
+    state.qualityRanges = [];
+    elements.smartAnalysis.hidden = true;
     state.captionsEnabled = state.projectType === "content";
     elements.captionsEnabled.checked = state.captionsEnabled;
     elements.captionMode.value = state.captionsEnabled ? "auto" : "none";
@@ -886,18 +953,47 @@
   const looksLikeVideo = (file) =>
     file && (
       String(file.type).startsWith("video/") ||
-      /\.(mp4|mov|m4v|webm|ogv|avi)$/i.test(file.name)
+      /\.(mp4|mov|m4v|webm|ogv|avi|3gp|mpeg|mpg|mts|m2ts|hevc)$/i.test(
+        file.name,
+      )
     );
 
   const probeVideo = async (file) => {
     const url = URL.createObjectURL(file);
     const video = document.createElement("video");
     video.preload = "metadata";
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.style.position = "fixed";
+    video.style.width = "1px";
+    video.style.height = "1px";
+    video.style.opacity = "0";
+    video.style.pointerEvents = "none";
+    document.body.appendChild(video);
     video.src = url;
     video.load();
     try {
-      if (video.readyState < 1) await waitForEvent(video, "loadedmetadata");
-      if (!Number.isFinite(video.duration) || video.duration <= 0) {
+      if (video.readyState < 1) {
+        await waitForMediaEvent(video, "loadedmetadata");
+      }
+
+      let duration = Number(video.duration);
+      if (Number.isNaN(duration) || duration <= 0) {
+        if (video.readyState < 2) {
+          await waitForMediaEvent(video, ["loadeddata", "canplay"], 15000);
+        }
+        duration = Number(video.duration);
+      }
+      if (duration === Infinity) {
+        video.currentTime = Number.MAX_SAFE_INTEGER;
+        await waitForMediaEvent(video, ["durationchange", "timeupdate"], 15000);
+        duration = Number(video.duration);
+        video.currentTime = 0;
+      }
+
+      if (!Number.isFinite(duration) || duration <= 0) {
         throw new Error(`Não foi possível ler “${file.name}”.`);
       }
       return {
@@ -906,7 +1002,7 @@
         file,
         url,
         name: file.name,
-        duration: video.duration,
+        duration,
         width: video.videoWidth,
         height: video.videoHeight,
         offset: 0,
@@ -915,20 +1011,26 @@
       URL.revokeObjectURL(url);
       throw error;
     } finally {
+      video.remove();
       video.removeAttribute("src");
       video.load();
     }
   };
 
   const loadVideos = async (files, append = false) => {
-    const validFiles = (Array.isArray(files) ? files : []).filter(
-      looksLikeVideo,
-    );
+    const selectedFiles = Array.isArray(files) ? files : [];
+    const validFiles = selectedFiles.filter(looksLikeVideo);
     if (!validFiles.length) {
-      setStatus("Escolha pelo menos um arquivo de vídeo válido.", "error");
+      setStatus(
+        "Não encontrei um vídeo compatível nessa seleção. Tente MP4, MOV ou M4V.",
+        "error",
+      );
       return;
     }
     if (state.exporting) return;
+    [elements.chooseVideo, elements.addVideos, elements.flowAddVideos].forEach(
+      (button) => setBusy(button, true, "Importando…"),
+    );
     elements.video.pause();
     elements.voiceover.pause();
     elements.music.pause();
@@ -939,14 +1041,30 @@
         validFiles.length === 1 ? "take" : "takes"
       }…`,
     );
+    const incoming = [];
+    const rejected = selectedFiles.length - validFiles.length;
+    let failedToOpen = 0;
     try {
-      const incoming = [];
-      for (const file of validFiles) incoming.push(await probeVideo(file));
+      for (const file of validFiles) {
+        try {
+          incoming.push(await probeVideo(file));
+        } catch (_error) {
+          failedToOpen += 1;
+        }
+      }
+      if (!incoming.length) {
+        throw new Error(
+          "O celular selecionou os arquivos, mas não conseguiu decodificá-los. Se estiverem em HEVC, tente exportá-los como ‘Mais compatível’ ou MP4.",
+        );
+      }
       if (!append) {
         state.clips.forEach((clip) => URL.revokeObjectURL(clip.url));
         state.clips = incoming;
         state.captions = [];
         state.silenceRanges = [];
+        state.analysis = [];
+        state.qualityRanges = [];
+        elements.smartAnalysis.hidden = true;
         state.activeClipId = "";
         if (state.voiceoverUrl) removeVoiceover();
         if (state.musicUrl) clearMusic();
@@ -1009,12 +1127,21 @@
       selectSegment(state.selectedSegmentId);
       renderTimeline();
       renderCaptions();
-      const warning = state.duration > 900
+      const skipped = rejected + failedToOpen;
+      const warning = skipped
+        ? `${incoming.length} ${
+          incoming.length === 1 ? "take importado" : "takes importados"
+        }. ${skipped} ${
+          skipped === 1
+            ? "arquivo não pôde ser aberto"
+            : "arquivos não puderam ser abertos"
+        } neste navegador.`
+        : state.duration > 900
         ? "Takes carregados. O projeto soma mais de 15 minutos e pode exigir bastante memória."
         : `${incoming.length} ${
           incoming.length === 1 ? "take carregado" : "takes carregados"
         }. A primeira montagem respeita a ordem de seleção.`;
-      setStatus(warning, state.duration > 900 ? "" : "success");
+      setStatus(warning, skipped || state.duration > 900 ? "" : "success");
     } catch (error) {
       if (!state.clips.length) {
         state.file = null;
@@ -1028,6 +1155,353 @@
       );
     } finally {
       elements.videoInput.value = "";
+      [elements.chooseVideo, elements.addVideos, elements.flowAddVideos]
+        .forEach(
+          (button) => setBusy(button, false),
+        );
+    }
+  };
+
+  const median = (values) => {
+    const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
+    if (!sorted.length) return 0;
+    const middle = Math.floor(sorted.length / 2);
+    return sorted.length % 2
+      ? sorted[middle]
+      : (sorted[middle - 1] + sorted[middle]) / 2;
+  };
+
+  const frameMetrics = (pixels, width, height) => {
+    const gray = new Float32Array(width * height);
+    let luminance = 0;
+    for (let index = 0; index < gray.length; index += 1) {
+      const offset = index * 4;
+      const value = pixels[offset] * 0.2126 + pixels[offset + 1] * 0.7152 +
+        pixels[offset + 2] * 0.0722;
+      gray[index] = value;
+      luminance += value;
+    }
+    let detail = 0;
+    let samples = 0;
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const index = y * width + x;
+        detail += Math.abs(
+          gray[index] * 4 - gray[index - 1] - gray[index + 1] -
+            gray[index - width] - gray[index + width],
+        );
+        samples += 1;
+      }
+    }
+    return {
+      gray,
+      exposure: luminance / Math.max(1, gray.length) / 255,
+      sharpness: detail / Math.max(1, samples) / 255,
+    };
+  };
+
+  const estimateFrameShift = (previous, current, width, height) => {
+    let best = { dx: 0, dy: 0, error: Infinity };
+    const radius = 3;
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        let error = 0;
+        let count = 0;
+        for (let y = radius; y < height - radius; y += 2) {
+          for (let x = radius; x < width - radius; x += 2) {
+            const a = previous[y * width + x];
+            const b = current[(y + dy) * width + x + dx];
+            const difference = a - b;
+            error += difference * difference;
+            count += 1;
+          }
+        }
+        const normalized = Math.sqrt(error / Math.max(1, count)) / 255;
+        if (normalized < best.error) best = { dx, dy, error: normalized };
+      }
+    }
+    return best;
+  };
+
+  const waitForDecodedFrame = (video) =>
+    new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        resolve();
+      };
+      globalThis.setTimeout(finish, 800);
+      if (typeof video.requestVideoFrameCallback === "function") {
+        video.requestVideoFrameCallback(finish);
+      } else {
+        requestAnimationFrame(() => requestAnimationFrame(finish));
+      }
+    });
+
+  const seekAnalysisFrame = async (video, time) => {
+    const target = core.clamp(time, 0, Math.max(0, video.duration - 0.03));
+    if (Math.abs(video.currentTime - target) > 0.015) {
+      video.currentTime = target;
+      await waitForMediaEvent(video, "seeked", 8000);
+    }
+    await waitForDecodedFrame(video);
+  };
+
+  const analyzeClipQuality = async (clip, index, total) => {
+    const video = document.createElement("video");
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.style.position = "fixed";
+    video.style.width = "1px";
+    video.style.height = "1px";
+    video.style.opacity = "0";
+    document.body.appendChild(video);
+    video.src = clip.url;
+    video.load();
+    try {
+      if (video.readyState < 1) {
+        await waitForMediaEvent(video, "loadedmetadata", 20000);
+      }
+      const width = 96;
+      const ratio = (video.videoHeight || clip.height || 9) /
+        Math.max(1, video.videoWidth || clip.width || 16);
+      const height = Math.max(54, Math.min(128, Math.round(width * ratio)));
+      canvas.width = width;
+      canvas.height = height;
+      const projectSampleBudget = 120;
+      const maxSamples = Math.max(
+        8,
+        Math.min(42, Math.floor(projectSampleBudget / state.clips.length)),
+      );
+      const sampleCount = Math.max(
+        4,
+        Math.min(maxSamples, Math.ceil(clip.duration / 0.7)),
+      );
+      const interval = clip.duration / sampleCount;
+      const frames = [];
+      let previous = null;
+      let previousShift = { dx: 0, dy: 0 };
+
+      for (let frameIndex = 0; frameIndex < sampleCount; frameIndex += 1) {
+        const time = Math.min(
+          clip.duration - 0.04,
+          Math.max(0.02, (frameIndex + 0.5) * interval),
+        );
+        elements.analysisDetail.textContent = `Take ${
+          index + 1
+        } de ${total} · quadro ${frameIndex + 1} de ${sampleCount}`;
+        await seekAnalysisFrame(video, time);
+        context.drawImage(video, 0, 0, width, height);
+        const image = context.getImageData(0, 0, width, height);
+        const metrics = frameMetrics(image.data, width, height);
+        let shift = { dx: 0, dy: 0, error: 0 };
+        let jerk = 0;
+        if (previous) {
+          shift = estimateFrameShift(previous, metrics.gray, width, height);
+          if (shift.error < 0.26) {
+            jerk = Math.hypot(
+              shift.dx - previousShift.dx,
+              shift.dy - previousShift.dy,
+            );
+            previousShift = shift;
+          } else {
+            previousShift = { dx: 0, dy: 0 };
+          }
+        }
+        frames.push({ time, interval, jerk, ...shift, ...metrics });
+        previous = metrics.gray;
+      }
+
+      const typicalSharpness = median(frames.map((frame) => frame.sharpness));
+      const candidates = frames.map((frame) => {
+        const shaky = frame.jerk >= 2.45 && frame.error < 0.2;
+        const blurry = typicalSharpness > 0.01 &&
+          frame.sharpness < typicalSharpness * 0.42;
+        const exposureBad = frame.exposure < 0.045 || frame.exposure > 0.965;
+        const severity = (shaky ? frame.jerk / 2.45 : 0) +
+          (blurry ? 0.8 : 0) + (exposureBad ? 0.65 : 0);
+        return { ...frame, shaky, blurry, exposureBad, severity };
+      }).filter((frame) => frame.severity > 0);
+
+      const removalBudget = clip.duration * 0.34;
+      let reserved = 0;
+      const selected = candidates.sort((a, b) => b.severity - a.severity)
+        .filter((frame) => {
+          const amount = Math.min(frame.interval, 1.25);
+          if (reserved + amount > removalBudget) return false;
+          reserved += amount;
+          return true;
+        });
+      const ranges = selected.map((frame) => ({
+        start: clip.offset + Math.max(0, frame.time - frame.interval * 0.55),
+        end: clip.offset + Math.min(
+          clip.duration,
+          frame.time + frame.interval * 0.55,
+        ),
+        clipId: clip.id,
+        reason: frame.shaky ? "shake" : frame.blurry ? "blur" : "exposure",
+        severity: frame.severity,
+      }));
+      const selectedTimes = new Set(selected.map((frame) => frame.time));
+      const bestFrame = frames.filter((frame) => !selectedTimes.has(frame.time))
+        .reduce((best, frame) => {
+          const sharpnessScore = typicalSharpness
+            ? Math.min(2, frame.sharpness / typicalSharpness)
+            : 1;
+          const exposureScore = 1 - Math.min(1, Math.abs(frame.exposure - 0.5));
+          const score = sharpnessScore + exposureScore - frame.jerk * 0.16;
+          return !best || score > best.score ? { frame, score } : best;
+        }, null)?.frame || frames[Math.floor(frames.length / 2)];
+      const highlightDuration = Math.min(
+        clip.duration,
+        Math.max(2.8, Math.min(5.2, clip.duration * 0.42)),
+      );
+      const localStart = core.clamp(
+        (bestFrame?.time || clip.duration / 2) - highlightDuration / 2,
+        0,
+        Math.max(0, clip.duration - highlightDuration),
+      );
+      const stableFrames = Math.max(0, frames.length - selected.length);
+      return {
+        clipId: clip.id,
+        name: clip.name,
+        frames: frames.length,
+        stableFrames,
+        score: frames.length ? stableFrames / frames.length : 1,
+        ranges,
+        bestWindow: {
+          start: clip.offset + localStart,
+          end: clip.offset + localStart + highlightDuration,
+        },
+      };
+    } finally {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.remove();
+    }
+  };
+
+  const mergeQualityRanges = (ranges) => {
+    if (typeof core.mergeRanges === "function") {
+      return core.mergeRanges(ranges, state.duration, {
+        gap: 0.28,
+        padding: 0.08,
+      });
+    }
+    return ranges.sort((a, b) => a.start - b.start);
+  };
+
+  const applyQualityCuts = (ranges) => {
+    if (!ranges.length || !elements.avoidShaky.checked) return 0;
+    const before = core.outputDuration(state.segments);
+    const next = typeof core.stableSegmentsFromRanges === "function"
+      ? core.stableSegmentsFromRanges(
+        state.segments,
+        ranges,
+        state.duration,
+        0.85,
+      )
+      : core.subtractRanges(state.segments, ranges, state.duration).filter(
+        (segment) => segment.end - segment.start >= 0.85,
+      );
+    if (!next.length) return 0;
+    state.segments = next;
+    state.selectedSegmentId = state.segments[0].id;
+    return Math.max(0, before - core.outputDuration(state.segments));
+  };
+
+  const analyzeTakes = async () => {
+    if (state.analyzing || !state.clips.length) return null;
+    state.analyzing = true;
+    state.analysis = [];
+    state.qualityRanges = [];
+    elements.smartAnalysis.hidden = false;
+    elements.smartAnalysis.classList.add("is-running");
+    elements.smartAnalysis.classList.remove("is-complete");
+    elements.analysisSummary.textContent = "Lendo movimento e nitidez…";
+    elements.analysisDetail.textContent = "Tudo acontece neste dispositivo";
+    elements.analysisApproved.textContent = "…";
+    elements.analysisRemoved.textContent = "…";
+    elements.analysisMusic.textContent = state.musicUrl ? "pronta" : "pendente";
+    setBusy(elements.analyzeTakes, true, "Analisando…");
+    try {
+      for (let index = 0; index < state.clips.length; index += 1) {
+        state.analysis.push(
+          await analyzeClipQuality(
+            state.clips[index],
+            index,
+            state.clips.length,
+          ),
+        );
+      }
+      state.qualityRanges = mergeQualityRanges(
+        state.analysis.flatMap((result) => result.ranges),
+      );
+      if (state.projectType === "aftermovie") {
+        state.segments = core.normalizeSegments(
+          state.analysis.map((result, index) => {
+            const source = state.segments.find((segment) =>
+              segment.clipId === result.clipId
+            );
+            return {
+              ...(source || {}),
+              id: source?.id || `highlight-${result.clipId}`,
+              clipId: result.clipId,
+              start: result.bestWindow.start,
+              end: result.bestWindow.end,
+              speed: source?.speed || (index % 3 === 1 ? "1.25" : "1"),
+              motion: source?.motion || "none",
+            };
+          }),
+          state.duration,
+        );
+        state.selectedSegmentId = state.segments[0]?.id || "";
+      }
+      const removed = applyQualityCuts(state.qualityRanges);
+      const approved = core.outputDuration(state.segments);
+      const averageScore = state.analysis.reduce(
+        (sum, item) => sum + item.score,
+        0,
+      ) / Math.max(1, state.analysis.length);
+      elements.analysisSummary.textContent = state.projectType === "aftermovie"
+        ? "Melhores momentos selecionados e montagem limpa"
+        : state.qualityRanges.length
+        ? "Montagem limpa e estabilizada por corte"
+        : "Seus takes estão visualmente estáveis";
+      elements.analysisDetail.textContent = `${state.analysis.length} ${
+        state.analysis.length === 1 ? "take analisado" : "takes analisados"
+      } · qualidade média ${Math.round(averageScore * 100)}%`;
+      elements.analysisApproved.textContent = core.formatTime(approved);
+      elements.analysisRemoved.textContent = core.formatTime(removed);
+      elements.smartAnalysis.classList.remove("is-running");
+      elements.smartAnalysis.classList.add("is-complete");
+      selectSegment(state.selectedSegmentId, true);
+      renderTimeline();
+      setStatus(
+        removed > 0.05
+          ? `${
+            core.formatTime(removed, true)
+          } de tremor, desfoque ou exposição ruim removidos.`
+          : "Análise concluída: não encontrei trechos críticos para remover.",
+        "success",
+      );
+      return { removed, approved, score: averageScore };
+    } catch (error) {
+      elements.analysisSummary.textContent =
+        "Não foi possível concluir a análise";
+      elements.analysisDetail.textContent = error.message ||
+        "O navegador interrompeu a leitura dos quadros.";
+      elements.smartAnalysis.classList.remove("is-running");
+      setStatus(elements.analysisDetail.textContent, "error");
+      return null;
+    } finally {
+      state.analyzing = false;
+      setBusy(elements.analyzeTakes, false);
     }
   };
 
@@ -1418,9 +1892,6 @@
       }`,
       "success",
     );
-    if (elements.captionMode.value === "auto") {
-      globalThis.setTimeout(() => transcribe(), 0);
-    }
   };
 
   const encodeWav = (samples, sampleRate) => {
@@ -1584,6 +2055,84 @@
     if (mode === "none") {
       clearMusic();
       setStatus("Projeto configurado sem trilha sonora.");
+    }
+  };
+
+  const ensureAutomaticMusic = async () => {
+    const mode = elements.soundtrackMode.value;
+    if (mode === "none") {
+      elements.analysisMusic.textContent = "sem trilha";
+      return false;
+    }
+    if (mode === "upload") {
+      elements.analysisMusic.textContent = state.musicUrl
+        ? "pronta"
+        : "aguardando";
+      return Boolean(state.musicUrl);
+    }
+    if (state.musicUrl) {
+      elements.analysisMusic.textContent = "pronta";
+      return true;
+    }
+    const direction = String(elements.projectNiche.value || "").trim();
+    const words = direction.toLocaleLowerCase("pt-BR");
+    const preset = /emoc|cinema|elegante|institucional/.test(words)
+      ? "cinematic"
+      : state.projectType === "content" || /leve|calm|delicad/.test(words)
+      ? "golden"
+      : "pulse";
+    elements.musicLibrary.value = preset;
+    if (!elements.musicPrompt.value.trim()) {
+      elements.musicPrompt.value = direction || (
+        state.projectType === "aftermovie"
+          ? "trilha eletrônica crescente, enérgica e cinematográfica"
+          : "trilha moderna, leve e discreta para conteúdo"
+      );
+    }
+    elements.analysisMusic.textContent = "criando…";
+    await createMusic();
+    elements.analysisMusic.textContent = state.musicUrl ? "pronta" : "falhou";
+    return Boolean(state.musicUrl);
+  };
+
+  const createCompleteVideo = async () => {
+    if (state.analyzing || !state.clips.length) return;
+    setupAudioGraph().catch(() => {});
+    setBusy(elements.applyRecipe, true, "Analisando e montando…");
+    try {
+      state.segments = core.normalizeSegments(
+        state.clips.map((clip) => ({
+          start: clip.offset,
+          end: clip.offset + clip.duration,
+          clipId: clip.id,
+          speed: "1",
+          motion: "none",
+        })),
+        state.duration,
+      );
+      state.selectedSegmentId = state.segments[0].id;
+      applyRecipe();
+      const analysis = await analyzeTakes();
+      const hasMusic = await ensureAutomaticMusic();
+      elements.smartAnalysis.hidden = false;
+      elements.smartAnalysis.classList.add("is-complete");
+      if (elements.captionMode.value === "auto") {
+        globalThis.setTimeout(() => transcribe(), 0);
+      }
+      setStatus(
+        `Primeira versão pronta${
+          analysis?.removed > 0.05
+            ? ` · ${
+              core.formatTime(analysis.removed, true)
+            } instáveis removidos`
+            : " · takes aprovados"
+        }${hasMusic ? " · trilha adicionada" : ""}.`,
+        "success",
+      );
+    } catch (error) {
+      setStatus(error.message || "Não foi possível montar o vídeo.", "error");
+    } finally {
+      setBusy(elements.applyRecipe, false);
     }
   };
 
@@ -2175,7 +2724,7 @@
         );
       });
     });
-    elements.applyRecipe.addEventListener("click", applyRecipe);
+    elements.applyRecipe.addEventListener("click", createCompleteVideo);
     const colorBindings = [
       [elements.brightness, "brightness"],
       [elements.contrast, "contrast"],
@@ -2225,6 +2774,7 @@
       input.addEventListener("input", updateOutputs)
     );
     elements.detectSilence.addEventListener("click", detectSilences);
+    elements.analyzeTakes.addEventListener("click", analyzeTakes);
     elements.applySilence.addEventListener("click", applySilenceCuts);
     elements.autoCaptions.addEventListener("click", transcribe);
     elements.addCaption.addEventListener("click", addCaptionAtPlayhead);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f1f0f0" />
+    <meta name="theme-color" content="#09090d" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="SparkFilmes" />
@@ -42,7 +42,7 @@
       </header>
 
       <section class="editor-dropzone" id="editor-dropzone">
-        <input id="video-input" type="file" accept="video/*" multiple hidden />
+        <input id="video-input" type="file" accept="video/*,.mp4,.mov,.m4v,.webm,.3gp,.mpeg,.mpg,.mts,.m2ts" multiple hidden />
         <div class="dropzone-icon" aria-hidden="true">
           <svg viewBox="0 0 48 48" role="img"><path d="M16 14h16M24 6v16M9 28h30v12H9z" /></svg>
         </div>
@@ -51,6 +51,7 @@
         <p>Selecione vários vídeos de uma vez. A ordem escolhida vira a primeira montagem.</p>
         <button class="internal-button internal-button-primary" id="choose-video" type="button">Selecionar takes</button>
         <small>Aceita múltiplos takes em HD, Full HD e 4K. Tudo permanece neste dispositivo.</small>
+        <div class="dropzone-status" id="dropzone-status" aria-live="polite"></div>
       </section>
 
       <section class="editor-workspace" id="editor-workspace" hidden>
@@ -136,6 +137,7 @@
               <span class="flow-number">6</span>
               <span class="flow-field"><strong>Trilha sonora</strong>
                 <select id="soundtrack-mode" aria-label="Origem da trilha sonora">
+                  <option value="auto" selected>Automática · recomendada</option>
                   <option value="none">Sem trilha</option>
                   <option value="upload">Já tenho uma trilha</option>
                   <option value="library">Banco livre Spark</option>
@@ -155,9 +157,23 @@
             </div>
           </div>
 
+          <div class="smart-analysis" id="smart-analysis" hidden>
+            <div class="analysis-orbit" aria-hidden="true"><i></i><span>✦</span></div>
+            <div class="analysis-copy">
+              <span class="analysis-eyebrow">Direção inteligente</span>
+              <strong id="analysis-summary">Analisando os takes…</strong>
+              <small id="analysis-detail">Movimento, nitidez, exposição e ritmo</small>
+            </div>
+            <div class="analysis-metrics">
+              <span><b id="analysis-approved">—</b> aproveitado</span>
+              <span><b id="analysis-removed">—</b> instável</span>
+              <span><b id="analysis-music">—</b> trilha</span>
+            </div>
+          </div>
+
           <footer class="creation-flow-footer">
-            <p><strong>Você continua no controle.</strong> Todos os ajustes ficam disponíveis na bancada abaixo.</p>
-            <button class="internal-button internal-button-primary" id="apply-recipe" type="button">Criar primeira montagem <span aria-hidden="true">→</span></button>
+            <p><strong>Um clique, primeira versão pronta.</strong> O editor analisa, corta as partes ruins e cria a trilha.</p>
+            <button class="internal-button internal-button-primary" id="apply-recipe" type="button">Analisar e montar vídeo <span aria-hidden="true">✦</span></button>
           </footer>
         </section>
 
@@ -189,6 +205,10 @@
             </div>
 
             <div class="quick-actions">
+              <button class="quick-action quick-action-featured" id="analyze-takes" type="button">
+                <span class="quick-action-icon" aria-hidden="true">✦</span>
+                <span><strong>Analisar qualidade</strong><small>Corte tremores, desfoque e quadros ruins</small></span>
+              </button>
               <button class="quick-action" id="detect-silence" type="button">
                 <span class="quick-action-icon" aria-hidden="true">⌁</span>
                 <span><strong>Detectar silêncios</strong><small>Encontre pausas e respiros localmente</small></span>
@@ -212,10 +232,10 @@
               <div class="inspector-section">
                 <header><div><span>Enquadramento</span><h3>Formato de saída</h3></div></header>
                 <div class="format-picker" role="radiogroup" aria-label="Formato do vídeo">
-                  <label><input type="radio" name="format" value="9:16" checked /><span><i class="format-shape portrait"></i>9:16</span></label>
+                  <label><input type="radio" name="format" value="9:16" /><span><i class="format-shape portrait"></i>9:16</span></label>
                   <label><input type="radio" name="format" value="1:1" /><span><i class="format-shape square"></i>1:1</span></label>
                   <label><input type="radio" name="format" value="16:9" /><span><i class="format-shape landscape"></i>16:9</span></label>
-                  <label><input type="radio" name="format" value="original" /><span><i class="format-shape original"></i>Original</span></label>
+                  <label><input type="radio" name="format" value="original" checked /><span><i class="format-shape original"></i>Original</span></label>
                 </div>
                 <label class="editor-field">
                   <span>Ajuste da imagem</span>
@@ -233,6 +253,7 @@
 
               <div class="inspector-section">
                 <header><div><span>Trecho selecionado</span><h3>Movimento e ritmo</h3></div></header>
+                <label class="switch-field quality-switch"><span><b>Evitar partes tremidas</b><small>A análise local remove trechos instáveis da montagem</small></span><input id="avoid-shaky" type="checkbox" checked /><i></i></label>
                 <label class="editor-field"><span>Velocidade</span><select id="segment-speed"><option value="0.75">0,75×</option><option value="1" selected>Normal · 1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="2">2×</option><option value="ramp-up">Speed ramp crescente</option><option value="ramp-down">Speed ramp decrescente</option></select></label>
                 <label class="editor-field"><span>Movimento</span><select id="segment-motion"><option value="none">Sem movimento</option><option value="zoom-in">Zoom in suave</option><option value="zoom-out">Zoom out suave</option><option value="punch">Punch in</option></select></label>
                 <p class="selection-hint" id="selection-hint">Trecho 1 selecionado</p>
