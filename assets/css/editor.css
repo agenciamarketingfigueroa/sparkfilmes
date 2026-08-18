@@ -703,6 +703,11 @@
   transform: translateX(19px);
 }
 
+.switch-field input:focus-visible + i {
+  outline: 3px solid rgba(255, 85, 119, 0.45);
+  outline-offset: 3px;
+}
+
 .silence-result {
   display: grid;
   gap: 0.75rem;
@@ -1101,6 +1106,60 @@
   background: rgba(8, 122, 85, 0.08);
   font-size: 0.68rem;
   font-weight: 800;
+}
+
+.flow-badges {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.wasm-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
+  padding: 0.55rem 0.72rem;
+  color: #8d8a95;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.wasm-status i {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #ff7893;
+  background: rgba(239, 40, 82, 0.12);
+  font-size: 0.55rem;
+  font-style: normal;
+}
+
+.wasm-status.is-ready {
+  border-color: rgba(66, 211, 163, 0.2);
+  color: #62d9b2;
+}
+
+.flow-inline-check {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  color: #aaa7b1;
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.flow-inline-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand);
 }
 
 .flow-ready i {
@@ -1787,6 +1846,29 @@
   background: rgba(239, 40, 82, 0.055);
 }
 
+.soundtrack-mix-section {
+  background:
+    linear-gradient(145deg, rgba(239, 40, 82, 0.07), transparent 58%),
+    #15151b;
+}
+
+.mix-status {
+  border: 1px solid rgba(66, 211, 163, 0.16);
+  border-radius: 999px;
+  padding: 0.38rem 0.55rem;
+  color: #62d9b2;
+  background: rgba(66, 211, 163, 0.07);
+  font-size: 0.7rem;
+}
+
+.music-actions {
+  margin: 1rem 0 0;
+}
+
+.music-actions .internal-button {
+  min-height: 44px;
+}
+
 .timeline-panel {
   background: #121217;
 }
@@ -1819,6 +1901,14 @@
 }
 
 @media (max-width: 780px) {
+  .range-field input[type="range"] {
+    min-height: 44px;
+  }
+
+  .flow-badges {
+    align-items: flex-start;
+    flex-direction: column;
+  }
   .smart-analysis {
     grid-template-columns: auto minmax(0, 1fr);
   }

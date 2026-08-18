@@ -10,6 +10,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="spark-music-api" content="" />
     <title>Editor de vídeo | SparkFilmes</title>
     <link rel="icon" type="image/svg+xml" href="../assets/img/logo-favicon-spark.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -77,7 +78,10 @@
               <h2 id="project-recipe-title">Conte para a gente o que você quer criar</h2>
               <p>O Spark Cut usa essas escolhas para preparar ritmo, movimento, legenda e som.</p>
             </div>
-            <span class="flow-ready"><i aria-hidden="true"></i> Takes prontos</span>
+            <div class="flow-badges">
+              <span class="flow-ready"><i aria-hidden="true"></i> Takes prontos</span>
+              <span class="wasm-status" id="wasm-status" role="status" aria-live="polite" aria-atomic="true"><i aria-hidden="true">W</i> WebAssembly</span>
+            </div>
           </header>
 
           <div class="creation-flow-grid">
@@ -152,7 +156,8 @@
                   </select>
                   <button class="internal-button internal-button-quiet" id="create-music" type="button">Criar trilha</button>
                 </span>
-                <input id="music-input" type="file" accept="audio/*" hidden />
+                <input id="music-input" type="file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.opus,.flac,.aif,.aiff,.caf" hidden />
+                <label class="flow-inline-check"><input type="checkbox" data-mute-takes checked /><span>Silenciar áudio dos takes</span></label>
               </span>
             </div>
           </div>
@@ -261,6 +266,17 @@
             </div>
 
             <div class="inspector-panel" data-panel="audio" hidden>
+              <div class="inspector-section soundtrack-mix-section">
+                <header><div><span>Mixagem final</span><h3>Trilha sonora</h3></div><strong class="mix-status" id="music-mix-status" role="status" aria-live="polite" aria-atomic="true">Sem trilha</strong></header>
+                <label class="switch-field"><span><b>Silenciar áudio dos takes</b><small>Ideal para aftermovies, making of e bastidores</small></span><input type="checkbox" data-mute-takes checked /><i></i></label>
+                <label class="range-field"><span><b>Volume da trilha</b><output id="music-volume-output" for="music-volume">72%</output></span><input id="music-volume" type="range" min="0" max="100" value="72" disabled /></label>
+                <div class="caption-actions music-actions">
+                  <button class="internal-button internal-button-quiet" id="regenerate-music" type="button">Nova trilha</button>
+                  <button class="internal-button internal-button-quiet" id="remove-music" type="button" disabled>Remover trilha</button>
+                </div>
+                <p class="inspector-note">A masterização WebAssembly equilibra volume, graves e picos antes da exportação.</p>
+              </div>
+
               <div class="inspector-section ai-voice-section">
                 <header><div><span>Narração generativa</span><h3>Voz com inteligência artificial</h3></div></header>
                 <p class="inspector-note voice-intro">Crie uma sugestão a partir do tipo de vídeo e do nicho, edite o texto e gere a voz em português no dispositivo.</p>

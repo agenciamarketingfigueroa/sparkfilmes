@@ -32,6 +32,50 @@ assert.equal(core.outputDuration([{ start: 0, end: 10, speed: "2" }]), 5);
 assert.equal(core.findSegmentIndex(subtracted, 5), 1);
 assert.equal(core.findSegmentIndex(subtracted, 2.5), -1);
 
+const assertApproximately = (actual, expected, tolerance = 0.001) => {
+  assert.ok(
+    Math.abs(actual - expected) <= tolerance,
+    `Esperava ${expected} ± ${tolerance}, recebeu ${actual}`,
+  );
+};
+const rampUp = { start: 0, end: 5, speed: "ramp-up" };
+const rampDown = { start: 0, end: 5, speed: "ramp-down" };
+const rampUpExpectedAt = (progress) =>
+  (5 / 1.25) * Math.log((0.75 + 1.25 * progress) / 0.75);
+const rampDownExpectedAt = (progress) =>
+  (5 / 1.25) * Math.log(2 / (2 - 1.25 * progress));
+
+[rampUp, rampDown].forEach((segment) => {
+  assert.equal(core.segmentOutputDurationAt(segment, 0), 0);
+  assertApproximately(
+    core.segmentOutputDurationAt(segment, 1),
+    core.segmentOutputDuration(segment),
+    Number.EPSILON,
+  );
+  const durations = [0, 0.25, 0.5, 0.75, 1].map((progress) =>
+    core.segmentOutputDurationAt(segment, progress)
+  );
+  durations.slice(1).forEach((duration, index) => {
+    assert.ok(duration > durations[index]);
+  });
+});
+assertApproximately(
+  core.segmentOutputDurationAt(rampUp, 0.5),
+  rampUpExpectedAt(0.5),
+);
+assertApproximately(
+  core.segmentOutputDurationAt(rampDown, 0.5),
+  rampDownExpectedAt(0.5),
+);
+assertApproximately(
+  core.segmentOutputDurationAt(rampUp, 1),
+  rampUpExpectedAt(1),
+);
+assertApproximately(
+  core.segmentOutputDurationAt(rampDown, 1),
+  rampDownExpectedAt(1),
+);
+
 const rangesToMerge = [
   { start: 3.12, end: 4 },
   { start: 2, end: 3 },

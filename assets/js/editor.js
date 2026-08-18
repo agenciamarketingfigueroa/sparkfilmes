@@ -110,6 +110,13 @@
     createMusic: $("#create-music"),
     musicInput: $("#music-input"),
     music: $("#music-audio"),
+    muteTakes: $$("[data-mute-takes]"),
+    musicVolume: $("#music-volume"),
+    musicVolumeOutput: $("#music-volume-output"),
+    musicMixStatus: $("#music-mix-status"),
+    regenerateMusic: $("#regenerate-music"),
+    removeMusic: $("#remove-music"),
+    wasmStatus: $("#wasm-status"),
     fitMode: $("#fit-mode"),
     brightness: $("#brightness"),
     contrast: $("#contrast"),
@@ -176,7 +183,11 @@
     captionsEnabled: false,
     soundtrackMode: "auto",
     musicUrl: "",
-    musicVolume: 0.32,
+    musicVolume: 0.72,
+    muteOriginal: true,
+    wasmAnalyzer: null,
+    wasmAttempted: false,
+    wasmPromise: null,
     voiceoverUrl: "",
     voiceoverDuration: 0,
     voiceVolume: 1,
@@ -189,6 +200,8 @@
     captionPosition: 78,
     exporting: false,
     exportCancelled: false,
+    exportError: "",
+    exportStream: null,
     recorder: null,
     chunks: [],
     mimeType: "",
@@ -268,7 +281,7 @@
           0,
           1,
         );
-        elapsed += core.segmentOutputDuration(segment) * progress;
+        elapsed += core.segmentOutputDurationAt(segment, progress);
       }
       break;
     }
@@ -299,6 +312,37 @@
     const target = outputTimeAt(time) % elements.music.duration;
     if (force || Math.abs(elements.music.currentTime - target) > 0.35) {
       elements.music.currentTime = target;
+    }
+  };
+
+  const playMixAudio = async () => {
+    const playback = [];
+    const add = (element, label) => {
+      try {
+        playback.push({ label, promise: Promise.resolve(element.play()) });
+      } catch (error) {
+        playback.push({ label, promise: Promise.reject(error) });
+      }
+    };
+    if (
+      state.voiceoverUrl &&
+      elements.voiceover.currentTime < elements.voiceover.duration
+    ) {
+      add(elements.voiceover, "narração");
+    }
+    if (state.musicUrl) add(elements.music, "trilha sonora");
+    const results = await Promise.allSettled(
+      playback.map((item) => item.promise),
+    );
+    const failedIndex = results.findIndex((result) =>
+      result.status === "rejected"
+    );
+    if (failedIndex >= 0) {
+      throw new Error(
+        `A ${
+          playback[failedIndex].label
+        } não pôde ser reproduzida. Toque em reproduzir novamente ou escolha outro arquivo.`,
+      );
     }
   };
 
@@ -545,7 +589,7 @@
       0,
       1,
     );
-    const elapsed = before + core.segmentOutputDuration(segment) * progress;
+    const elapsed = before + core.segmentOutputDurationAt(segment, progress);
     return elapsed / Math.max(0.01, core.outputDuration(state.segments));
   };
 
@@ -562,15 +606,21 @@
         0,
         clip.duration,
       );
-      if (clip.id !== state.activeClipId || elements.video.src !== clip.url) {
-        if (state.exporting && state.recorder?.state === "recording") {
-          state.recorder.pause();
-          pausedRecorderForTransition = true;
-          if (state.recorder.state !== "paused") {
-            await waitForEvent(state.recorder, "pause");
-          }
+      const sourceChanged = clip.id !== state.activeClipId ||
+        elements.video.src !== clip.url;
+      const needsSeek = sourceChanged ||
+        Math.abs(elements.video.currentTime - localTime) > 0.015;
+      if (
+        needsSeek && state.exporting && state.recorder?.state === "recording"
+      ) {
+        state.recorder.pause();
+        pausedRecorderForTransition = true;
+        if (state.recorder.state !== "paused") {
+          await waitForEvent(state.recorder, "pause");
         }
-        elements.video.pause();
+      }
+      if (needsSeek) elements.video.pause();
+      if (sourceChanged) {
         elements.video.src = clip.url;
         elements.video.load();
         state.activeClipId = clip.id;
@@ -578,7 +628,7 @@
           await waitForEvent(elements.video, "loadedmetadata");
         }
       }
-      if (Math.abs(elements.video.currentTime - localTime) > 0.015) {
+      if (needsSeek) {
         elements.video.currentTime = localTime;
         if (elements.video.seeking) {
           await waitForEvent(elements.video, "seeked");
@@ -590,13 +640,7 @@
       updateTransport();
       if (autoplay) {
         await elements.video.play();
-        if (
-          state.voiceoverUrl &&
-          elements.voiceover.currentTime < elements.voiceover.duration
-        ) {
-          elements.voiceover.play().catch(() => {});
-        }
-        if (state.musicUrl) elements.music.play().catch(() => {});
+        await playMixAudio();
         if (pausedRecorderForTransition && state.recorder?.state === "paused") {
           state.recorder.resume();
         }
@@ -610,7 +654,29 @@
     elements.video.pause();
     elements.voiceover.pause();
     elements.music.pause();
-    if (state.recorder?.state === "recording") state.recorder.stop();
+    if (state.recorder && state.recorder.state !== "inactive") {
+      try {
+        state.recorder.stop();
+      } catch (_error) {
+        cleanupExport();
+      }
+    } else if (state.exporting) {
+      cleanupExport();
+    }
+  };
+
+  const handleTransitionFailure = (error) => {
+    const message = error?.message ||
+      "O navegador não conseguiu avançar para o próximo trecho.";
+    if (state.exporting) {
+      state.exportCancelled = true;
+      state.exportError = message;
+      setStatus(message, "error");
+      finishExportPlayback();
+      return;
+    }
+    elements.video.pause();
+    setStatus(message, "error");
   };
 
   const maintainPlayback = () => {
@@ -628,7 +694,9 @@
         else elements.video.pause();
         return;
       }
-      activateGlobalTime(state.segments[index].start, true);
+      activateGlobalTime(state.segments[index].start, true).catch(
+        handleTransitionFailure,
+      );
       return;
     }
     const segment = state.segments[index];
@@ -642,14 +710,16 @@
     if (time >= segment.end - 0.035) {
       const next = state.segments[index + 1];
       if (next) {
-        activateGlobalTime(next.start, true);
+        activateGlobalTime(next.start, true).catch(handleTransitionFailure);
         selectSegment(next.id);
       } else if (state.exporting) {
         finishExportPlayback();
       } else {
         elements.video.pause();
         elements.voiceover.pause();
-        activateGlobalTime(state.segments[0].start);
+        activateGlobalTime(state.segments[0].start).catch(
+          handleTransitionFailure,
+        );
       }
     }
     syncVoiceover(time);
@@ -769,7 +839,7 @@
     elements.voiceover.pause();
     elements.music.pause();
     selectSegmentAtTime(target);
-    activateGlobalTime(target);
+    activateGlobalTime(target).catch(handleTransitionFailure);
   };
 
   const setupAudioGraph = async () => {
@@ -796,17 +866,25 @@
     const voiceGain = context.createGain();
     const musicSource = context.createMediaElementSource(elements.music);
     const musicGain = context.createGain();
+    const mixBus = context.createGain();
+    const masterCompressor = context.createDynamicsCompressor();
     const monitor = context.createGain();
     const destination = context.createMediaStreamDestination();
+    gain.gain.value = state.muteOriginal ? 0 : state.volume;
+    voiceGain.gain.value = state.voiceVolume;
+    musicGain.gain.value = state.musicUrl ? state.musicVolume : 0;
     source.connect(highpass).connect(lowpass).connect(compressor).connect(gain);
-    gain.connect(monitor).connect(context.destination);
-    gain.connect(destination);
-    voiceSource.connect(voiceGain);
-    voiceGain.connect(monitor);
-    voiceGain.connect(destination);
-    musicSource.connect(musicGain);
-    musicGain.connect(monitor);
-    musicGain.connect(destination);
+    gain.connect(mixBus);
+    voiceSource.connect(voiceGain).connect(mixBus);
+    musicSource.connect(musicGain).connect(mixBus);
+    masterCompressor.threshold.value = -4;
+    masterCompressor.knee.value = 2;
+    masterCompressor.ratio.value = 16;
+    masterCompressor.attack.value = 0.003;
+    masterCompressor.release.value = 0.16;
+    mixBus.connect(masterCompressor);
+    masterCompressor.connect(monitor).connect(context.destination);
+    masterCompressor.connect(destination);
     state.audio = {
       context,
       source,
@@ -818,11 +896,21 @@
       voiceGain,
       musicSource,
       musicGain,
+      mixBus,
+      masterCompressor,
       monitor,
       destination,
     };
     updateAudioGraph();
     return state.audio;
+  };
+
+  const setMuteOriginal = (muted) => {
+    state.muteOriginal = Boolean(muted);
+    elements.muteTakes.forEach((input) => {
+      input.checked = state.muteOriginal;
+    });
+    updateAudioGraph();
   };
 
   const updateAudioGraph = () => {
@@ -848,13 +936,17 @@
     compressor.ratio.setTargetAtTime(state.cleanVoice ? 3 : 1, now, 0.02);
     compressor.attack.setTargetAtTime(0.012, now, 0.02);
     compressor.release.setTargetAtTime(0.22, now, 0.02);
-    const originalVolume = state.voiceoverUrl && state.duckOriginal
+    const originalVolume = state.muteOriginal
+      ? 0
+      : state.voiceoverUrl && state.duckOriginal
       ? state.volume * 0.25
       : state.volume;
-    gain.gain.setTargetAtTime(originalVolume, now, 0.02);
+    gain.gain.cancelScheduledValues(now);
+    if (state.muteOriginal) gain.gain.setValueAtTime(0, now);
+    else gain.gain.setTargetAtTime(originalVolume, now, 0.02);
     voiceGain.gain.setTargetAtTime(state.voiceVolume, now, 0.02);
     musicGain.gain.setTargetAtTime(
-      state.musicUrl ? state.musicVolume : 0,
+      state.musicUrl ? state.musicVolume * (state.voiceoverUrl ? 0.42 : 1) : 0,
       now,
       0.02,
     );
@@ -874,13 +966,7 @@
     await elements.video.play();
     syncVoiceover(globalTime(), true);
     syncMusic(globalTime(), true);
-    if (
-      state.voiceoverUrl &&
-      elements.voiceover.currentTime < elements.voiceover.duration
-    ) {
-      elements.voiceover.play().catch(() => {});
-    }
-    if (state.musicUrl) elements.music.play().catch(() => {});
+    await playMixAudio();
   };
 
   const togglePlay = async () => {
@@ -924,6 +1010,7 @@
     elements.captionMode.value = state.captionsEnabled ? "auto" : "none";
     elements.captionPreset.disabled = !state.captionsEnabled;
     elements.autoCaptions.disabled = !state.captionsEnabled;
+    setMuteOriginal(state.projectType === "aftermovie");
     if (state.voiceoverUrl) removeVoiceover();
     state.brightness = 0;
     state.contrast = 0;
@@ -1171,8 +1258,109 @@
       : (sorted[middle - 1] + sorted[middle]) / 2;
   };
 
-  const frameMetrics = (pixels, width, height) => {
-    const gray = new Float32Array(width * height);
+  const loadWasmAnalyzer = async () => {
+    if (state.wasmAnalyzer) return state.wasmAnalyzer;
+    if (state.wasmPromise) return state.wasmPromise;
+    if (state.wasmAttempted || typeof WebAssembly !== "object") return null;
+    state.wasmAttempted = true;
+    state.wasmPromise = (async () => {
+      try {
+        const response = await fetch("../assets/wasm/spark-processor.wasm");
+        if (!response.ok) throw new Error("Módulo WASM indisponível.");
+        let result;
+        try {
+          result = await WebAssembly.instantiateStreaming(response.clone(), {});
+        } catch {
+          result = await WebAssembly.instantiate(
+            await response.arrayBuffer(),
+            {},
+          );
+        }
+        const api = result.instance.exports;
+        const memory = api.memory;
+        const requiredFunctions = [
+          "current_buffer",
+          "exposure",
+          "sharpness",
+          "best_shift",
+          "shift_error",
+          "commit_frame",
+          "audio_buffer",
+          "master_audio",
+        ];
+        if (
+          !memory ||
+          requiredFunctions.some((name) => typeof api[name] !== "function")
+        ) {
+          throw new Error("ABI WebAssembly incompatível.");
+        }
+        state.wasmAnalyzer = {
+          api,
+          setFrame(gray) {
+            new Uint8Array(
+              memory.buffer,
+              Number(api.current_buffer()),
+              gray.length,
+            ).set(gray);
+          },
+          exposure(length) {
+            return Number(api.exposure(length)) / (255 * 256);
+          },
+          sharpness(width, height) {
+            return Number(api.sharpness(width, height)) / (256 * 255);
+          },
+          estimateShift(width, height) {
+            const packed = Number(api.best_shift(width, height, 3));
+            return {
+              dx: packed >> 16,
+              dy: (packed << 16) >> 16,
+              error: Number(api.shift_error()) / 65536,
+            };
+          },
+          commit(length) {
+            api.commit_frame(length);
+          },
+          master(samples, targetPeak = 0.92) {
+            if (
+              typeof api.audio_buffer !== "function" ||
+              typeof api.master_audio !== "function"
+            ) return samples;
+            const pointer = Number(api.audio_buffer());
+            const requiredBytes = pointer + samples.byteLength;
+            if (requiredBytes > memory.buffer.byteLength) {
+              memory.grow(
+                Math.ceil((requiredBytes - memory.buffer.byteLength) / 65536),
+              );
+            }
+            const buffer = new Float32Array(
+              memory.buffer,
+              pointer,
+              samples.length,
+            );
+            buffer.set(samples);
+            api.master_audio(samples.length, targetPeak);
+            samples.set(buffer);
+            return samples;
+          },
+        };
+        elements.wasmStatus.classList.add("is-ready");
+        elements.wasmStatus.lastChild.textContent = " WASM ativo";
+        return state.wasmAnalyzer;
+      } catch (_error) {
+        elements.wasmStatus.classList.remove("is-ready");
+        elements.wasmStatus.lastChild.textContent = " modo compatível";
+        return null;
+      }
+    })();
+    try {
+      return await state.wasmPromise;
+    } finally {
+      state.wasmPromise = null;
+    }
+  };
+
+  const frameMetrics = (pixels, width, height, analyzer = null) => {
+    const gray = new Uint8Array(width * height);
     let luminance = 0;
     for (let index = 0; index < gray.length; index += 1) {
       const offset = index * 4;
@@ -1180,6 +1368,14 @@
         pixels[offset + 2] * 0.0722;
       gray[index] = value;
       luminance += value;
+    }
+    if (analyzer) {
+      analyzer.setFrame(gray);
+      return {
+        gray,
+        exposure: analyzer.exposure(gray.length),
+        sharpness: analyzer.sharpness(width, height),
+      };
     }
     let detail = 0;
     let samples = 0;
@@ -1248,7 +1444,7 @@
     await waitForDecodedFrame(video);
   };
 
-  const analyzeClipQuality = async (clip, index, total) => {
+  const analyzeClipQuality = async (clip, index, total, analyzer = null) => {
     const video = document.createElement("video");
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d", { willReadFrequently: true });
@@ -1297,11 +1493,13 @@
         await seekAnalysisFrame(video, time);
         context.drawImage(video, 0, 0, width, height);
         const image = context.getImageData(0, 0, width, height);
-        const metrics = frameMetrics(image.data, width, height);
+        const metrics = frameMetrics(image.data, width, height, analyzer);
         let shift = { dx: 0, dy: 0, error: 0 };
         let jerk = 0;
-        if (previous) {
-          shift = estimateFrameShift(previous, metrics.gray, width, height);
+        if (previous || (analyzer && frameIndex > 0)) {
+          shift = analyzer
+            ? analyzer.estimateShift(width, height)
+            : estimateFrameShift(previous, metrics.gray, width, height);
           if (shift.error < 0.26) {
             jerk = Math.hypot(
               shift.dx - previousShift.dx,
@@ -1313,7 +1511,8 @@
           }
         }
         frames.push({ time, interval, jerk, ...shift, ...metrics });
-        previous = metrics.gray;
+        if (analyzer) analyzer.commit(metrics.gray.length);
+        else previous = metrics.gray;
       }
 
       const typicalSharpness = median(frames.map((frame) => frame.sharpness));
@@ -1430,12 +1629,17 @@
     elements.analysisMusic.textContent = state.musicUrl ? "pronta" : "pendente";
     setBusy(elements.analyzeTakes, true, "Analisando…");
     try {
+      const analyzer = await loadWasmAnalyzer();
+      elements.analysisDetail.textContent = analyzer
+        ? "WebAssembly ativo · análise acelerada no dispositivo"
+        : "Análise compatível ativa neste dispositivo";
       for (let index = 0; index < state.clips.length; index += 1) {
         state.analysis.push(
           await analyzeClipQuality(
             state.clips[index],
             index,
             state.clips.length,
+            analyzer,
           ),
         );
       }
@@ -1812,6 +2016,7 @@
     state.niche = String(elements.projectNiche.value || "").trim();
     state.transitionStyle = elements.transitionStyle.value;
     state.captionsEnabled = elements.captionMode.value !== "none";
+    state.muteOriginal = Boolean(elements.muteTakes[0]?.checked);
     elements.captionsEnabled.checked = state.captionsEnabled;
     state.fit = "contain";
     elements.fitMode.value = "contain";
@@ -1823,6 +2028,7 @@
         saturation: 12,
         warmth: 6,
         volume: 80,
+        musicVolume: 72,
         captionStyle: "clean",
         cleanVoice: false,
       },
@@ -1833,6 +2039,7 @@
         saturation: 5,
         warmth: 2,
         volume: 100,
+        musicVolume: 48,
         captionStyle: "spark",
         cleanVoice: true,
       },
@@ -1843,6 +2050,7 @@
         saturation: 14,
         warmth: 5,
         volume: 65,
+        musicVolume: 52,
         captionStyle: "impact",
         cleanVoice: true,
       },
@@ -1868,11 +2076,13 @@
     state.saturation = recipe.saturation;
     state.warmth = recipe.warmth;
     state.volume = recipe.volume / 100;
+    state.musicVolume = recipe.musicVolume / 100;
     state.cleanVoice = recipe.cleanVoice;
     elements.contrast.value = recipe.contrast;
     elements.saturation.value = recipe.saturation;
     elements.warmth.value = recipe.warmth;
     elements.volume.value = recipe.volume;
+    elements.musicVolume.value = recipe.musicVolume;
     elements.cleanVoice.checked = recipe.cleanVoice;
     setCaptionStyle(elements.captionPreset.value || recipe.captionStyle);
     const selected = selectedSegment();
@@ -1932,6 +2142,10 @@
     elements.music.load();
     if (state.musicUrl) URL.revokeObjectURL(state.musicUrl);
     state.musicUrl = "";
+    elements.musicMixStatus.textContent = "Sem trilha";
+    elements.analysisMusic.textContent = "sem trilha";
+    elements.musicVolume.disabled = true;
+    elements.removeMusic.disabled = true;
     updateAudioGraph();
   };
 
@@ -1945,6 +2159,12 @@
     }
     await setupAudioGraph();
     updateAudioGraph();
+    elements.musicVolume.disabled = false;
+    elements.removeMusic.disabled = false;
+    elements.musicMixStatus.textContent = `Pronta · ${
+      Math.round(state.musicVolume * 100)
+    }%`;
+    elements.analysisMusic.textContent = "pronta";
     setStatus(
       `${label} adicionada à montagem e pronta para exportar.`,
       "success",
@@ -1957,50 +2177,179 @@
       2166136261,
     );
 
+  const getMusicApiEndpoint = () =>
+    String(
+      $('meta[name="spark-music-api"]')?.getAttribute("content") || "",
+    ).trim();
+
+  const decodeBase64Audio = (encoded, type = "audio/mpeg") => {
+    const raw = globalThis.atob(encoded);
+    const bytes = new Uint8Array(raw.length);
+    for (let index = 0; index < raw.length; index += 1) {
+      bytes[index] = raw.charCodeAt(index);
+    }
+    return new Blob([bytes], { type });
+  };
+
+  const requestExternalMusic = async (description, duration, preset) => {
+    const endpoint = getMusicApiEndpoint();
+    if (!endpoint) return null;
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: description,
+        duration: core.clamp(Math.round(duration || 45), 8, 180),
+        preset,
+        projectType: state.projectType,
+      }),
+    });
+    if (!response.ok) {
+      let message = "O serviço externo de música não respondeu.";
+      try {
+        const body = await response.json();
+        if (body?.error) message = String(body.error);
+      } catch (_error) {
+        // O fallback local assume quando o provedor não envia JSON.
+      }
+      throw new Error(message);
+    }
+    const type = response.headers.get("content-type") || "";
+    if (type.startsWith("audio/")) return response.blob();
+    const body = await response.json();
+    if (body.audioBase64) {
+      return decodeBase64Audio(body.audioBase64, body.mimeType);
+    }
+    if (body.audioUrl) {
+      const audioResponse = await fetch(body.audioUrl);
+      if (!audioResponse.ok) {
+        throw new Error("A música foi criada, mas não pôde ser baixada.");
+      }
+      return audioResponse.blob();
+    }
+    throw new Error("O serviço externo não retornou um arquivo de áudio.");
+  };
+
+  const masterMusicFallback = (samples, targetPeak = 0.92) => {
+    let peak = 0;
+    let energy = 0;
+    for (let index = 0; index < samples.length; index += 1) {
+      const value = samples[index];
+      peak = Math.max(peak, Math.abs(value));
+      energy += value * value;
+    }
+    const rms = Math.sqrt(energy / Math.max(1, samples.length));
+    const gain = Math.min(
+      peak ? targetPeak / peak : 1,
+      rms ? 0.2 / rms : 1,
+      3.2,
+    );
+    const saturation = Math.tanh(1.35);
+    for (let index = 0; index < samples.length; index += 1) {
+      samples[index] = Math.tanh(samples[index] * gain * 1.35) / saturation;
+    }
+    return samples;
+  };
+
   const generateMusicSamples = (description, duration, preset) => {
-    const sampleRate = 22050;
-    const safeDuration = core.clamp(duration || 45, 20, 180);
+    const sampleRate = 32000;
+    const mobile = globalThis.matchMedia?.("(max-width: 780px)")?.matches;
+    const safeDuration = core.clamp(duration || 45, 20, mobile ? 60 : 120);
     const length = Math.ceil(safeDuration * sampleRate);
     const samples = new Float32Array(length);
     const words = `${description} ${preset}`.toLowerCase();
-    const bpm = /calm|leve|suave|golden/.test(words)
-      ? 92
-      : /cinema|emoc|rise/.test(words)
-      ? 108
-      : 126;
+    const cinematic = /cinema|emoc|rise|dram/.test(words);
+    const gentle = /calm|leve|suave|golden|acoustic/.test(words);
+    const bpm = gentle ? 94 : cinematic ? 110 : 126;
     const beat = 60 / bpm;
     const seed = musicSeed(words);
-    const roots = /cinema|emoc|rise/.test(words)
+    const roots = cinematic
       ? [110, 130.81, 146.83, 98]
-      : /leve|golden|acoustic/.test(words)
+      : gentle
       ? [130.81, 164.81, 196, 146.83]
       : [110, 146.83, 130.81, 164.81];
-    const brightness = /dark|cinema|dram/.test(words) ? 0.45 : 0.72;
+    const chord = cinematic ? [1, 1.189207, 1.498307] : [1, 1.259921, 1.498307];
+    const barDuration = beat * 4;
+    const brightness = cinematic ? 0.5 : gentle ? 0.62 : 0.82;
+    let noiseState = seed || 1;
+    let previousNoise = 0;
 
     for (let index = 0; index < length; index += 1) {
       const time = index / sampleRate;
-      const barPosition = time % (beat * 4);
-      const root = roots[Math.floor(time / (beat * 4)) % roots.length];
+      const progress = time / safeDuration;
+      const barPosition = time % barDuration;
+      const barIndex = Math.floor(time / barDuration);
+      const root = roots[barIndex % roots.length];
+      const energy = progress < 0.1
+        ? 0.22 + progress * 3.8
+        : progress < 0.34
+        ? 0.68 + (progress - 0.1) * 1.15
+        : progress < 0.72
+        ? 1
+        : progress < 0.8
+        ? 0.34
+        : progress < 0.94
+        ? 1.08
+        : Math.max(0.18, (1 - progress) * 16);
       const kickPosition = time % beat;
-      const kick = kickPosition < 0.13
-        ? Math.sin(2 * Math.PI * (52 - kickPosition * 145) * kickPosition) *
-          Math.exp(-kickPosition * 25)
+      const kickEnabled = progress > 0.08 &&
+        !(progress > 0.72 && progress < 0.8);
+      const kick = kickEnabled && kickPosition < 0.18
+        ? Math.sin(
+          2 * Math.PI * (58 * kickPosition - 32 * kickPosition ** 2),
+        ) * Math.exp(-kickPosition * 23)
         : 0;
-      const hatPosition = (time + beat / 2) % beat;
-      const noise = (((index * 16807 + seed) % 2147483647) / 1073741823.5) - 1;
-      const hat = hatPosition < 0.045 ? noise * Math.exp(-hatPosition * 70) : 0;
-      const pulseGate = (time % (beat / 2)) < beat * 0.28 ? 1 : 0.18;
-      const bass = Math.sin(2 * Math.PI * (root / 2) * time) * pulseGate;
+      noiseState ^= noiseState << 13;
+      noiseState ^= noiseState >>> 17;
+      noiseState ^= noiseState << 5;
+      const noise = (noiseState >>> 0) / 2147483648 - 1;
+      const brightNoise = noise - previousNoise * 0.82;
+      previousNoise = noise;
+      const hatPosition = time % (beat / 2);
+      const hat = hatPosition < 0.045
+        ? brightNoise * Math.exp(-hatPosition * 78)
+        : 0;
+      const snarePosition = (time + beat) % (beat * 2);
+      const snare = snarePosition < 0.16
+        ? (brightNoise * 0.78 +
+          Math.sin(2 * Math.PI * 176 * snarePosition) * 0.22) *
+          Math.exp(-snarePosition * 19)
+        : 0;
+      const pulseGate = (time % (beat / 2)) < beat * 0.3 ? 1 : 0.12;
+      const bass = (
+        Math.sin(2 * Math.PI * (root / 2) * time) * 0.78 +
+        Math.sin(2 * Math.PI * (root / 4) * time) * 0.22
+      ) * pulseGate;
       const pad = (
-        Math.sin(2 * Math.PI * root * time) +
-        Math.sin(2 * Math.PI * root * 1.25 * time) * 0.55 +
-        Math.sin(2 * Math.PI * root * 1.5 * time) * 0.4
-      ) / 1.95;
-      const rise = Math.min(1, time / 6);
-      const fade = Math.min(1, time / 0.8, (safeDuration - time) / 1.5);
-      samples[index] = (kick * 0.36 + hat * 0.08 * brightness + bass * 0.16 +
-        pad * 0.13 * rise) * Math.max(0, fade);
-      if (barPosition > beat * 3.75) samples[index] *= 0.72;
+        Math.sin(2 * Math.PI * root * chord[0] * time) +
+        Math.sin(2 * Math.PI * root * chord[1] * time) * 0.72 +
+        Math.sin(2 * Math.PI * root * chord[2] * time) * 0.58
+      ) / 2.3;
+      const arpStep = Math.floor(time / (beat / 2));
+      const arpFrequency = root * 2 * chord[arpStep % chord.length];
+      const arpPosition = time % (beat / 2);
+      const arp = Math.sin(2 * Math.PI * arpFrequency * time) *
+        Math.exp(-arpPosition * (gentle ? 5.5 : 8));
+      const barEdge = Math.min(
+        1,
+        barPosition / 0.045,
+        (barDuration - barPosition) / 0.045,
+      );
+      const transition = barIndex % 8 === 7
+        ? brightNoise * Math.max(0, (barPosition / barDuration - 0.72) * 0.16)
+        : 0;
+      const sidechain = kickEnabled
+        ? 0.58 + 0.42 * Math.min(1, kickPosition / 0.14)
+        : 1;
+      const fade = Math.min(1, time / 0.9, (safeDuration - time) / 1.7);
+      const drums = kick * 0.5 + snare * 0.18 * energy +
+        hat * 0.085 * brightness * energy;
+      const harmony = (
+        bass * 0.2 * energy +
+        pad * 0.15 * barEdge +
+        arp * 0.1 * brightness * Math.max(0.25, energy)
+      ) * sidechain;
+      samples[index] = (drums + harmony + transition) * Math.max(0, fade);
     }
     return { samples, sampleRate };
   };
@@ -2008,25 +2357,66 @@
   const createMusic = async () => {
     const mode = elements.soundtrackMode.value;
     const preset = elements.musicLibrary.value;
-    const description = String(elements.musicPrompt.value || "").trim();
+    const description = String(elements.musicPrompt.value || "").trim() ||
+      String(elements.projectNiche.value || "").trim() ||
+      (state.projectType === "aftermovie"
+        ? "eletrônica crescente, enérgica e cinematográfica"
+        : "moderna, leve e discreta para conteúdo");
     if (mode === "ai" && !description) {
       setStatus("Descreva o clima da trilha que você quer gerar.", "error");
       elements.musicPrompt.focus();
       return;
     }
     setBusy(elements.createMusic, true, "Criando…");
+    elements.musicMixStatus.textContent = "Criando…";
     try {
-      await new Promise((resolve) => globalThis.setTimeout(resolve, 40));
+      const duration = core.outputDuration(state.segments);
+      if (["auto", "ai"].includes(mode) && getMusicApiEndpoint()) {
+        try {
+          const externalMusic = await requestExternalMusic(
+            description,
+            duration,
+            preset,
+          );
+          if (externalMusic) {
+            await useMusicBlob(externalMusic, "Trilha criada pela IA");
+            return;
+          }
+        } catch (externalError) {
+          setStatus(
+            `${externalError.message} Criando uma versão local agora…`,
+          );
+        }
+      }
+      await new Promise((resolve) => globalThis.setTimeout(resolve, 30));
       const generated = generateMusicSamples(
         description,
-        core.outputDuration(state.segments),
+        duration,
         preset,
       );
+      elements.musicMixStatus.textContent = "Masterizando…";
+      const analyzer = await loadWasmAnalyzer();
+      let wasmMastered = false;
+      if (analyzer) {
+        try {
+          analyzer.master(generated.samples, 0.92);
+          wasmMastered = true;
+        } catch (_error) {
+          masterMusicFallback(generated.samples, 0.92);
+        }
+      } else {
+        masterMusicFallback(generated.samples, 0.92);
+      }
       await useMusicBlob(
         encodeWav(generated.samples, generated.sampleRate),
-        mode === "ai" ? "Trilha generativa" : "Trilha do banco Spark",
+        mode === "library"
+          ? "Trilha do banco Spark"
+          : wasmMastered
+          ? "Trilha generativa masterizada"
+          : "Trilha generativa local",
       );
     } catch (error) {
+      elements.musicMixStatus.textContent = "Não criada";
       setStatus(error.message || "Não foi possível criar a trilha.", "error");
     } finally {
       setBusy(elements.createMusic, false);
@@ -2034,7 +2424,11 @@
   };
 
   const importMusic = async (file) => {
-    if (!file || !String(file.type).startsWith("audio/")) {
+    const compatible = file && (
+      String(file.type).startsWith("audio/") ||
+      /\.(mp3|wav|m4a|aac|ogg|oga|opus|flac|aiff?|caf)$/i.test(file.name)
+    );
+    if (!compatible) {
       setStatus("Escolha um arquivo de áudio válido.", "error");
       return;
     }
@@ -2049,7 +2443,7 @@
     elements.musicPrompt.hidden = mode !== "ai";
     elements.musicLibrary.hidden = mode !== "library";
     elements.createMusic.textContent = mode === "ai"
-      ? "Gerar trilha"
+      ? getMusicApiEndpoint() ? "Gerar com IA" : "Gerar versão local"
       : "Usar trilha";
     if (mode === "upload") elements.musicInput.click();
     if (mode === "none") {
@@ -2113,7 +2507,19 @@
       state.selectedSegmentId = state.segments[0].id;
       applyRecipe();
       const analysis = await analyzeTakes();
+      if (!analysis) {
+        throw new Error(
+          "A montagem foi iniciada, mas a análise dos takes não pôde ser concluída.",
+        );
+      }
       const hasMusic = await ensureAutomaticMusic();
+      if (!hasMusic && elements.soundtrackMode.value !== "none") {
+        throw new Error(
+          elements.soundtrackMode.value === "upload"
+            ? "A montagem está pronta, mas falta selecionar a trilha que será exportada."
+            : "A montagem está pronta, mas a trilha não pôde ser criada. Tente gerar uma nova trilha.",
+        );
+      }
       elements.smartAnalysis.hidden = false;
       elements.smartAnalysis.classList.add("is-complete");
       if (elements.captionMode.value === "auto") {
@@ -2400,6 +2806,8 @@
 
   const cleanupExport = () => {
     state.exporting = false;
+    state.exportStream?.getTracks().forEach((track) => track.stop());
+    state.exportStream = null;
     state.recorder = null;
     elements.voiceover.pause();
     elements.music.pause();
@@ -2429,6 +2837,7 @@
       await setupAudioGraph();
       state.exporting = true;
       state.exportCancelled = false;
+      state.exportError = "";
       state.chunks = [];
       state.mimeType = mimeType;
       elements.video.pause();
@@ -2440,9 +2849,12 @@
       const canvasStream = elements.canvas.captureStream(30);
       const tracks = [
         ...canvasStream.getVideoTracks(),
-        ...state.audio.destination.stream.getAudioTracks(),
+        ...state.audio.destination.stream.getAudioTracks().map((track) =>
+          track.clone()
+        ),
       ];
       const stream = new MediaStream(tracks);
+      state.exportStream = stream;
       const quality = Number(elements.exportQuality.value);
       const bitrate = quality >= 2160
         ? 35_000_000
@@ -2484,17 +2896,19 @@
             "Concluído. O download foi iniciado.";
           elements.exportProgressBar.style.width = "100%";
         } else {
-          setStatus("Exportação cancelada.");
+          setStatus(
+            state.exportError || "Exportação cancelada.",
+            state.exportError ? "error" : "",
+          );
           elements.exportProgress.hidden = true;
         }
         cleanupExport();
       }, { once: true });
       state.recorder.addEventListener("error", () => {
         state.exportCancelled = true;
-        setStatus(
-          "O navegador interrompeu a exportação. Tente uma qualidade menor ou um vídeo mais curto.",
-          "error",
-        );
+        state.exportError =
+          "O navegador interrompeu a exportação. Tente uma qualidade menor ou um vídeo mais curto.";
+        setStatus(state.exportError, "error");
         cleanupExport();
       }, { once: true });
       elements.exportProgress.hidden = false;
@@ -2505,21 +2919,24 @@
       await activateGlobalTime(state.segments[0].start);
       syncVoiceover(state.segments[0].start, true);
       syncMusic(state.segments[0].start, true);
+      const videoPlayback = elements.video.play();
+      const audioPlayback = playMixAudio();
       state.recorder.start(1000);
-      await elements.video.play();
-      if (state.voiceoverUrl) elements.voiceover.play().catch(() => {});
-      if (state.musicUrl) elements.music.play().catch(() => {});
+      await videoPlayback;
+      await audioPlayback;
       setStatus(
         "Renderizando no dispositivo. A prévia ficará sem som durante a exportação.",
       );
     } catch (error) {
       state.exportCancelled = true;
-      if (state.recorder?.state === "recording") state.recorder.stop();
-      cleanupExport();
-      setStatus(
-        error.message || "Não foi possível iniciar a exportação.",
-        "error",
-      );
+      state.exportError = error.message ||
+        "Não foi possível iniciar a exportação.";
+      setStatus(state.exportError, "error");
+      if (state.recorder && state.recorder.state !== "inactive") {
+        state.recorder.stop();
+      } else {
+        cleanupExport();
+      }
     }
   };
 
@@ -2537,6 +2954,14 @@
       ? `+${state.warmth}`
       : String(state.warmth);
     $("#volume-output").textContent = `${Math.round(state.volume * 100)}%`;
+    elements.musicVolumeOutput.textContent = `${
+      Math.round(state.musicVolume * 100)
+    }%`;
+    if (state.musicUrl) {
+      elements.musicMixStatus.textContent = `Pronta · ${
+        Math.round(state.musicVolume * 100)
+      }%`;
+    }
     $("#voice-volume-output").textContent = `${
       Math.round(state.voiceVolume * 100)
     }%`;
@@ -2684,6 +3109,7 @@
       elements.captionsEnabled.checked = enabled;
       elements.captionPreset.disabled = !enabled;
       elements.autoCaptions.disabled = !enabled;
+      setMuteOriginal(state.projectType === "aftermovie");
       drawPreview();
     });
     elements.projectNiche.addEventListener("input", () => {
@@ -2716,6 +3142,40 @@
       updateSoundtrackControls,
     );
     elements.createMusic.addEventListener("click", createMusic);
+    elements.regenerateMusic.addEventListener("click", () => {
+      if (["none", "upload"].includes(elements.soundtrackMode.value)) {
+        elements.soundtrackMode.value = "auto";
+        updateSoundtrackControls();
+      }
+      clearMusic();
+      createMusic();
+    });
+    elements.removeMusic.addEventListener("click", () => {
+      elements.soundtrackMode.value = "none";
+      updateSoundtrackControls();
+      setStatus("Trilha removida da montagem.", "success");
+    });
+    elements.muteTakes.forEach((input) =>
+      input.addEventListener("change", () => {
+        setMuteOriginal(input.checked);
+        setStatus(
+          input.checked
+            ? "Áudio dos takes silenciado. A exportação usará apenas a trilha e a narração."
+            : "Áudio original dos takes reativado.",
+          "success",
+        );
+      })
+    );
+    elements.musicVolume.addEventListener("input", () => {
+      state.musicVolume = Number(elements.musicVolume.value) / 100;
+      if (state.musicUrl) {
+        elements.musicMixStatus.textContent = `Pronta · ${
+          Math.round(state.musicVolume * 100)
+        }%`;
+      }
+      updateOutputs();
+      updateAudioGraph();
+    });
     elements.musicInput.addEventListener("change", () => {
       importMusic(elements.musicInput.files?.[0]).catch((error) => {
         setStatus(
@@ -2817,5 +3277,11 @@
     updateOutputs();
     updateExportSupport();
     renderLoop();
+    const warmWasm = () => loadWasmAnalyzer();
+    if (typeof globalThis.requestIdleCallback === "function") {
+      globalThis.requestIdleCallback(warmWasm, { timeout: 2500 });
+    } else {
+      globalThis.setTimeout(warmWasm, 500);
+    }
   }
 })();

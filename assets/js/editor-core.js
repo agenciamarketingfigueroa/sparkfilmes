@@ -209,19 +209,23 @@
     return clamp(Number(value) || 1, 0.25, 4);
   };
 
-  const segmentOutputDuration = (segment) => {
+  const segmentOutputDurationAt = (segment, progress) => {
     const sourceDuration = Math.max(0, segment.end - segment.start);
-    if (!String(segment.speed).startsWith("ramp")) {
-      return sourceDuration / speedAt(segment, 0);
+    const position = clamp(progress, 0, 1);
+    if (!position || !sourceDuration) return 0;
+    const speed = String(segment.speed);
+    if (speed === "ramp-up" || speed === "ramp-down") {
+      const startSpeed = speed === "ramp-up" ? 0.75 : 2;
+      const slope = speed === "ramp-up" ? 1.25 : -1.25;
+      return (sourceDuration / slope) * Math.log(
+        (startSpeed + slope * position) / startSpeed,
+      );
     }
-    const steps = 80;
-    let total = 0;
-    for (let index = 0; index < steps; index += 1) {
-      const progress = (index + 0.5) / steps;
-      total += (sourceDuration / steps) / speedAt(segment, progress);
-    }
-    return total;
+    return (sourceDuration * position) / speedAt(segment, 0);
   };
+
+  const segmentOutputDuration = (segment) =>
+    segmentOutputDurationAt(segment, 1);
 
   const outputDuration = (segments) =>
     (Array.isArray(segments) ? segments : []).reduce(
@@ -362,6 +366,7 @@
     mergeRanges,
     stableSegmentsFromRanges,
     speedAt,
+    segmentOutputDurationAt,
     segmentOutputDuration,
     outputDuration,
     findSegmentIndex,

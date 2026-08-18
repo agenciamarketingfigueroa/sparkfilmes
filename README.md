@@ -72,9 +72,25 @@ O Spark Cut importa e processa os takes no próprio navegador. A primeira versã
 inclui montagem com vários clipes, receitas para aftermovie, conteúdo e criativo
 de vendas, timeline não destrutiva, cortes manuais, detecção de pausas, ajustes
 de cor e voz, zoom, speed ramp, legendas manuais/SRT, transcrição local com
-Whisper, narração em português com IA e exportação em MP4 ou WebM, conforme o
-suporte do navegador. Os modelos são baixados na primeira utilização, mas os
+Whisper, análise visual e masterização de áudio em WebAssembly, trilha
+generativa, narração em português com IA e exportação em MP4 ou WebM, conforme
+o suporte do navegador. Os modelos são baixados na primeira utilização, mas os
 arquivos e o áudio dos takes não são enviados para processamento.
+
+O editor também aceita um gerador de música externo sem transformar o site em
+uma aplicação dinâmica. Configure a URL do adaptador no `editor/index.html`:
+
+```html
+<meta name="spark-music-api" content="https://api.seudominio.com/music" />
+```
+
+O endpoint recebe `POST` JSON com `prompt`, `duration`, `preset` e
+`projectType`. Ele pode responder com o arquivo de áudio diretamente, com
+`{ "audioUrl": "..." }` ou com `{ "audioBase64": "...", "mimeType":
+"audio/mpeg" }`. O recomendado é um endpoint serverless no mesmo domínio:
+a chave do provedor fica em variável de ambiente no servidor e nunca aparece
+no HTML ou JavaScript público. Sem endpoint configurado, a trilha local é usada
+automaticamente como fallback.
 
 Para validar o núcleo da timeline:
 
