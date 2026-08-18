@@ -5,6 +5,14 @@ const core = globalThis.SparkEditorCore;
 
 assert.equal(core.formatTime(0), "00:00");
 assert.equal(core.formatTime(65.94, true), "01:05.9");
+assert.deepEqual(core.outputDimensions(16 / 9, 2160), {
+  width: 3840,
+  height: 2160,
+});
+assert.deepEqual(core.outputDimensions(9 / 16, 2160), {
+  width: 2160,
+  height: 3840,
+});
 
 const original = core.normalizeSegments([{ start: 0, end: 10 }], 10);
 const split = core.splitSegments(original, 4, 10);

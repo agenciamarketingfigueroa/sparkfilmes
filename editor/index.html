@@ -34,9 +34,9 @@
     <main class="editor-page">
       <header class="editor-intro">
         <div>
-          <p class="internal-eyebrow">Spark Cut · editor local</p>
-          <h1>Do bruto ao conteúdo pronto.</h1>
-          <p>Corte, limpe, legende e exporte sem enviar o vídeo para a nuvem.</p>
+          <p class="internal-eyebrow">Spark Cut · editor guiado</p>
+          <h1>Seus takes. Uma ideia. Vídeo pronto.</h1>
+          <p>Descreva o resultado e deixe o Spark Cut montar a primeira versão. Depois, ajuste apenas o que quiser.</p>
         </div>
         <span class="editor-local-badge"><span aria-hidden="true">●</span> Arquivo permanece neste dispositivo</span>
       </header>
@@ -50,7 +50,7 @@
         <h2>Escolha ou arraste seus takes</h2>
         <p>Selecione vários vídeos de uma vez. A ordem escolhida vira a primeira montagem.</p>
         <button class="internal-button internal-button-primary" id="choose-video" type="button">Selecionar takes</button>
-        <small>Para uma primeira edição mais fluida, prefira vídeos em 1080p com até 15 minutos.</small>
+        <small>Aceita múltiplos takes em HD, Full HD e 4K. Tudo permanece neste dispositivo.</small>
       </section>
 
       <section class="editor-workspace" id="editor-workspace" hidden>
@@ -69,24 +69,96 @@
           </div>
         </header>
 
-        <section class="project-recipe" aria-labelledby="project-recipe-title">
-          <div>
-            <p class="editor-kicker">Direção criativa</p>
-            <h2 id="project-recipe-title">Que vídeo vamos montar?</h2>
+        <section class="project-recipe creation-flow" aria-labelledby="project-recipe-title">
+          <header class="creation-flow-header">
+            <div>
+              <p class="editor-kicker">Montagem em 6 passos</p>
+              <h2 id="project-recipe-title">Conte para a gente o que você quer criar</h2>
+              <p>O Spark Cut usa essas escolhas para preparar ritmo, movimento, legenda e som.</p>
+            </div>
+            <span class="flow-ready"><i aria-hidden="true"></i> Takes prontos</span>
+          </header>
+
+          <div class="creation-flow-grid">
+            <article class="flow-step flow-step-takes">
+              <span class="flow-number">1</span>
+              <div><strong>Seus takes</strong><small id="flow-takes-summary">Arquivos selecionados</small></div>
+              <button class="editor-text-button" id="flow-add-videos" type="button">Adicionar</button>
+            </article>
+
+            <label class="flow-step flow-step-prompt" for="project-niche">
+              <span class="flow-number">2</span>
+              <span class="flow-field">
+                <strong>Como será o vídeo?</strong>
+                <textarea id="project-niche" maxlength="500" rows="3" placeholder="Ex.: aftermovie enérgico do evento, começando pelos melhores momentos, cortes no ritmo da música e final emocionante."></textarea>
+              </span>
+            </label>
+
+            <label class="flow-step" for="project-type">
+              <span class="flow-number">3</span>
+              <span class="flow-field"><strong>Tipo de vídeo</strong>
+                <select id="project-type">
+                  <option value="content">Conteúdo</option>
+                  <option value="aftermovie" selected>Aftermovie</option>
+                </select>
+              </span>
+            </label>
+
+            <label class="flow-step" for="transition-style">
+              <span class="flow-number">4</span>
+              <span class="flow-field"><strong>Transições e ritmo</strong>
+                <select id="transition-style">
+                  <option value="auto">Automático</option>
+                  <option value="soft">Zoom in / out</option>
+                  <option value="dynamic">Speed ramp</option>
+                  <option value="clean">Corte limpo</option>
+                </select>
+              </span>
+            </label>
+
+            <div class="flow-step">
+              <span class="flow-number">5</span>
+              <span class="flow-field"><strong>Legenda</strong>
+                <select id="caption-mode" aria-label="Usar legenda">
+                  <option value="auto">Sim, gerar com IA</option>
+                  <option value="manual">Sim, vou adicionar</option>
+                  <option value="none" selected>Sem legenda</option>
+                </select>
+                <select id="caption-preset" aria-label="Estilo da legenda" disabled>
+                  <option value="spark">Social em alta</option>
+                  <option value="impact">Impacto</option>
+                  <option value="clean">Minimalista</option>
+                </select>
+              </span>
+            </div>
+
+            <div class="flow-step flow-step-soundtrack">
+              <span class="flow-number">6</span>
+              <span class="flow-field"><strong>Trilha sonora</strong>
+                <select id="soundtrack-mode" aria-label="Origem da trilha sonora">
+                  <option value="none">Sem trilha</option>
+                  <option value="upload">Já tenho uma trilha</option>
+                  <option value="library">Banco livre Spark</option>
+                  <option value="ai">Gerar com IA</option>
+                </select>
+                <span class="soundtrack-config" id="soundtrack-config" hidden>
+                  <input id="music-prompt" type="text" maxlength="180" placeholder="Descreva o clima: eletrônico, crescente, cinematográfico..." />
+                  <select id="music-library" aria-label="Trilha do banco" hidden>
+                    <option value="pulse">Pulse · eletrônica</option>
+                    <option value="golden">Golden Hour · leve</option>
+                    <option value="cinematic">Rise · cinematográfica</option>
+                  </select>
+                  <button class="internal-button internal-button-quiet" id="create-music" type="button">Criar trilha</button>
+                </span>
+                <input id="music-input" type="file" accept="audio/*" hidden />
+              </span>
+            </div>
           </div>
-          <label class="editor-field">
-            <span>Tipo de vídeo</span>
-            <select id="project-type">
-              <option value="aftermovie">Aftermovie</option>
-              <option value="content">Conteúdo / dica</option>
-              <option value="sales">Criativo de vendas</option>
-            </select>
-          </label>
-          <label class="editor-field project-niche-field">
-            <span>Nicho, evento ou produto</span>
-            <input id="project-niche" type="text" maxlength="100" placeholder="Ex.: arquitetura, evento esportivo, clínica..." />
-          </label>
-          <button class="internal-button internal-button-primary" id="apply-recipe" type="button">Aplicar estilo</button>
+
+          <footer class="creation-flow-footer">
+            <p><strong>Você continua no controle.</strong> Todos os ajustes ficam disponíveis na bancada abaixo.</p>
+            <button class="internal-button internal-button-primary" id="apply-recipe" type="button">Criar primeira montagem <span aria-hidden="true">→</span></button>
+          </footer>
         </section>
 
         <div class="editor-main-grid">
@@ -103,6 +175,7 @@
               <canvas id="preview-canvas" width="540" height="960" aria-label="Prévia do vídeo"></canvas>
               <video id="source-video" playsinline preload="metadata" hidden></video>
               <audio id="voiceover-audio" preload="auto" hidden></audio>
+              <audio id="music-audio" preload="auto" loop hidden></audio>
               <div class="stage-empty" id="stage-empty">Preparando prévia…</div>
             </div>
 
@@ -120,7 +193,7 @@
                 <span class="quick-action-icon" aria-hidden="true">⌁</span>
                 <span><strong>Detectar silêncios</strong><small>Encontre pausas e respiros localmente</small></span>
               </button>
-              <button class="quick-action" id="auto-captions" type="button">
+              <button class="quick-action" id="auto-captions" type="button" disabled>
                 <span class="quick-action-icon" aria-hidden="true">CC</span>
                 <span><strong>Legenda com IA</strong><small>Transcreva em português no dispositivo</small></span>
               </button>
@@ -209,7 +282,7 @@
 
             <div class="inspector-panel" data-panel="captions" hidden>
               <div class="inspector-section">
-                <header><div><span>Estilo</span><h3>Legenda do conteúdo</h3></div></header>
+                <header><div><span>Estilo</span><h3>Legenda do conteúdo</h3></div><label class="caption-master"><input id="captions-enabled" type="checkbox" /><span>Ativa</span></label></header>
                 <div class="caption-style-picker">
                   <label><input type="radio" name="caption-style" value="spark" checked /><span class="caption-sample spark">FAÍSCA</span></label>
                   <label><input type="radio" name="caption-style" value="impact" /><span class="caption-sample impact">IMPACTO</span></label>
@@ -264,7 +337,7 @@
             <h2>Exportar no dispositivo</h2>
             <p>O navegador renderiza a edição em tempo real. Mantenha esta aba aberta durante o processo.</p>
           </div>
-          <label class="editor-field export-quality"><span>Qualidade</span><select id="export-quality"><option value="720">HD · 720p</option><option value="1080">Full HD · 1080p</option></select></label>
+          <label class="editor-field export-quality"><span>Qualidade</span><select id="export-quality"><option value="720">HD · 720p</option><option value="1080" selected>Full HD · 1080p</option><option value="2160">Ultra HD · 4K</option></select></label>
           <div class="export-action">
             <button class="internal-button internal-button-primary" id="export-video" type="button">Exportar vídeo</button>
             <small id="export-support">Formato definido pelo navegador</small>

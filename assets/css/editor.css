@@ -1037,8 +1037,207 @@
   font-size: 0.65rem;
 }
 
+/* Fluxo guiado de criação */
+.project-recipe.creation-flow {
+  display: block;
+  padding: clamp(1.2rem, 2.4vw, 2rem);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0, rgba(239, 40, 82, 0.08), transparent 24rem),
+    rgba(255, 255, 255, 0.98);
+}
+
+.creation-flow-header,
+.creation-flow-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.creation-flow-header {
+  margin-bottom: 1.35rem;
+}
+
+.creation-flow-header h2 {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+}
+
+.creation-flow-header p:last-child,
+.creation-flow-footer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.flow-ready {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.48rem;
+  border-radius: 999px;
+  padding: 0.62rem 0.85rem;
+  color: #087a55;
+  background: rgba(8, 122, 85, 0.08);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.flow-ready i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.creation-flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.flow-step {
+  min-width: 0;
+  min-height: 116px;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.78rem;
+  border: 1px solid rgba(16, 16, 20, 0.09);
+  border-radius: 16px;
+  padding: 1rem;
+  color: var(--ink);
+  background: #faf9f7;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.flow-step:focus-within {
+  border-color: rgba(239, 40, 82, 0.5);
+  box-shadow: 0 0 0 3px rgba(239, 40, 82, 0.08);
+  transform: translateY(-1px);
+}
+
+.flow-step-prompt {
+  grid-column: span 2;
+}
+
+.flow-number {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: white;
+  background: var(--ink);
+  font-size: 0.66rem;
+  font-weight: 800;
+}
+
+.flow-field,
+.flow-step-takes > div {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 0.52rem;
+}
+
+.flow-step strong {
+  font-family: "Sora", sans-serif;
+  font-size: 0.76rem;
+}
+
+.flow-step small {
+  color: var(--muted);
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.flow-step select,
+.flow-step textarea,
+.flow-step input[type="text"] {
+  width: 100%;
+  min-height: 39px;
+  border: 1px solid #d9d5d0;
+  border-radius: 10px;
+  padding: 0.62rem 0.7rem;
+  color: var(--ink);
+  background: white;
+  font: 600 0.7rem/1.4 "Manrope", sans-serif;
+}
+
+.flow-step textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.flow-step-takes {
+  align-items: center;
+}
+
+.flow-step-takes .editor-text-button {
+  margin-left: auto;
+}
+
+.soundtrack-config {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+}
+
+.soundtrack-config[hidden] {
+  display: none;
+}
+
+.soundtrack-config select {
+  grid-column: 1 / -1;
+}
+
+.soundtrack-config .internal-button {
+  min-height: 39px;
+  padding: 0.55rem 0.7rem;
+  white-space: nowrap;
+}
+
+.creation-flow-footer {
+  margin-top: 1rem;
+  border-top: 1px solid rgba(16, 16, 20, 0.08);
+  padding-top: 1rem;
+}
+
+.creation-flow-footer p strong {
+  color: var(--ink);
+}
+
+.creation-flow-footer .internal-button {
+  min-width: 220px;
+  justify-content: center;
+}
+
+.caption-master {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+
+.caption-master input {
+  accent-color: var(--brand);
+}
+
+.export-quality select option[value="2160"] {
+  font-weight: 800;
+}
+
 @media (max-width: 1100px) {
   .project-recipe {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .creation-flow-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1080,6 +1279,24 @@
 
   .project-recipe {
     grid-template-columns: 1fr;
+  }
+
+  .creation-flow-header,
+  .creation-flow-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .creation-flow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-step-prompt {
+    grid-column: auto;
+  }
+
+  .creation-flow-footer .internal-button {
+    width: 100%;
   }
 
   .editor-local-badge {

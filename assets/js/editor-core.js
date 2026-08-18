@@ -18,6 +18,16 @@
     return precise ? `${base}.${Math.floor((safe % 1) * 10)}` : base;
   };
 
+  const outputDimensions = (ratio, shortEdge) => {
+    const safeRatio = clamp(ratio, 0.1, 10) || 16 / 9;
+    const edge = Math.max(2, Math.round(Number(shortEdge) || 1080));
+    let width = safeRatio <= 1 ? edge : Math.round(edge * safeRatio);
+    let height = safeRatio <= 1 ? Math.round(edge / safeRatio) : edge;
+    width -= width % 2;
+    height -= height % 2;
+    return { width: Math.max(2, width), height: Math.max(2, height) };
+  };
+
   const segmentId = () =>
     `segment-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -241,6 +251,7 @@
   return {
     clamp,
     formatTime,
+    outputDimensions,
     normalizeSegments,
     splitSegments,
     subtractRanges,

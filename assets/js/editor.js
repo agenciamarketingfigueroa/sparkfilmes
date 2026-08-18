@@ -58,6 +58,19 @@
     projectType: $("#project-type"),
     projectNiche: $("#project-niche"),
     applyRecipe: $("#apply-recipe"),
+    flowAddVideos: $("#flow-add-videos"),
+    flowTakesSummary: $("#flow-takes-summary"),
+    transitionStyle: $("#transition-style"),
+    captionMode: $("#caption-mode"),
+    captionPreset: $("#caption-preset"),
+    captionsEnabled: $("#captions-enabled"),
+    soundtrackMode: $("#soundtrack-mode"),
+    soundtrackConfig: $("#soundtrack-config"),
+    musicPrompt: $("#music-prompt"),
+    musicLibrary: $("#music-library"),
+    createMusic: $("#create-music"),
+    musicInput: $("#music-input"),
+    music: $("#music-audio"),
     fitMode: $("#fit-mode"),
     brightness: $("#brightness"),
     contrast: $("#contrast"),
@@ -120,6 +133,11 @@
     cleanVoice: true,
     projectType: "aftermovie",
     niche: "",
+    transitionStyle: "auto",
+    captionsEnabled: false,
+    soundtrackMode: "none",
+    musicUrl: "",
+    musicVolume: 0.32,
     voiceoverUrl: "",
     voiceoverDuration: 0,
     voiceVolume: 1,
@@ -223,6 +241,19 @@
     }
   };
 
+  const syncMusic = (time = globalTime(), force = false) => {
+    if (
+      !state.musicUrl || !Number.isFinite(elements.music.duration) ||
+      !elements.music.duration
+    ) {
+      return;
+    }
+    const target = outputTimeAt(time) % elements.music.duration;
+    if (force || Math.abs(elements.music.currentTime - target) > 0.35) {
+      elements.music.currentTime = target;
+    }
+  };
+
   const selectSegment = (id, seek = false) => {
     const segment = state.segments.find((item) => item.id === id);
     if (!segment) return;
@@ -252,14 +283,16 @@
       : state.format === "16:9"
       ? 16 / 9
       : (elements.video.videoWidth || 16) / (elements.video.videoHeight || 9);
-    const longEdge = forExport ? Number(elements.exportQuality.value) : 720;
+    const targetEdge = forExport ? Number(elements.exportQuality.value) : 720;
     let width;
     let height;
-    if (ratio <= 1) {
-      height = longEdge;
+    if (forExport) {
+      ({ width, height } = core.outputDimensions(ratio, targetEdge));
+    } else if (ratio <= 1) {
+      height = targetEdge;
       width = Math.round(height * ratio);
     } else {
-      width = longEdge;
+      width = targetEdge;
       height = Math.round(width / ratio);
     }
     width -= width % 2;
@@ -317,6 +350,7 @@
   };
 
   const drawCaption = (time) => {
+    if (!state.captionsEnabled) return;
     const caption = state.captions.find((item) =>
       time >= item.start && time <= item.end
     );
@@ -371,6 +405,26 @@
     ctx.restore();
   };
 
+  const drawTransition = (segment, time) => {
+    if (!segment || state.transitionStyle === "clean") return;
+    const index = state.segments.indexOf(segment);
+    if (index <= 0) return;
+    const elapsed = time - segment.start;
+    const duration = state.transitionStyle === "dynamic" ? 0.22 : 0.38;
+    if (elapsed < 0 || elapsed > duration) return;
+    const progress = core.clamp(elapsed / duration, 0, 1);
+    ctx.save();
+    if (state.transitionStyle === "dynamic") {
+      ctx.globalAlpha = Math.sin(progress * Math.PI) * 0.18;
+      ctx.fillStyle = "white";
+    } else {
+      ctx.globalAlpha = (1 - progress) * 0.55;
+      ctx.fillStyle = "#09090c";
+    }
+    ctx.fillRect(0, 0, elements.canvas.width, elements.canvas.height);
+    ctx.restore();
+  };
+
   const drawPreview = () => {
     if (!ctx || !state.file || elements.video.readyState < 2) return;
     const canvasWidth = elements.canvas.width;
@@ -408,6 +462,7 @@
       ctx.globalCompositeOperation = "source-over";
     }
     ctx.restore();
+    drawTransition(segment, time);
     drawCaption(time);
   };
 
@@ -476,6 +531,7 @@
         }
       }
       syncVoiceover(targetTime, true);
+      syncMusic(targetTime, true);
       drawPreview();
       updateTransport();
       if (autoplay) {
@@ -486,6 +542,7 @@
         ) {
           elements.voiceover.play().catch(() => {});
         }
+        if (state.musicUrl) elements.music.play().catch(() => {});
         if (pausedRecorderForTransition && state.recorder?.state === "paused") {
           state.recorder.resume();
         }
@@ -498,6 +555,7 @@
   const finishExportPlayback = () => {
     elements.video.pause();
     elements.voiceover.pause();
+    elements.music.pause();
     if (state.recorder?.state === "recording") state.recorder.stop();
   };
 
@@ -541,6 +599,7 @@
       }
     }
     syncVoiceover(time);
+    syncMusic(time);
     if (state.exporting) {
       const progressValue = exportProgressAt(index, time);
       elements.exportProgressBar.style.width = `${
@@ -644,6 +703,7 @@
     const target = core.clamp(time, 0, state.duration);
     elements.video.pause();
     elements.voiceover.pause();
+    elements.music.pause();
     selectSegmentAtTime(target);
     activateGlobalTime(target);
   };
@@ -670,6 +730,8 @@
     const gain = context.createGain();
     const voiceSource = context.createMediaElementSource(elements.voiceover);
     const voiceGain = context.createGain();
+    const musicSource = context.createMediaElementSource(elements.music);
+    const musicGain = context.createGain();
     const monitor = context.createGain();
     const destination = context.createMediaStreamDestination();
     source.connect(highpass).connect(lowpass).connect(compressor).connect(gain);
@@ -678,6 +740,9 @@
     voiceSource.connect(voiceGain);
     voiceGain.connect(monitor);
     voiceGain.connect(destination);
+    musicSource.connect(musicGain);
+    musicGain.connect(monitor);
+    musicGain.connect(destination);
     state.audio = {
       context,
       source,
@@ -687,6 +752,8 @@
       gain,
       voiceSource,
       voiceGain,
+      musicSource,
+      musicGain,
       monitor,
       destination,
     };
@@ -696,8 +763,15 @@
 
   const updateAudioGraph = () => {
     if (!state.audio) return;
-    const { context, highpass, lowpass, compressor, gain, voiceGain } =
-      state.audio;
+    const {
+      context,
+      highpass,
+      lowpass,
+      compressor,
+      gain,
+      voiceGain,
+      musicGain,
+    } = state.audio;
     const now = context.currentTime;
     highpass.frequency.setTargetAtTime(state.cleanVoice ? 75 : 20, now, 0.02);
     lowpass.frequency.setTargetAtTime(
@@ -715,6 +789,11 @@
       : state.volume;
     gain.gain.setTargetAtTime(originalVolume, now, 0.02);
     voiceGain.gain.setTargetAtTime(state.voiceVolume, now, 0.02);
+    musicGain.gain.setTargetAtTime(
+      state.musicUrl ? state.musicVolume : 0,
+      now,
+      0.02,
+    );
   };
 
   const play = async () => {
@@ -730,12 +809,14 @@
     }
     await elements.video.play();
     syncVoiceover(globalTime(), true);
+    syncMusic(globalTime(), true);
     if (
       state.voiceoverUrl &&
       elements.voiceover.currentTime < elements.voiceover.duration
     ) {
       elements.voiceover.play().catch(() => {});
     }
+    if (state.musicUrl) elements.music.play().catch(() => {});
   };
 
   const togglePlay = async () => {
@@ -744,6 +825,7 @@
       else {
         elements.video.pause();
         elements.voiceover.pause();
+        elements.music.pause();
       }
     } catch (error) {
       setStatus(
@@ -756,6 +838,7 @@
   const resetEditing = () => {
     if (!state.duration) return;
     elements.video.pause();
+    elements.music.pause();
     state.segments = core.normalizeSegments(
       state.clips.map((clip) => ({
         start: clip.offset,
@@ -769,6 +852,11 @@
     state.selectedSegmentId = state.segments[0].id;
     state.silenceRanges = [];
     state.captions = [];
+    state.captionsEnabled = state.projectType === "content";
+    elements.captionsEnabled.checked = state.captionsEnabled;
+    elements.captionMode.value = state.captionsEnabled ? "auto" : "none";
+    elements.captionPreset.disabled = !state.captionsEnabled;
+    elements.autoCaptions.disabled = !state.captionsEnabled;
     if (state.voiceoverUrl) removeVoiceover();
     state.brightness = 0;
     state.contrast = 0;
@@ -843,6 +931,7 @@
     if (state.exporting) return;
     elements.video.pause();
     elements.voiceover.pause();
+    elements.music.pause();
     state.audioBuffer = null;
     state.audioSamples = null;
     setStatus(
@@ -860,6 +949,7 @@
         state.silenceRanges = [];
         state.activeClipId = "";
         if (state.voiceoverUrl) removeVoiceover();
+        if (state.musicUrl) clearMusic();
       } else {
         state.clips.push(...incoming);
       }
@@ -908,6 +998,9 @@
       } · montagem com ${state.clips.length} ${
         state.clips.length === 1 ? "take" : "takes"
       }`;
+      elements.flowTakesSummary.textContent = `${state.clips.length} ${
+        state.clips.length === 1 ? "take" : "takes"
+      } · ${core.formatTime(state.duration)} no total`;
       elements.dropzone.hidden = true;
       elements.workspace.hidden = false;
       elements.stageEmpty.hidden = true;
@@ -1243,6 +1336,9 @@
   const applyRecipe = () => {
     state.projectType = elements.projectType.value;
     state.niche = String(elements.projectNiche.value || "").trim();
+    state.transitionStyle = elements.transitionStyle.value;
+    state.captionsEnabled = elements.captionMode.value !== "none";
+    elements.captionsEnabled.checked = state.captionsEnabled;
     state.fit = "contain";
     elements.fitMode.value = "contain";
     const recipes = {
@@ -1278,9 +1374,21 @@
       },
     };
     const recipe = recipes[state.projectType];
+    const transitionRecipes = {
+      auto: { motions: recipe.motions, speeds: recipe.speeds },
+      soft: { motions: ["zoom-in", "zoom-out"], speeds: ["1"] },
+      dynamic: {
+        motions: ["punch", "zoom-in", "zoom-out"],
+        speeds: ["ramp-up", "1.25", "ramp-down"],
+      },
+      clean: { motions: ["none"], speeds: ["1"] },
+    };
+    const transitionRecipe = transitionRecipes[state.transitionStyle];
     state.segments.forEach((segment, index) => {
-      segment.motion = recipe.motions[index % recipe.motions.length];
-      segment.speed = recipe.speeds[index % recipe.speeds.length];
+      segment.motion =
+        transitionRecipe.motions[index % transitionRecipe.motions.length];
+      segment.speed =
+        transitionRecipe.speeds[index % transitionRecipe.speeds.length];
     });
     state.contrast = recipe.contrast;
     state.saturation = recipe.saturation;
@@ -1292,7 +1400,7 @@
     elements.warmth.value = recipe.warmth;
     elements.volume.value = recipe.volume;
     elements.cleanVoice.checked = recipe.cleanVoice;
-    setCaptionStyle(recipe.captionStyle);
+    setCaptionStyle(elements.captionPreset.value || recipe.captionStyle);
     const selected = selectedSegment();
     if (selected) {
       elements.speed.value = selected.speed;
@@ -1302,13 +1410,17 @@
     updateAudioGraph();
     renderTimeline();
     drawPreview();
-    buildVoiceScript();
     setStatus(
-      `Estilo de ${
-        elements.projectType.selectedOptions[0].textContent
-      } aplicado aos ${state.segments.length} trechos.`,
+      `Primeira montagem criada com ${state.segments.length} trechos${
+        state.captionsEnabled
+          ? ". A legenda está pronta para gerar."
+          : " e sem legendas."
+      }`,
       "success",
     );
+    if (elements.captionMode.value === "auto") {
+      globalThis.setTimeout(() => transcribe(), 0);
+    }
   };
 
   const encodeWav = (samples, sampleRate) => {
@@ -1341,6 +1453,138 @@
       );
     });
     return new Blob([buffer], { type: "audio/wav" });
+  };
+
+  const clearMusic = () => {
+    elements.music.pause();
+    elements.music.removeAttribute("src");
+    elements.music.load();
+    if (state.musicUrl) URL.revokeObjectURL(state.musicUrl);
+    state.musicUrl = "";
+    updateAudioGraph();
+  };
+
+  const useMusicBlob = async (blob, label) => {
+    clearMusic();
+    state.musicUrl = URL.createObjectURL(blob);
+    elements.music.src = state.musicUrl;
+    elements.music.load();
+    if (elements.music.readyState < 1) {
+      await waitForEvent(elements.music, "loadedmetadata");
+    }
+    await setupAudioGraph();
+    updateAudioGraph();
+    setStatus(
+      `${label} adicionada à montagem e pronta para exportar.`,
+      "success",
+    );
+  };
+
+  const musicSeed = (text) =>
+    Array.from(String(text || "spark")).reduce(
+      (seed, character) => ((seed * 31) + character.charCodeAt(0)) >>> 0,
+      2166136261,
+    );
+
+  const generateMusicSamples = (description, duration, preset) => {
+    const sampleRate = 22050;
+    const safeDuration = core.clamp(duration || 45, 20, 180);
+    const length = Math.ceil(safeDuration * sampleRate);
+    const samples = new Float32Array(length);
+    const words = `${description} ${preset}`.toLowerCase();
+    const bpm = /calm|leve|suave|golden/.test(words)
+      ? 92
+      : /cinema|emoc|rise/.test(words)
+      ? 108
+      : 126;
+    const beat = 60 / bpm;
+    const seed = musicSeed(words);
+    const roots = /cinema|emoc|rise/.test(words)
+      ? [110, 130.81, 146.83, 98]
+      : /leve|golden|acoustic/.test(words)
+      ? [130.81, 164.81, 196, 146.83]
+      : [110, 146.83, 130.81, 164.81];
+    const brightness = /dark|cinema|dram/.test(words) ? 0.45 : 0.72;
+
+    for (let index = 0; index < length; index += 1) {
+      const time = index / sampleRate;
+      const barPosition = time % (beat * 4);
+      const root = roots[Math.floor(time / (beat * 4)) % roots.length];
+      const kickPosition = time % beat;
+      const kick = kickPosition < 0.13
+        ? Math.sin(2 * Math.PI * (52 - kickPosition * 145) * kickPosition) *
+          Math.exp(-kickPosition * 25)
+        : 0;
+      const hatPosition = (time + beat / 2) % beat;
+      const noise = (((index * 16807 + seed) % 2147483647) / 1073741823.5) - 1;
+      const hat = hatPosition < 0.045 ? noise * Math.exp(-hatPosition * 70) : 0;
+      const pulseGate = (time % (beat / 2)) < beat * 0.28 ? 1 : 0.18;
+      const bass = Math.sin(2 * Math.PI * (root / 2) * time) * pulseGate;
+      const pad = (
+        Math.sin(2 * Math.PI * root * time) +
+        Math.sin(2 * Math.PI * root * 1.25 * time) * 0.55 +
+        Math.sin(2 * Math.PI * root * 1.5 * time) * 0.4
+      ) / 1.95;
+      const rise = Math.min(1, time / 6);
+      const fade = Math.min(1, time / 0.8, (safeDuration - time) / 1.5);
+      samples[index] = (kick * 0.36 + hat * 0.08 * brightness + bass * 0.16 +
+        pad * 0.13 * rise) * Math.max(0, fade);
+      if (barPosition > beat * 3.75) samples[index] *= 0.72;
+    }
+    return { samples, sampleRate };
+  };
+
+  const createMusic = async () => {
+    const mode = elements.soundtrackMode.value;
+    const preset = elements.musicLibrary.value;
+    const description = String(elements.musicPrompt.value || "").trim();
+    if (mode === "ai" && !description) {
+      setStatus("Descreva o clima da trilha que você quer gerar.", "error");
+      elements.musicPrompt.focus();
+      return;
+    }
+    setBusy(elements.createMusic, true, "Criando…");
+    try {
+      await new Promise((resolve) => globalThis.setTimeout(resolve, 40));
+      const generated = generateMusicSamples(
+        description,
+        core.outputDuration(state.segments),
+        preset,
+      );
+      await useMusicBlob(
+        encodeWav(generated.samples, generated.sampleRate),
+        mode === "ai" ? "Trilha generativa" : "Trilha do banco Spark",
+      );
+    } catch (error) {
+      setStatus(error.message || "Não foi possível criar a trilha.", "error");
+    } finally {
+      setBusy(elements.createMusic, false);
+    }
+  };
+
+  const importMusic = async (file) => {
+    if (!file || !String(file.type).startsWith("audio/")) {
+      setStatus("Escolha um arquivo de áudio válido.", "error");
+      return;
+    }
+    await useMusicBlob(file, `Trilha “${file.name}”`);
+    elements.musicInput.value = "";
+  };
+
+  const updateSoundtrackControls = () => {
+    const mode = elements.soundtrackMode.value;
+    state.soundtrackMode = mode;
+    elements.soundtrackConfig.hidden = !["library", "ai"].includes(mode);
+    elements.musicPrompt.hidden = mode !== "ai";
+    elements.musicLibrary.hidden = mode !== "library";
+    elements.createMusic.textContent = mode === "ai"
+      ? "Gerar trilha"
+      : "Usar trilha";
+    if (mode === "upload") elements.musicInput.click();
+    if (mode === "none") {
+      clearMusic();
+      setStatus("Projeto configurado sem trilha sonora.");
+    }
   };
 
   const loadTransformers = async () => {
@@ -1464,6 +1708,9 @@
   };
 
   const transcribe = async () => {
+    state.captionsEnabled = true;
+    elements.captionsEnabled.checked = true;
+    elements.captionMode.value = "auto";
     setBusy(
       elements.autoCaptions,
       true,
@@ -1596,15 +1843,17 @@
         "Exportação indisponível neste navegador";
       return;
     }
-    elements.exportSupport.textContent = mime.startsWith("video/mp4")
-      ? "Saída MP4 · renderização local"
-      : "Saída WebM · renderização local";
+    const is4k = Number(elements.exportQuality.value) === 2160;
+    elements.exportSupport.textContent = `${
+      mime.startsWith("video/mp4") ? "Saída MP4" : "Saída WebM"
+    } · ${is4k ? "4K exige um dispositivo potente" : "renderização local"}`;
   };
 
   const cleanupExport = () => {
     state.exporting = false;
     state.recorder = null;
     elements.voiceover.pause();
+    elements.music.pause();
     if (state.audio) state.audio.monitor.gain.value = 1;
     elements.exportButton.textContent = "Exportar vídeo";
     elements.exportButton.classList.remove("is-cancelling");
@@ -1635,6 +1884,7 @@
       state.mimeType = mimeType;
       elements.video.pause();
       elements.voiceover.pause();
+      elements.music.pause();
       state.audio.monitor.gain.value = 0;
       updateCanvasSize(true);
       drawPreview();
@@ -1644,9 +1894,12 @@
         ...state.audio.destination.stream.getAudioTracks(),
       ];
       const stream = new MediaStream(tracks);
-      const bitrate = Number(elements.exportQuality.value) >= 1080
-        ? 8_000_000
-        : 4_000_000;
+      const quality = Number(elements.exportQuality.value);
+      const bitrate = quality >= 2160
+        ? 35_000_000
+        : quality >= 1080
+        ? 10_000_000
+        : 5_000_000;
       state.recorder = new MediaRecorder(stream, {
         mimeType,
         videoBitsPerSecond: bitrate,
@@ -1662,7 +1915,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement("a");
           const baseName = state.clips.length > 1
-            ? `${state.projectType}-${state.niche || "sparkfilmes"}`
+            ? `${state.projectType}-sparkfilmes`
             : state.file.name.replace(/\.[^.]+$/, "") || "video";
           link.href = url;
           link.download = `${baseName}-spark-cut.${
@@ -1690,7 +1943,7 @@
       state.recorder.addEventListener("error", () => {
         state.exportCancelled = true;
         setStatus(
-          "O navegador interrompeu a exportação. Tente usar 720p ou um vídeo mais curto.",
+          "O navegador interrompeu a exportação. Tente uma qualidade menor ou um vídeo mais curto.",
           "error",
         );
         cleanupExport();
@@ -1702,9 +1955,11 @@
       elements.exportButton.classList.add("is-cancelling");
       await activateGlobalTime(state.segments[0].start);
       syncVoiceover(state.segments[0].start, true);
+      syncMusic(state.segments[0].start, true);
       state.recorder.start(1000);
       await elements.video.play();
       if (state.voiceoverUrl) elements.voiceover.play().catch(() => {});
+      if (state.musicUrl) elements.music.play().catch(() => {});
       setStatus(
         "Renderizando no dispositivo. A prévia ficará sem som durante a exportação.",
       );
@@ -1764,6 +2019,13 @@
         elements.videoInput.click();
       },
     );
+    elements.flowAddVideos.addEventListener(
+      "click",
+      () => {
+        elements.videoInput.dataset.mode = "append";
+        elements.videoInput.click();
+      },
+    );
     elements.replaceVideo.addEventListener(
       "click",
       () => {
@@ -1805,6 +2067,7 @@
       elements.togglePlay.textContent = "▶";
       elements.togglePlay.setAttribute("aria-label", "Reproduzir");
       elements.voiceover.pause();
+      elements.music.pause();
     });
     elements.video.addEventListener("seeked", () => {
       drawPreview();
@@ -1866,9 +2129,51 @@
     });
     elements.projectType.addEventListener("change", () => {
       state.projectType = elements.projectType.value;
+      const enabled = state.projectType === "content";
+      state.captionsEnabled = enabled;
+      elements.captionMode.value = enabled ? "auto" : "none";
+      elements.captionsEnabled.checked = enabled;
+      elements.captionPreset.disabled = !enabled;
+      elements.autoCaptions.disabled = !enabled;
+      drawPreview();
     });
     elements.projectNiche.addEventListener("input", () => {
       state.niche = elements.projectNiche.value.trim();
+    });
+    elements.transitionStyle.addEventListener("change", () => {
+      state.transitionStyle = elements.transitionStyle.value;
+    });
+    elements.captionMode.addEventListener("change", () => {
+      const enabled = elements.captionMode.value !== "none";
+      state.captionsEnabled = enabled;
+      elements.captionsEnabled.checked = enabled;
+      elements.captionPreset.disabled = !enabled;
+      elements.autoCaptions.disabled = !enabled;
+      drawPreview();
+    });
+    elements.captionPreset.addEventListener("change", () => {
+      setCaptionStyle(elements.captionPreset.value);
+      drawPreview();
+    });
+    elements.captionsEnabled.addEventListener("change", () => {
+      state.captionsEnabled = elements.captionsEnabled.checked;
+      elements.captionMode.value = state.captionsEnabled ? "manual" : "none";
+      elements.captionPreset.disabled = !state.captionsEnabled;
+      elements.autoCaptions.disabled = !state.captionsEnabled;
+      drawPreview();
+    });
+    elements.soundtrackMode.addEventListener(
+      "change",
+      updateSoundtrackControls,
+    );
+    elements.createMusic.addEventListener("click", createMusic);
+    elements.musicInput.addEventListener("change", () => {
+      importMusic(elements.musicInput.files?.[0]).catch((error) => {
+        setStatus(
+          error.message || "Não foi possível carregar a trilha.",
+          "error",
+        );
+      });
     });
     elements.applyRecipe.addEventListener("click", applyRecipe);
     const colorBindings = [
@@ -1934,6 +2239,7 @@
     $$('input[name="caption-style"]').forEach((input) =>
       input.addEventListener("change", () => {
         state.captionStyle = input.value;
+        elements.captionPreset.value = input.value;
         drawPreview();
       })
     );
