@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Editor de vídeo | SparkFilmes</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/img/logo-favicon-spark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/css/interno.css" />
+    <link rel="stylesheet" href="../assets/css/editor.css" />
+  </head>
+  <body class="internal-body editor-body" data-requires-auth="true">
+    <header class="internal-header">
+      <a class="internal-brand" href="../area-interna/" aria-label="Voltar à área interna">
+        <img src="../assets/img/logo-home.svg" alt="SparkFilmes" />
+      </a>
+      <nav aria-label="Navegação interna">
+        <a href="../area-interna/">Área interna</a>
+        <a href="../orcamentos/">Orçamentos</a>
+        <a href="../contratos/">Contratos</a>
+        <button type="button" data-logout>Sair</button>
+      </nav>
+    </header>
+
+    <main class="editor-page">
+      <header class="editor-intro">
+        <div>
+          <p class="internal-eyebrow">Spark Cut · editor local</p>
+          <h1>Do bruto ao conteúdo pronto.</h1>
+          <p>Corte, limpe, legende e exporte sem enviar o vídeo para a nuvem.</p>
+        </div>
+        <span class="editor-local-badge"><span aria-hidden="true">●</span> Arquivo permanece neste dispositivo</span>
+      </header>
+
+      <section class="editor-dropzone" id="editor-dropzone">
+        <input id="video-input" type="file" accept="video/*" multiple hidden />
+        <div class="dropzone-icon" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img"><path d="M16 14h16M24 6v16M9 28h30v12H9z" /></svg>
+        </div>
+        <p class="internal-eyebrow">Começar projeto</p>
+        <h2>Escolha ou arraste seus takes</h2>
+        <p>Selecione vários vídeos de uma vez. A ordem escolhida vira a primeira montagem.</p>
+        <button class="internal-button internal-button-primary" id="choose-video" type="button">Selecionar takes</button>
+        <small>Para uma primeira edição mais fluida, prefira vídeos em 1080p com até 15 minutos.</small>
+      </section>
+
+      <section class="editor-workspace" id="editor-workspace" hidden>
+        <header class="project-bar">
+          <div class="project-file">
+            <span class="project-file-icon" aria-hidden="true">▶</span>
+            <div>
+              <strong id="project-name">Vídeo</strong>
+              <small id="project-meta">—</small>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="editor-text-button" id="reset-project" type="button">Restaurar edição</button>
+            <button class="internal-button internal-button-quiet" id="add-videos" type="button">+ Adicionar takes</button>
+            <button class="internal-button internal-button-quiet" id="replace-video" type="button">Trocar projeto</button>
+          </div>
+        </header>
+
+        <section class="project-recipe" aria-labelledby="project-recipe-title">
+          <div>
+            <p class="editor-kicker">Direção criativa</p>
+            <h2 id="project-recipe-title">Que vídeo vamos montar?</h2>
+          </div>
+          <label class="editor-field">
+            <span>Tipo de vídeo</span>
+            <select id="project-type">
+              <option value="aftermovie">Aftermovie</option>
+              <option value="content">Conteúdo / dica</option>
+              <option value="sales">Criativo de vendas</option>
+            </select>
+          </label>
+          <label class="editor-field project-niche-field">
+            <span>Nicho, evento ou produto</span>
+            <input id="project-niche" type="text" maxlength="100" placeholder="Ex.: arquitetura, evento esportivo, clínica..." />
+          </label>
+          <button class="internal-button internal-button-primary" id="apply-recipe" type="button">Aplicar estilo</button>
+        </section>
+
+        <div class="editor-main-grid">
+          <section class="editor-stage-panel" aria-labelledby="preview-title">
+            <div class="stage-heading">
+              <div>
+                <p class="editor-kicker">Prévia</p>
+                <h2 id="preview-title">Visualização da edição</h2>
+              </div>
+              <span id="preview-quality">Prévia otimizada</span>
+            </div>
+
+            <div class="video-stage" id="video-stage">
+              <canvas id="preview-canvas" width="540" height="960" aria-label="Prévia do vídeo"></canvas>
+              <video id="source-video" playsinline preload="metadata" hidden></video>
+              <audio id="voiceover-audio" preload="auto" hidden></audio>
+              <div class="stage-empty" id="stage-empty">Preparando prévia…</div>
+            </div>
+
+            <div class="transport" aria-label="Controles do vídeo">
+              <button type="button" data-seek="start" aria-label="Ir ao início">|◀</button>
+              <button type="button" data-seek="-1" aria-label="Voltar um segundo">−1s</button>
+              <button class="transport-play" id="toggle-play" type="button" aria-label="Reproduzir">▶</button>
+              <button type="button" data-seek="1" aria-label="Avançar um segundo">+1s</button>
+              <button type="button" data-action="split" aria-label="Dividir no cursor">✂</button>
+              <span class="transport-time"><b id="current-time">00:00.0</b> / <span id="total-time">00:00.0</span></span>
+            </div>
+
+            <div class="quick-actions">
+              <button class="quick-action" id="detect-silence" type="button">
+                <span class="quick-action-icon" aria-hidden="true">⌁</span>
+                <span><strong>Detectar silêncios</strong><small>Encontre pausas e respiros localmente</small></span>
+              </button>
+              <button class="quick-action" id="auto-captions" type="button">
+                <span class="quick-action-icon" aria-hidden="true">CC</span>
+                <span><strong>Legenda com IA</strong><small>Transcreva em português no dispositivo</small></span>
+              </button>
+            </div>
+            <p class="editor-status" id="editor-status" aria-live="polite"></p>
+          </section>
+
+          <aside class="editor-inspector" aria-label="Ajustes da edição">
+            <div class="inspector-tabs" role="tablist" aria-label="Ferramentas">
+              <button class="is-active" type="button" role="tab" aria-selected="true" data-tab="visual">Visual</button>
+              <button type="button" role="tab" aria-selected="false" data-tab="audio">Áudio</button>
+              <button type="button" role="tab" aria-selected="false" data-tab="captions">Legendas</button>
+            </div>
+
+            <div class="inspector-panel is-active" data-panel="visual">
+              <div class="inspector-section">
+                <header><div><span>Enquadramento</span><h3>Formato de saída</h3></div></header>
+                <div class="format-picker" role="radiogroup" aria-label="Formato do vídeo">
+                  <label><input type="radio" name="format" value="9:16" checked /><span><i class="format-shape portrait"></i>9:16</span></label>
+                  <label><input type="radio" name="format" value="1:1" /><span><i class="format-shape square"></i>1:1</span></label>
+                  <label><input type="radio" name="format" value="16:9" /><span><i class="format-shape landscape"></i>16:9</span></label>
+                  <label><input type="radio" name="format" value="original" /><span><i class="format-shape original"></i>Original</span></label>
+                </div>
+                <label class="editor-field">
+                  <span>Ajuste da imagem</span>
+                  <select id="fit-mode"><option value="contain" selected>Mostrar vídeo inteiro</option><option value="cover">Preencher quadro (pode cortar)</option></select>
+                </label>
+              </div>
+
+              <div class="inspector-section">
+                <header><div><span>Tratamento</span><h3>Cor e acabamento</h3></div><button class="editor-text-button" id="reset-color" type="button">Zerar</button></header>
+                <label class="range-field"><span><b>Exposição</b><output id="brightness-output">0</output></span><input id="brightness" type="range" min="-40" max="40" value="0" /></label>
+                <label class="range-field"><span><b>Contraste</b><output id="contrast-output">0</output></span><input id="contrast" type="range" min="-40" max="40" value="0" /></label>
+                <label class="range-field"><span><b>Saturação</b><output id="saturation-output">0</output></span><input id="saturation" type="range" min="-100" max="100" value="0" /></label>
+                <label class="range-field"><span><b>Temperatura</b><output id="warmth-output">0</output></span><input id="warmth" type="range" min="-50" max="50" value="0" /></label>
+              </div>
+
+              <div class="inspector-section">
+                <header><div><span>Trecho selecionado</span><h3>Movimento e ritmo</h3></div></header>
+                <label class="editor-field"><span>Velocidade</span><select id="segment-speed"><option value="0.75">0,75×</option><option value="1" selected>Normal · 1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="2">2×</option><option value="ramp-up">Speed ramp crescente</option><option value="ramp-down">Speed ramp decrescente</option></select></label>
+                <label class="editor-field"><span>Movimento</span><select id="segment-motion"><option value="none">Sem movimento</option><option value="zoom-in">Zoom in suave</option><option value="zoom-out">Zoom out suave</option><option value="punch">Punch in</option></select></label>
+                <p class="selection-hint" id="selection-hint">Trecho 1 selecionado</p>
+              </div>
+            </div>
+
+            <div class="inspector-panel" data-panel="audio" hidden>
+              <div class="inspector-section ai-voice-section">
+                <header><div><span>Narração generativa</span><h3>Voz com inteligência artificial</h3></div></header>
+                <p class="inspector-note voice-intro">Crie uma sugestão a partir do tipo de vídeo e do nicho, edite o texto e gere a voz em português no dispositivo.</p>
+                <label class="editor-field voice-script-field">
+                  <span>Texto da narração</span>
+                  <textarea id="voice-script" rows="6" maxlength="700" placeholder="A sugestão de narração aparecerá aqui."></textarea>
+                </label>
+                <div class="caption-actions voice-actions">
+                  <button class="internal-button internal-button-quiet" id="suggest-voice-script" type="button">Sugerir texto</button>
+                  <button class="internal-button internal-button-primary" id="generate-voice" type="button">Gerar voz com IA</button>
+                </div>
+                <div class="voice-result" id="voice-result" hidden>
+                  <span id="voice-summary">Narração pronta</span>
+                  <div>
+                    <button class="editor-text-button" id="preview-voice" type="button">Ouvir</button>
+                    <button class="editor-text-button" id="remove-voice" type="button">Remover</button>
+                  </div>
+                </div>
+                <label class="range-field"><span><b>Volume da narração</b><output id="voice-volume-output">100%</output></span><input id="voice-volume" type="range" min="0" max="150" value="100" /></label>
+                <label class="switch-field voice-duck-field"><span><b>Baixar áudio dos takes</b><small>Abre espaço para a narração durante o vídeo</small></span><input id="duck-original" type="checkbox" checked /><i></i></label>
+              </div>
+
+              <div class="inspector-section">
+                <header><div><span>Tratamento local</span><h3>Voz mais presente</h3></div></header>
+                <label class="switch-field"><span><b>Limpeza de voz</b><small>Reduz graves, chiado e variações bruscas</small></span><input id="clean-voice" type="checkbox" checked /><i></i></label>
+                <label class="range-field"><span><b>Volume</b><output id="volume-output">100%</output></span><input id="volume" type="range" min="0" max="150" value="100" /></label>
+                <p class="inspector-note">O tratamento usa filtros, compressor e normalização do navegador. Ruídos complexos podem exigir uma ferramenta dedicada.</p>
+              </div>
+
+              <div class="inspector-section">
+                <header><div><span>Corte inteligente</span><h3>Pausas e respiros</h3></div></header>
+                <label class="range-field"><span><b>Sensibilidade</b><output id="silence-threshold-output">−38 dB</output></span><input id="silence-threshold" type="range" min="-55" max="-25" value="-38" /></label>
+                <label class="range-field"><span><b>Pausa mínima</b><output id="silence-duration-output">0,35 s</output></span><input id="silence-duration" type="range" min="0.18" max="1.2" step="0.01" value="0.35" /></label>
+                <div class="silence-result" id="silence-result" hidden>
+                  <span id="silence-summary">Nenhuma sugestão</span>
+                  <button class="internal-button internal-button-primary" id="apply-silence" type="button">Aplicar cortes</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="inspector-panel" data-panel="captions" hidden>
+              <div class="inspector-section">
+                <header><div><span>Estilo</span><h3>Legenda do conteúdo</h3></div></header>
+                <div class="caption-style-picker">
+                  <label><input type="radio" name="caption-style" value="spark" checked /><span class="caption-sample spark">FAÍSCA</span></label>
+                  <label><input type="radio" name="caption-style" value="impact" /><span class="caption-sample impact">IMPACTO</span></label>
+                  <label><input type="radio" name="caption-style" value="clean" /><span class="caption-sample clean">Limpa</span></label>
+                </div>
+                <label class="range-field"><span><b>Tamanho</b><output id="caption-size-output">8%</output></span><input id="caption-size" type="range" min="4" max="12" value="8" /></label>
+                <label class="range-field"><span><b>Altura</b><output id="caption-position-output">78%</output></span><input id="caption-position" type="range" min="45" max="90" value="78" /></label>
+              </div>
+
+              <div class="inspector-section captions-editor-section">
+                <header><div><span>Texto</span><h3>Revisar legendas</h3></div></header>
+                <div class="caption-actions">
+                  <button class="internal-button internal-button-quiet" id="add-caption" type="button">+ Adicionar</button>
+                  <button class="internal-button internal-button-quiet" id="import-srt" type="button">Importar SRT</button>
+                  <input id="srt-input" type="file" accept=".srt,text/plain" hidden />
+                </div>
+                <div class="caption-list" id="caption-list"><p class="empty-list">Nenhuma legenda adicionada.</p></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <section class="timeline-panel" aria-labelledby="timeline-title">
+          <header class="timeline-header">
+            <div><p class="editor-kicker">Montagem</p><h2 id="timeline-title">Linha do tempo</h2></div>
+            <div class="timeline-actions">
+              <button class="internal-button internal-button-quiet" id="set-in" type="button">Entrada no cursor</button>
+              <button class="internal-button internal-button-quiet" id="set-out" type="button">Saída no cursor</button>
+              <button class="internal-button internal-button-quiet is-danger" id="remove-segment" type="button">Excluir trecho</button>
+            </div>
+          </header>
+
+          <div class="timeline-ruler" id="timeline-ruler" tabindex="0" role="slider" aria-label="Posição no vídeo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="timeline-track">
+              <div class="silence-markers" id="silence-markers"></div>
+              <div class="timeline-segments" id="timeline-segments"></div>
+              <div class="caption-markers" id="caption-markers"></div>
+              <div class="timeline-playhead" id="timeline-playhead"><span></span></div>
+            </div>
+          </div>
+          <div class="segment-list" id="segment-list"></div>
+          <footer class="timeline-summary">
+            <span><b id="kept-duration">00:00</b> no resultado</span>
+            <span><b id="removed-duration">00:00</b> removidos</span>
+            <span><b id="segment-count">1</b> trecho</span>
+          </footer>
+        </section>
+
+        <section class="export-panel">
+          <div>
+            <p class="editor-kicker">Finalização</p>
+            <h2>Exportar no dispositivo</h2>
+            <p>O navegador renderiza a edição em tempo real. Mantenha esta aba aberta durante o processo.</p>
+          </div>
+          <label class="editor-field export-quality"><span>Qualidade</span><select id="export-quality"><option value="720">HD · 720p</option><option value="1080">Full HD · 1080p</option></select></label>
+          <div class="export-action">
+            <button class="internal-button internal-button-primary" id="export-video" type="button">Exportar vídeo</button>
+            <small id="export-support">Formato definido pelo navegador</small>
+          </div>
+          <div class="export-progress" id="export-progress" hidden>
+            <span><i id="export-progress-bar"></i></span>
+            <p id="export-progress-text">Preparando renderização…</p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="../assets/js/internal-auth.js"></script>
+    <script src="../assets/js/editor-core.js"></script>
+    <script src="../assets/js/editor.js"></script>
+  </body>
+</html>

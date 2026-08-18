@@ -60,6 +60,28 @@ publicado, e os orçamentos não são armazenados. Para validar os cálculos com
 deno run --allow-read tests/orcamentos-core.test.js
 ```
 
+## Editor de vídeo local
+
+Depois de entrar na área interna, acesse:
+
+```text
+http://localhost:8080/editor/
+```
+
+O Spark Cut importa e processa os takes no próprio navegador. A primeira versão
+inclui montagem com vários clipes, receitas para aftermovie, conteúdo e criativo
+de vendas, timeline não destrutiva, cortes manuais, detecção de pausas, ajustes
+de cor e voz, zoom, speed ramp, legendas manuais/SRT, transcrição local com
+Whisper, narração em português com IA e exportação em MP4 ou WebM, conforme o
+suporte do navegador. Os modelos são baixados na primeira utilização, mas os
+arquivos e o áudio dos takes não são enviados para processamento.
+
+Para validar o núcleo da timeline:
+
+```bash
+deno run tests/editor-core.test.js
+```
+
 ## Personalizacao rapida
 
 1. WhatsApp oficial
