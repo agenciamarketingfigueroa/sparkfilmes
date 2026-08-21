@@ -598,6 +598,15 @@ body[data-graduation-proposal] .section-title {
   color: var(--color-muted);
 }
 
+.graduation-investment-list-title {
+  margin: 0 0 0.65rem;
+  color: #ff9cb2;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
 .graduation-investment-shell ul {
   display: grid;
   gap: 0;
@@ -607,9 +616,12 @@ body[data-graduation-proposal] .section-title {
 }
 
 .graduation-investment-shell li {
+  position: relative;
   border-bottom: 1px solid rgba(241, 240, 240, 0.12);
-  padding: 0.85rem 0;
-  font-weight: 700;
+  padding: 0.68rem 0 0.68rem 1.55rem;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .graduation-investment-shell li:first-child {
@@ -618,8 +630,11 @@ body[data-graduation-proposal] .section-title {
 
 .graduation-investment-shell li::before {
   content: "✓";
-  margin-right: 0.7rem;
+  position: absolute;
+  top: 0.68rem;
+  left: 0;
   color: var(--color-primary);
+  font-weight: 900;
 }
 
 .graduation-final-cta {
@@ -664,9 +679,22 @@ body[data-graduation-proposal] .section-title {
 
   .graduation-event-layout,
   .graduation-album-shell,
-  .graduation-portal-layout,
-  .graduation-investment-shell {
+  .graduation-portal-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .graduation-investment-shell {
+    grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+    align-items: start;
+  }
+
+  .graduation-investment-shell ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+
+  .graduation-investment-shell li:nth-child(2) {
+    border-top: 1px solid rgba(241, 240, 240, 0.12);
   }
 
 }
