@@ -5,7 +5,7 @@
   if (!core) return;
 
   const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
-  const BUDGET_EXPORT_VERSION = 3;
+  const BUDGET_EXPORT_VERSION = 4;
   const CONTRACT_DRAFT_KEY = "sparkfilmes-contract-draft";
   const CONTRACT_DRAFT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
@@ -293,7 +293,7 @@
       return {
         name: input.value,
         professionalId: input.dataset.professionalId || "",
-        quantity: quantityInput ? Math.max(1, core.asNumber(quantityInput.value) || 1) : 0
+        quantity: quantityInput ? Math.max(1, Math.floor(core.asNumber(quantityInput.value) || 1)) : 0
       };
     });
 
@@ -329,14 +329,20 @@
     return format?.quantity || 1;
   };
 
+  const eventTeamFormats = () => {
+    const availableProfessionalIds = new Set(
+      catalog.pacotesEventos.flatMap((eventPackage) => eventPackage.etapas.map((stage) => stage.profissionalId))
+    );
+    return selectedServiceFormats().filter((format) => availableProfessionalIds.has(format.professionalId));
+  };
+
   const eventPackageProfessionalIds = (eventPackage) => {
     if (eventPackage?.id === "essencial") return ["fotografo", "storymaker"];
     if (eventPackage?.id === "spark") return ["fotografo", "videomaker"];
     return ["fotografo", "videomaker", "storymaker"];
   };
 
-  const sharedEventStageLines = () => {
-    if (eventStageLines.length) return eventStageLines;
+  const defaultEventStageLines = () => {
     const flamePackage = catalog.pacotesEventos.find((eventPackage) => eventPackage.id === "flame") || catalog.pacotesEventos[0];
     return (flamePackage?.etapas || []).map((stage) => ({
       name: stage.nome,
@@ -344,6 +350,8 @@
       minutes: stage.minutos
     }));
   };
+
+  const sharedEventStageLines = () => eventStageLines.length ? eventStageLines : defaultEventStageLines();
 
   const calculateEventPackageQuote = (eventPackage) => core.calculateBudget({
     model: "pacote",
@@ -355,7 +363,7 @@
       .map((stage) => ({
         ...stage,
         hourlyRate: getProfessional(stage.professionalId)?.valorHora || 0,
-        quantity: teamQuantityFor(stage.professionalId)
+        quantity: stage.professionalIndex ? 1 : teamQuantityFor(stage.professionalId)
       })),
     partnershipDiscount: currentPartnership().discount
   });
@@ -389,50 +397,114 @@
   };
 
   const readEventStageLines = () => {
-    eventStageLines = Array.from(elements.eventStageItems.querySelectorAll("[data-event-stage-index]")).map((row) => {
-      const professional = getProfessional(row.dataset.professionalId);
-      return {
-        name: row.dataset.stageName,
-        professionalId: professional.id,
-        professionalName: professional.nome,
-        minutes: core.asNumber(row.querySelector(".event-stage-minutes-input").value),
-        hourlyRate: professional.valorHora,
-        quantity: teamQuantityFor(professional.id)
-      };
-    });
+    eventStageLines = Array.from(elements.eventStageItems.querySelectorAll("[data-event-stage-index]"))
+      .map((row) => {
+        const professional = getProfessional(row.dataset.professionalId);
+        if (!professional) return null;
+        return {
+          name: row.dataset.stageName,
+          professionalId: professional.id,
+          professionalName: professional.nome,
+          professionalIndex: Math.max(1, core.asNumber(row.dataset.professionalIndex) || 1),
+          minutes: core.asNumber(row.querySelector(".event-stage-minutes-input").value),
+          hourlyRate: professional.valorHora,
+          quantity: 1
+        };
+      })
+      .filter(Boolean);
     return eventStageLines;
+  };
+
+  const syncEventStageLinesWithTeam = (readRenderedValues = true) => {
+    const hasRenderedLines = Boolean(elements.eventStageItems.querySelector("[data-event-stage-index]"));
+    const sourceLines = readRenderedValues && hasRenderedLines ? readEventStageLines() : eventStageLines;
+    const templates = defaultEventStageLines();
+    const nextLines = [];
+
+    eventTeamFormats().forEach((format) => {
+      const professionalTemplates = templates.filter((stage) => stage.professionalId === format.professionalId);
+      for (let professionalIndex = 1; professionalIndex <= format.quantity; professionalIndex += 1) {
+        professionalTemplates.forEach((stage) => {
+          const exactLine = sourceLines.find((line) =>
+            line.professionalId === format.professionalId
+            && line.name === stage.name
+            && core.asNumber(line.professionalIndex) === professionalIndex
+          );
+          const firstProfessionalLine = sourceLines.find((line) =>
+            line.professionalId === format.professionalId
+            && line.name === stage.name
+            && core.asNumber(line.professionalIndex) === 1
+          );
+          const legacyLine = sourceLines.find((line) =>
+            line.professionalId === format.professionalId
+            && line.name === stage.name
+            && !line.professionalIndex
+          );
+          const sourceLine = exactLine || firstProfessionalLine || legacyLine || stage;
+          nextLines.push({
+            ...sourceLine,
+            name: stage.name,
+            professionalId: format.professionalId,
+            professionalIndex,
+            minutes: core.asNumber(sourceLine.minutes),
+            quantity: 1
+          });
+        });
+      }
+    });
+
+    eventStageLines = nextLines;
+    renderEventStageLines();
   };
 
   const renderEventStageLines = () => {
     const stageMarkup = (line, index) => {
         const professional = getProfessional(line.professionalId);
         return `
-          <div class="event-stage-item" data-event-stage-index="${index}" data-stage-name="${escapeHtml(line.name)}" data-professional-id="${professional.id}">
+          <div class="event-stage-item" data-event-stage-index="${index}" data-stage-name="${escapeHtml(line.name)}" data-professional-id="${professional.id}" data-professional-index="${line.professionalIndex}">
             <div class="event-stage-name">
               <strong>${escapeHtml(line.name)}</strong>
               <small>${core.money(professional.valorHora)}/hora</small>
             </div>
-            <span class="event-stage-role">${escapeHtml(professional.nome)}</span>
             <label class="event-stage-minutes">
               <input class="event-stage-minutes-input" type="number" min="0" step="5" value="${line.minutes}" aria-label="Minutos em ${escapeHtml(line.name)}" />
               <span>min</span>
             </label>
-            <strong class="event-stage-cost">${core.money((line.minutes / 60) * professional.valorHora * (line.quantity || 1))}</strong>
+            <strong class="event-stage-cost">${core.money((line.minutes / 60) * professional.valorHora)}</strong>
           </div>`;
       };
 
-    elements.eventStageItems.innerHTML = catalog.profissionais
-      .map((professional) => {
+    const professionalSections = eventTeamFormats().flatMap((format) => {
+      const professional = getProfessional(format.professionalId);
+      return Array.from({ length: format.quantity }, (_, offset) => {
+        const professionalIndex = offset + 1;
         const stages = eventStageLines
           .map((line, index) => ({ line, index }))
-          .filter(({ line }) => line.professionalId === professional.id);
+          .filter(({ line }) => line.professionalId === professional.id && line.professionalIndex === professionalIndex);
+        const totalMinutes = stages.reduce((total, { line }) => total + core.asNumber(line.minutes), 0);
+        const subtotal = (totalMinutes / 60) * professional.valorHora;
+        const professionalLabel = format.quantity > 1 ? `${professional.nome} ${professionalIndex}` : professional.nome;
         return `
-          <section class="event-stage-professional">
-            <header><h4>${escapeHtml(professional.nome)}</h4><span>${core.money(professional.valorHora)}/hora</span></header>
+          <details class="event-stage-professional" data-event-professional="${professional.id}-${professionalIndex}" ${professionalIndex === 1 ? "open" : ""}>
+            <summary>
+              <div class="event-stage-professional-title">
+                <small>Profissional ${professionalIndex} de ${format.quantity}</small>
+                <h4>${escapeHtml(professionalLabel)}</h4>
+              </div>
+              <div class="event-stage-professional-summary">
+                <span>${core.money(professional.valorHora)}/hora</span>
+                <strong data-professional-minutes>${core.formatHours(totalMinutes / 60)}</strong>
+                <b data-professional-cost>${core.money(subtotal)}</b>
+              </div>
+            </summary>
             <div class="event-stage-professional-items">${stages.map(({ line, index }) => stageMarkup(line, index)).join("")}</div>
-          </section>`;
-      })
-      .join("");
+          </details>`;
+      });
+    });
+
+    elements.eventStageItems.innerHTML = professionalSections.length
+      ? professionalSections.join("")
+      : `<div class="event-stage-empty"><strong>Selecione a equipe acima.</strong><span>Os campos de tempo serão criados separadamente para cada profissional.</span></div>`;
   };
 
   const loadEventPackage = (packageId, force = false) => {
@@ -441,13 +513,8 @@
     selectedEventPackageId = eventPackage.id;
 
     if (force || eventStageLines.length === 0) {
-      const flamePackage = getEventPackage("flame") || eventPackage;
-      eventStageLines = flamePackage.etapas.map((stage) => ({
-        name: stage.nome,
-        professionalId: stage.profissionalId,
-        minutes: stage.minutos
-      }));
-      renderEventStageLines();
+      eventStageLines = defaultEventStageLines();
+      syncEventStageLinesWithTeam(false);
     }
 
     elements.eventPackageTeam.textContent = `${eventPackage.profissionaisEmCampo} ${eventPackage.profissionaisEmCampo === 1 ? "profissional em campo" : "profissionais em campo"} · ${eventPackage.subtitulo}`;
@@ -460,7 +527,15 @@
     elements.eventStageItems.querySelectorAll("[data-event-stage-index]").forEach((row) => {
       const professional = getProfessional(row.dataset.professionalId);
       const minutes = core.asNumber(row.querySelector(".event-stage-minutes-input").value);
-      row.querySelector(".event-stage-cost").textContent = core.money((minutes / 60) * professional.valorHora * teamQuantityFor(professional.id));
+      row.querySelector(".event-stage-cost").textContent = core.money((minutes / 60) * professional.valorHora);
+    });
+    elements.eventStageItems.querySelectorAll("[data-event-professional]").forEach((section) => {
+      const rows = Array.from(section.querySelectorAll("[data-event-stage-index]"));
+      const totalMinutes = rows.reduce((total, row) => total + core.asNumber(row.querySelector(".event-stage-minutes-input").value), 0);
+      const professional = getProfessional(rows[0]?.dataset.professionalId);
+      if (!professional) return;
+      section.querySelector("[data-professional-minutes]").textContent = core.formatHours(totalMinutes / 60);
+      section.querySelector("[data-professional-cost]").textContent = core.money((totalMinutes / 60) * professional.valorHora);
     });
   };
 
@@ -474,9 +549,12 @@
   const isInsalubridadeLine = (line) =>
     line?.billingType === "insalubridade" || String(line?.name || "").trim().toLowerCase() === "taxa de insalubridade";
 
-  const customLineTotal = (line) => line?.billingType === "minuto"
-    ? (core.asNumber(line.quantity) / 60) * core.asNumber(line.unitValue)
-    : core.asNumber(line.quantity) * core.asNumber(line.unitValue);
+  const customLineTotal = (line) => {
+    const baseTotal = line?.billingType === "minuto"
+      ? (core.asNumber(line.quantity) / 60) * core.asNumber(line.unitValue)
+      : core.asNumber(line.quantity) * core.asNumber(line.unitValue);
+    return line?.billingType === "minuto" ? baseTotal * teamQuantityFor(line.professionalId) : baseTotal;
+  };
 
   const insalubridadeBase = (lines) => lines
     .filter((line) => line?.billingType !== "insalubridade")
@@ -635,7 +713,12 @@
     const attendance = form.querySelector('input[name="attendance"]:checked')?.value || "remoto";
     const packageProfessional = getProfessional(elements.packageProfessional.value);
     const technicalProfessional = getProfessional(elements.technicalProfessional.value);
-    const customInputLines = elements.model.value === "sob-medida" ? readCustomLines() : [];
+    const customInputLines = elements.model.value === "sob-medida"
+      ? readCustomLines().map((line) => ({
+          ...line,
+          professionalQuantity: line.billingType === "minuto" ? teamQuantityFor(line.professionalId) : 1
+        }))
+      : [];
     const eventPackageMode = isEventPackageMode();
     const eventPackage = eventPackageMode ? getEventPackage() : null;
     const sharedEventInputLines = eventPackageMode ? readEventStageLines() : [];
@@ -685,6 +768,7 @@
       eventStageLines: eventInputLines,
       hourlyRate: elements.model.value === "tecnico" ? technicalProfessional?.valorHora : packageProfessional?.valorHora,
       professionalName: elements.model.value === "tecnico" ? technicalProfessional?.nome : packageProfessional?.nome,
+      professionalQuantity: teamQuantityFor(elements.model.value === "tecnico" ? technicalProfessional?.id : packageProfessional?.id),
       technicalUnit: elements.technicalUnit.value,
       technicalMinutes: elements.technicalMinutes.value,
       lines: customInputLines,
@@ -707,7 +791,10 @@
       .reduce((total, row) => {
         const quantity = core.asNumber(row.querySelector(".line-quantity").value);
         const rate = core.asNumber(row.querySelector(".line-rate").value);
-        return total + (row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate);
+        const professionalQuantity = row.dataset.billingType === "minuto"
+          ? teamQuantityFor(row.querySelector(".line-professional").value)
+          : 1;
+        return total + (row.dataset.billingType === "minuto" ? (quantity / 60) * rate * professionalQuantity : quantity * rate);
       }, 0);
     rows.forEach((row) => {
       const isInsalubridade = row.dataset.billingType === "insalubridade";
@@ -716,7 +803,10 @@
         : null;
       const quantity = isInsalubridade ? level.rate : core.asNumber(row.querySelector(".line-quantity").value);
       const rate = isInsalubridade ? base : core.asNumber(row.querySelector(".line-rate").value);
-      const total = isInsalubridade ? rate * quantity : row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate;
+      const professionalQuantity = row.dataset.billingType === "minuto"
+        ? teamQuantityFor(row.querySelector(".line-professional").value)
+        : 1;
+      const total = isInsalubridade ? rate * quantity : row.dataset.billingType === "minuto" ? (quantity / 60) * rate * professionalQuantity : quantity * rate;
       row.querySelector(".line-total").textContent = core.money(total);
     });
   };
@@ -792,8 +882,11 @@
       : referenceTotals.estimatedMinutes > 0
         ? `${referenceTotals.estimatedMinutes} minutos estimados com a base selecionada${referenceTotals.discountAmount ? ` e ${Math.round(referenceTotals.discountRate * 100)}% de desconto` : ""}.`
         : "Informe minutos ou valores nas etapas.";
-    const sharedMinutes = sharedEventStageLines().reduce((total, line) => total + core.asNumber(line.minutes) * teamQuantityFor(line.professionalId), 0);
-    elements.eventStageTotalMinutes.textContent = `${Math.round(sharedMinutes * 100) / 100} min`;
+    const sharedMinutes = eventStageLines.reduce((total, line) => {
+      const lineQuantity = line.professionalIndex ? 1 : teamQuantityFor(line.professionalId);
+      return total + core.asNumber(line.minutes) * lineQuantity;
+    }, 0);
+    elements.eventStageTotalMinutes.textContent = core.formatHours(sharedMinutes / 60);
     elements.eventTechnicalCost.textContent = core.money(referenceTotals.technicalCost);
     if (eventPackageMode) elements.eventPackagePrice.textContent = core.money(referenceTotals.unitValue);
     elements.locationFields.hidden = currentInput.attendance !== "presencial";
@@ -862,7 +955,7 @@
   };
 
   const migrateBudgetSnapshot = (snapshot) => {
-    if (!snapshot || !snapshot.fields || ![1, 2, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
+    if (!snapshot || !snapshot.fields || ![1, 2, 3, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
       throw new Error("Arquivo de orçamento inválido.");
     }
 
@@ -883,7 +976,7 @@
       customLines: Array.isArray(snapshot.customLines)
         ? snapshot.customLines.map((line) => {
             const normalizedLine = normalizeCustomTimeLine(line);
-            if (line?.billingType === "minuto" && snapshot.version < BUDGET_EXPORT_VERSION) {
+            if (line?.billingType === "minuto" && snapshot.version < 3) {
               normalizedLine.unitValue = core.asNumber(line.unitValue) * 60;
             }
             return normalizedLine;
@@ -924,12 +1017,24 @@
     });
     elements.eventPackageQuantity.value = snapshot.eventPackageQuantity || "1";
     eventStageLines = Array.isArray(snapshot.eventStageLines) ? snapshot.eventStageLines : [];
+    if (fields.projectType === "evento" && !elements.formatInputs.some((input) => input.checked) && eventStageLines.length) {
+      elements.formatInputs.forEach((input) => {
+        const matchingLines = eventStageLines.filter((line) => line.professionalId === input.dataset.professionalId);
+        if (!matchingLines.length) return;
+        input.checked = true;
+        const quantityInput = input.closest(".service-format-option")?.querySelector(".service-format-quantity");
+        const indexedQuantity = Math.max(...matchingLines.map((line) => core.asNumber(line.professionalIndex)), 0);
+        const legacyQuantity = Math.max(...matchingLines.map((line) => core.asNumber(line.quantity)), 1);
+        if (quantityInput) quantityInput.value = String(indexedQuantity || legacyQuantity);
+      });
+    }
     customLines = Array.isArray(snapshot.customLines) ? snapshot.customLines : [];
     manualServiceValue = Boolean(snapshot.manualServiceValue);
     updateFormats();
     updateServiceLocationFields();
     updateModelPanels();
-    if (eventStageLines.length) renderEventStageLines();
+    if (isEventPackageMode()) syncEventStageLinesWithTeam(false);
+    else if (eventStageLines.length) renderEventStageLines();
     if (customLines.length) renderCustomLines();
     updatePackageScope();
     refresh();
@@ -1235,6 +1340,15 @@
     elements.formatInputs.forEach((input) => {
       input.addEventListener("change", () => {
         updateFormats();
+        if (isEventPackageMode()) syncEventStageLinesWithTeam();
+        manualServiceValue = false;
+        refresh();
+      });
+    });
+
+    form.querySelectorAll(".service-format-quantity").forEach((input) => {
+      input.addEventListener("input", () => {
+        if (isEventPackageMode()) syncEventStageLinesWithTeam();
         manualServiceValue = false;
         refresh();
       });

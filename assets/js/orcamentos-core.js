@@ -55,8 +55,9 @@
       } else {
         const minutesPerPackage = positive(input.minutesPerPackage);
         const hourlyRate = positive(input.hourlyRate);
-        estimatedMinutes = quantity * minutesPerPackage;
-        unitValue = (minutesPerPackage / 60) * hourlyRate;
+        const professionalQuantity = positive(input.professionalQuantity) || 1;
+        estimatedMinutes = quantity * minutesPerPackage * professionalQuantity;
+        unitValue = (minutesPerPackage / 60) * hourlyRate * professionalQuantity;
         reference = quantity * unitValue;
         technicalCost = reference;
       }
@@ -64,9 +65,10 @@
     } else if (model === "tecnico") {
       quantity = positive(input.technicalMinutes);
       const hourlyRate = positive(input.hourlyRate);
-      estimatedMinutes = quantity;
+      const professionalQuantity = positive(input.professionalQuantity) || 1;
+      estimatedMinutes = quantity * professionalQuantity;
       unitValue = hourlyRate;
-      reference = (quantity / 60) * unitValue;
+      reference = (quantity / 60) * unitValue * professionalQuantity;
       technicalCost = reference;
       unitLabel = quantity === 1 ? "minuto" : "minutos";
     } else {
@@ -75,11 +77,14 @@
         if (line.billingType === "insalubridade") return total;
         const lineQuantity = positive(line.quantity);
         const lineUnitValue = positive(line.unitValue);
-        if (line.billingType === "hora") estimatedMinutes += lineQuantity * 60;
-        if (line.billingType === "minuto") estimatedMinutes += lineQuantity;
+        const professionalQuantity = line.billingType === "hora" || line.billingType === "minuto"
+          ? positive(line.professionalQuantity) || 1
+          : 1;
+        if (line.billingType === "hora") estimatedMinutes += lineQuantity * 60 * professionalQuantity;
+        if (line.billingType === "minuto") estimatedMinutes += lineQuantity * professionalQuantity;
         const lineTotal = line.billingType === "minuto"
-          ? (lineQuantity / 60) * lineUnitValue
-          : lineQuantity * lineUnitValue;
+          ? (lineQuantity / 60) * lineUnitValue * professionalQuantity
+          : lineQuantity * lineUnitValue * professionalQuantity;
         return total + lineTotal;
       }, 0);
       const insalubridadeRate = lines

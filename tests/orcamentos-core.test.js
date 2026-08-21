@@ -35,6 +35,17 @@ assert.equal(packageBudget.estimatedHours, 32);
 assert.equal(packageBudget.estimatedMinutes, 1920);
 assert.equal(packageBudget.total, 3539.69);
 
+const teamPackageBudget = core.calculateBudget({
+  model: "pacote",
+  packageQuantity: 1,
+  minutesPerPackage: 480,
+  hourlyRate: rate("fotografo"),
+  professionalQuantity: 3,
+  attendance: "remoto"
+});
+assert.equal(teamPackageBudget.reference, core.roundMoney(8 * rate("fotografo") * 3));
+assert.equal(teamPackageBudget.estimatedHours, 24);
+
 const sparkPackage = catalog.pacotesEventos.find((item) => item.id === "spark");
 const sparkStageLines = sparkPackage.etapas.map((stage) => ({
   minutes: stage.minutos,
@@ -55,6 +66,44 @@ assert.equal(eventBudget.services, core.roundMoney(expectedEventCost));
 assert.equal(eventBudget.estimatedHours, 8);
 assert.equal(eventBudget.estimatedMinutes, 480);
 assert.equal(eventBudget.technicalCost, core.roundMoney(expectedEventCost));
+
+const expandedEventTeam = [
+  ...Array.from({ length: 3 }, (_, professionalIndex) => ({
+    professionalIndex: professionalIndex + 1,
+    minutes: 240,
+    hourlyRate: rate("fotografo"),
+    quantity: 1
+  })),
+  ...Array.from({ length: 3 }, (_, professionalIndex) => ({
+    professionalIndex: professionalIndex + 1,
+    minutes: 240,
+    hourlyRate: rate("videomaker"),
+    quantity: 1
+  })),
+  { professionalIndex: 1, minutes: 240, hourlyRate: rate("storymaker"), quantity: 1 }
+];
+const expandedEventBudget = core.calculateBudget({
+  model: "pacote",
+  projectType: "evento",
+  eventPackageId: "flame",
+  eventPackageQuantity: 1,
+  eventStageLines: expandedEventTeam
+});
+const expectedExpandedEventCost = (4 * rate("fotografo") * 3)
+  + (4 * rate("videomaker") * 3)
+  + (4 * rate("storymaker"));
+assert.equal(expandedEventBudget.reference, core.roundMoney(expectedExpandedEventCost));
+assert.equal(expandedEventBudget.estimatedHours, 28);
+
+const legacyMultipliedEventBudget = core.calculateBudget({
+  model: "pacote",
+  projectType: "evento",
+  eventPackageId: "flame",
+  eventPackageQuantity: 1,
+  eventStageLines: [{ minutes: 240, hourlyRate: rate("fotografo"), quantity: 3 }]
+});
+assert.equal(legacyMultipliedEventBudget.reference, core.roundMoney(4 * rate("fotografo") * 3));
+assert.equal(legacyMultipliedEventBudget.estimatedHours, 12);
 
 const partnerEventBudget = core.calculateBudget({
   model: "pacote",
@@ -79,6 +128,16 @@ assert.equal(technicalBudget.estimatedMinutes, 960);
 assert.equal(technicalBudget.unitLabel, "minutos");
 assert.equal(technicalBudget.unitValue, core.roundMoney(rate("fotografo")));
 
+const technicalTeamBudget = core.calculateBudget({
+  model: "tecnico",
+  technicalMinutes: 480,
+  hourlyRate: rate("videomaker"),
+  professionalQuantity: 3,
+  attendance: "remoto"
+});
+assert.equal(technicalTeamBudget.reference, core.roundMoney(8 * rate("videomaker") * 3));
+assert.equal(technicalTeamBudget.estimatedHours, 24);
+
 const customBudget = core.calculateBudget({
   model: "sob-medida",
   lines: [
@@ -94,6 +153,19 @@ assert.equal(customBudget.estimatedHours, 2);
 assert.equal(customBudget.estimatedMinutes, 120);
 assert.equal(customBudget.travel, 125);
 assert.equal(customBudget.total, 496.23);
+
+const customTeamBudget = core.calculateBudget({
+  model: "sob-medida",
+  lines: [{
+    billingType: "minuto",
+    quantity: 240,
+    unitValue: rate("storymaker"),
+    professionalQuantity: 2
+  }],
+  attendance: "remoto"
+});
+assert.equal(customTeamBudget.reference, core.roundMoney(4 * rate("storymaker") * 2));
+assert.equal(customTeamBudget.estimatedHours, 8);
 
 const minuteBudget = core.calculateBudget({
   model: "sob-medida",
