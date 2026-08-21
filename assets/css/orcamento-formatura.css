@@ -74,10 +74,10 @@ body[data-graduation-proposal] .section-title {
 }
 
 .graduation-hero-media img {
+  display: block;
   width: 100%;
-  height: 26rem;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  object-fit: contain;
 }
 
 .graduation-hero-media figcaption {
@@ -162,7 +162,8 @@ body[data-graduation-proposal] .section-title {
 
 .graduation-photo-card {
   position: relative;
-  min-height: 18rem;
+  min-height: 0;
+  aspect-ratio: 3 / 2;
   margin: 0;
   overflow: hidden;
   border-radius: var(--radius-md);
@@ -173,19 +174,20 @@ body[data-graduation-proposal] .section-title {
 .graduation-photo-card::after {
   content: "";
   position: absolute;
-  inset: 42% 0 0;
+  inset: 55% 0 0;
   background: linear-gradient(transparent, rgba(5, 5, 8, 0.92));
 }
 
 .graduation-photo-card img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 450ms ease;
+  object-fit: contain;
+  transition: filter 250ms ease;
 }
 
 .graduation-photo-card:hover img {
-  transform: scale(1.025);
+  filter: brightness(0.96);
 }
 
 .graduation-photo-card figcaption {
@@ -323,9 +325,12 @@ body[data-graduation-proposal] .section-title {
 }
 
 .graduation-product-card img {
+  display: block;
   width: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: #f4f1ec;
 }
 
 .graduation-product-card > div {
@@ -334,10 +339,6 @@ body[data-graduation-proposal] .section-title {
 
 .graduation-product-card p {
   color: rgba(13, 13, 15, 0.68);
-}
-
-.graduation-shirt-card img {
-  object-position: center 42%;
 }
 
 .graduation-album-section {
@@ -639,11 +640,6 @@ body[data-graduation-proposal] .section-title {
 
   .graduation-photo-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: 21rem;
-  }
-
-  .graduation-photo-card-wide {
-    grid-column: 1 / -1;
   }
 
   .graduation-shirt-card {
@@ -660,10 +656,6 @@ body[data-graduation-proposal] .section-title {
 @media (min-width: 840px) {
   .graduation-hero-shell {
     grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.85fr);
-  }
-
-  .graduation-hero-media img {
-    height: clamp(29rem, 48vw, 38rem);
   }
 
   .graduation-video-grid {
@@ -685,25 +677,7 @@ body[data-graduation-proposal] .section-title {
   }
 
   .graduation-photo-grid {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-rows: repeat(2, 15.5rem);
-  }
-
-  .graduation-photo-card-tall {
-    grid-column: span 4;
-    grid-row: span 2;
-  }
-
-  .graduation-photo-card:not(.graduation-photo-card-tall):not(.graduation-photo-card-wide) {
-    grid-column: span 4;
-  }
-
-  .graduation-photo-card-wide {
-    grid-column: span 8;
-  }
-
-  .graduation-photo-card-tall img {
-    object-position: 42% center;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .graduation-product-grid {
@@ -715,13 +689,15 @@ body[data-graduation-proposal] .section-title {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
     align-items: center;
-    height: 32rem;
+    height: auto;
   }
 
   .graduation-shirt-card img {
     min-width: 0;
-    height: 100%;
+    width: 100%;
+    height: auto;
     aspect-ratio: auto;
+    object-fit: contain;
   }
 
   .graduation-shirt-card > div {
@@ -732,10 +708,6 @@ body[data-graduation-proposal] .section-title {
 @media (max-width: 619px) {
   .graduation-event-copy {
     position: static;
-  }
-
-  .graduation-photo-card {
-    min-height: 22rem;
   }
 
   .graduation-portal-copy .btn {
