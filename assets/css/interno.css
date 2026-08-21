@@ -1142,7 +1142,7 @@ h3 {
 
 .line-item {
   display: grid;
-  grid-template-columns: minmax(170px, 1.4fr) minmax(125px, 0.9fr) 88px 115px 90px 34px;
+  grid-template-columns: minmax(170px, 1.4fr) minmax(125px, 0.9fr) minmax(120px, 0.7fr) 115px 90px 34px;
   align-items: end;
   gap: 0.55rem;
   border: 1px solid var(--line);
@@ -1164,6 +1164,30 @@ h3 {
   min-height: 40px;
   padding: 0.52rem 0.58rem;
   font-size: 0.76rem;
+}
+
+.line-times-field {
+  align-self: stretch;
+}
+
+.line-individual-times {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.line-individual-time {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.line-individual-time small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .line-total {
@@ -1553,7 +1577,7 @@ h3 {
   }
 
   .line-item {
-    grid-template-columns: minmax(160px, 1.4fr) minmax(120px, 0.9fr) 80px 105px 82px 34px;
+    grid-template-columns: minmax(160px, 1.4fr) minmax(120px, 0.9fr) minmax(110px, 0.7fr) 105px 82px 34px;
   }
 }
 

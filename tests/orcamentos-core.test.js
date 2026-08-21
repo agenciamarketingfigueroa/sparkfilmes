@@ -167,6 +167,19 @@ const customTeamBudget = core.calculateBudget({
 assert.equal(customTeamBudget.reference, core.roundMoney(4 * rate("storymaker") * 2));
 assert.equal(customTeamBudget.estimatedHours, 8);
 
+const customSeparatedTeamBudget = core.calculateBudget({
+  model: "sob-medida",
+  lines: [{
+    billingType: "minuto",
+    quantity: 45 + 75,
+    unitValue: rate("videomaker"),
+    professionalQuantity: 1
+  }],
+  attendance: "remoto"
+});
+assert.equal(customSeparatedTeamBudget.reference, core.roundMoney(2 * rate("videomaker")));
+assert.equal(customSeparatedTeamBudget.estimatedMinutes, 120);
+
 const minuteBudget = core.calculateBudget({
   model: "sob-medida",
   lines: [{ billingType: "minuto", quantity: 90, unitValue: rate("editor") }],

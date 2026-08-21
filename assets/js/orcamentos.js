@@ -5,7 +5,7 @@
   if (!core) return;
 
   const BUDGET_CACHE_KEY = "sparkfilmes-last-budget";
-  const BUDGET_EXPORT_VERSION = 4;
+  const BUDGET_EXPORT_VERSION = 5;
   const CONTRACT_DRAFT_KEY = "sparkfilmes-contract-draft";
   const CONTRACT_DRAFT_VERSION = 1;
   const byId = (id) => document.getElementById(id);
@@ -549,11 +549,20 @@
   const isInsalubridadeLine = (line) =>
     line?.billingType === "insalubridade" || String(line?.name || "").trim().toLowerCase() === "taxa de insalubridade";
 
+  const customLineIndividualMinutes = (line) => {
+    const professionalQuantity = teamQuantityFor(line?.professionalId);
+    const savedMinutes = Array.isArray(line?.individualMinutes)
+      ? line.individualMinutes.map((minutes) => core.asNumber(minutes))
+      : [];
+    const fallbackMinutes = savedMinutes[0] ?? core.asNumber(line?.quantity);
+    return Array.from({ length: professionalQuantity }, (_, index) => savedMinutes[index] ?? fallbackMinutes);
+  };
+
   const customLineTotal = (line) => {
     const baseTotal = line?.billingType === "minuto"
-      ? (core.asNumber(line.quantity) / 60) * core.asNumber(line.unitValue)
+      ? (customLineIndividualMinutes(line).reduce((total, minutes) => total + minutes, 0) / 60) * core.asNumber(line.unitValue)
       : core.asNumber(line.quantity) * core.asNumber(line.unitValue);
-    return line?.billingType === "minuto" ? baseTotal * teamQuantityFor(line.professionalId) : baseTotal;
+    return baseTotal;
   };
 
   const insalubridadeBase = (lines) => lines
@@ -579,6 +588,9 @@
         ...line,
         billingType: "minuto",
         quantity: core.asNumber(line.quantity) * 60,
+        individualMinutes: Array.isArray(line.individualMinutes)
+          ? line.individualMinutes.map((hours) => core.asNumber(hours) * 60)
+          : line.individualMinutes,
         unitValue: core.asNumber(line.unitValue)
       };
     }
@@ -588,18 +600,29 @@
 
   const readCustomLines = () => {
     customLines = Array.from(elements.lineItems.querySelectorAll("[data-line-index]")).map((row) => {
+      const sourceLine = customLines[Number(row.dataset.lineIndex)] || {};
       const billingType = row.dataset.billingType;
       const isInsalubridade = billingType === "insalubridade";
       const rate = isInsalubridade ? 0 : core.asNumber(row.querySelector(".line-rate").value);
       const level = isInsalubridade
         ? INSALUBRIDADE_LEVELS.find((item) => item.id === row.querySelector(".line-insalubridade-level").value) || INSALUBRIDADE_LEVELS[0]
         : null;
+      const individualMinutes = billingType === "minuto"
+        ? Array.from(row.querySelectorAll(".line-quantity")).map((input) => core.asNumber(input.value))
+        : [];
       return {
+        ...(sourceLine.teamManaged ? { teamManaged: true } : {}),
+        ...(sourceLine.stageKey ? { stageKey: sourceLine.stageKey } : {}),
         name: row.querySelector(".line-name").value.trim() || "Etapa sem nome",
         billingType,
         professionalId: row.querySelector(".line-professional").value,
-        quantity: isInsalubridade ? level.rate : core.asNumber(row.querySelector(".line-quantity").value),
+        quantity: isInsalubridade
+          ? level.rate
+          : billingType === "minuto"
+            ? individualMinutes.reduce((total, minutes) => total + minutes, 0)
+            : core.asNumber(row.querySelector(".line-quantity").value),
         unitValue: rate,
+        ...(billingType === "minuto" ? { individualMinutes } : {}),
         ...(isInsalubridade ? { insalubridadeNivel: level.id, internalOnly: true } : {})
       };
     });
@@ -620,12 +643,33 @@
         const isTimeBased = isMinute;
         const quantityLabel = isInsalubridade ? "Nível" : isMinute ? "Minutos" : "Qtd.";
         const lineTotal = isInsalubridade ? insalubridadeBase(customLines) * line.quantity : customLineTotal(line);
+        const professional = getProfessional(line.professionalId);
+        const individualMinutes = isMinute ? customLineIndividualMinutes(line) : [];
         const levelOptions = INSALUBRIDADE_LEVELS
           .map((level) => `<option value="${level.id}" ${line.insalubridadeNivel === level.id ? "selected" : ""}>${level.id.toUpperCase()}</option>`)
           .join("");
         const quantityControl = isInsalubridade
           ? `<select class="line-insalubridade-level">${levelOptions}</select>`
-          : `<input class="line-quantity" type="number" min="0" step="${isMinute ? "5" : "1"}" value="${line.quantity}" />`;
+          : `<input class="line-quantity" type="number" min="0" step="1" value="${line.quantity}" />`;
+        const quantityField = isMinute
+          ? `<div class="field line-times-field">
+              <span>Minutos por profissional</span>
+              <div class="line-individual-times">
+                ${individualMinutes.map((minutes, professionalIndex) => {
+                  const professionalLabel = individualMinutes.length > 1
+                    ? `${professional.nome} ${professionalIndex + 1}`
+                    : professional.nome;
+                  return `<label class="line-individual-time">
+                    <small>${escapeHtml(professionalLabel)}</small>
+                    <input class="line-quantity" type="number" min="0" step="5" value="${minutes}" aria-label="Minutos de ${escapeHtml(professionalLabel)} em ${escapeHtml(line.name)}" />
+                  </label>`;
+                }).join("")}
+              </div>
+            </div>`
+          : `<label class="field">
+              <span>${quantityLabel}</span>
+              ${quantityControl}
+            </label>`;
         const professionalSelect = isTimeBased
           ? professionalOptions(line.professionalId)
           : '<option value="">Custo direto</option>';
@@ -637,12 +681,9 @@
             </label>
             <label class="field">
               <span>Profissional</span>
-              <select class="line-professional" ${isTimeBased ? "" : "disabled"}>${professionalSelect}</select>
+              <select class="line-professional" ${isTimeBased && !line.teamManaged ? "" : "disabled"}>${professionalSelect}</select>
             </label>
-            <label class="field">
-              <span>${quantityLabel}</span>
-              ${quantityControl}
-            </label>
+            ${quantityField}
             <label class="field">
               <span>${isMinute ? "Valor/hora." : isInsalubridade ? "Base da taxa" : "Valor unit."}</span>
               ${isInsalubridade
@@ -660,21 +701,94 @@
     const template = getTemplate(elements.customTemplate.value);
     if (!template) return;
     const defaultProfessional = catalog.profissionais[0];
-    customLines = template.etapas.map((step) => {
+    const selectedTeam = selectedServiceFormats();
+    const team = selectedTeam.length
+      ? selectedTeam
+      : [{ professionalId: defaultProfessional.id, quantity: 1 }];
+    customLines = template.etapas.flatMap((step, stageIndex) => {
       const professional = getProfessional(step.profissionalId) || defaultProfessional;
       const isFixed = step.tipoCobranca === "fixo";
       const isInsalubridade = step.tipoCobranca === "insalubridade";
-      return {
+      if (!isFixed && !isInsalubridade) {
+        return team.map((format) => {
+          const teamProfessional = getProfessional(format.professionalId) || professional;
+          return {
+            name: step.nome,
+            billingType: "minuto",
+            professionalId: teamProfessional.id,
+            quantity: 0,
+            individualMinutes: Array.from({ length: format.quantity }, () => 0),
+            unitValue: teamProfessional.valorHora,
+            teamManaged: true,
+            stageKey: `${template.id}:${stageIndex}`
+          };
+        });
+      }
+      return [{
         name: step.nome,
         billingType: isInsalubridade ? "insalubridade" : isFixed ? "fixo" : "minuto",
         professionalId: professional.id,
         quantity: isInsalubridade ? 0 : isFixed ? 1 : 0,
         unitValue: isFixed || isInsalubridade ? 0 : professional.valorHora,
         ...(isInsalubridade ? { insalubridadeNivel: "m0", internalOnly: true } : {})
-      };
+      }];
     });
     renderCustomLines();
     refresh();
+  };
+
+  const syncCustomLinesWithTeam = (readRenderedValues = true) => {
+    const template = getTemplate(elements.customTemplate.value);
+    if (!template || elements.model.value !== "sob-medida") return;
+    const hasRenderedLines = Boolean(elements.lineItems.querySelector("[data-line-index]"));
+    if (readRenderedValues && hasRenderedLines) readCustomLines();
+
+    const timeStages = template.etapas
+      .map((stage, stageIndex) => ({ stage, stageIndex }))
+      .filter(({ stage }) => stage.tipoCobranca !== "fixo" && stage.tipoCobranca !== "insalubridade");
+    const templateStageNames = new Set(timeStages.map(({ stage }) => stage.nome));
+    const selectedTeam = selectedServiceFormats();
+    const fallbackProfessional = catalog.profissionais[0];
+    const team = selectedTeam.length
+      ? selectedTeam
+      : [{ professionalId: fallbackProfessional.id, quantity: 1 }];
+    const sourceLines = customLines.slice();
+    const unmanagedLines = sourceLines.filter((line) =>
+      line.billingType !== "minuto" || (!line.teamManaged && !templateStageNames.has(line.name))
+    );
+    const managedLines = timeStages.flatMap(({ stage, stageIndex }) => {
+      const stageKey = `${template.id}:${stageIndex}`;
+      return team.map((format) => {
+        const professional = getProfessional(format.professionalId) || fallbackProfessional;
+        const sourceLine = sourceLines.find((line) =>
+          line.billingType === "minuto"
+          && (line.stageKey === stageKey || (!line.stageKey && line.name === stage.nome))
+          && line.professionalId === professional.id
+        );
+        const fallbackMinutes = sourceLine ? core.asNumber(sourceLine.quantity) : 0;
+        const savedMinutes = Array.isArray(sourceLine?.individualMinutes)
+          ? sourceLine.individualMinutes.map((minutes) => core.asNumber(minutes))
+          : [];
+        const firstMinutes = savedMinutes[0] ?? fallbackMinutes;
+        const individualMinutes = Array.from(
+          { length: format.quantity },
+          (_, index) => savedMinutes[index] ?? firstMinutes
+        );
+        return {
+          name: stage.nome,
+          billingType: "minuto",
+          professionalId: professional.id,
+          quantity: individualMinutes.reduce((total, minutes) => total + minutes, 0),
+          individualMinutes,
+          unitValue: sourceLine ? core.asNumber(sourceLine.unitValue) : professional.valorHora,
+          teamManaged: true,
+          stageKey
+        };
+      });
+    });
+
+    customLines = [...managedLines, ...unmanagedLines];
+    renderCustomLines();
   };
 
   const updateModelPanels = () => {
@@ -716,7 +830,7 @@
     const customInputLines = elements.model.value === "sob-medida"
       ? readCustomLines().map((line) => ({
           ...line,
-          professionalQuantity: line.billingType === "minuto" ? teamQuantityFor(line.professionalId) : 1
+          professionalQuantity: 1
         }))
       : [];
     const eventPackageMode = isEventPackageMode();
@@ -789,24 +903,22 @@
     const base = rows
       .filter((row) => row.dataset.billingType !== "insalubridade")
       .reduce((total, row) => {
-        const quantity = core.asNumber(row.querySelector(".line-quantity").value);
+        const quantity = Array.from(row.querySelectorAll(".line-quantity"))
+          .reduce((minutes, input) => minutes + core.asNumber(input.value), 0);
         const rate = core.asNumber(row.querySelector(".line-rate").value);
-        const professionalQuantity = row.dataset.billingType === "minuto"
-          ? teamQuantityFor(row.querySelector(".line-professional").value)
-          : 1;
-        return total + (row.dataset.billingType === "minuto" ? (quantity / 60) * rate * professionalQuantity : quantity * rate);
+        return total + (row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate);
       }, 0);
     rows.forEach((row) => {
       const isInsalubridade = row.dataset.billingType === "insalubridade";
       const level = isInsalubridade
         ? INSALUBRIDADE_LEVELS.find((item) => item.id === row.querySelector(".line-insalubridade-level").value) || INSALUBRIDADE_LEVELS[0]
         : null;
-      const quantity = isInsalubridade ? level.rate : core.asNumber(row.querySelector(".line-quantity").value);
+      const quantity = isInsalubridade
+        ? level.rate
+        : Array.from(row.querySelectorAll(".line-quantity"))
+          .reduce((minutes, input) => minutes + core.asNumber(input.value), 0);
       const rate = isInsalubridade ? base : core.asNumber(row.querySelector(".line-rate").value);
-      const professionalQuantity = row.dataset.billingType === "minuto"
-        ? teamQuantityFor(row.querySelector(".line-professional").value)
-        : 1;
-      const total = isInsalubridade ? rate * quantity : row.dataset.billingType === "minuto" ? (quantity / 60) * rate * professionalQuantity : quantity * rate;
+      const total = isInsalubridade ? rate * quantity : row.dataset.billingType === "minuto" ? (quantity / 60) * rate : quantity * rate;
       row.querySelector(".line-total").textContent = core.money(total);
     });
   };
@@ -955,7 +1067,7 @@
   };
 
   const migrateBudgetSnapshot = (snapshot) => {
-    if (!snapshot || !snapshot.fields || ![1, 2, 3, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
+    if (!snapshot || !snapshot.fields || ![1, 2, 3, 4, BUDGET_EXPORT_VERSION].includes(snapshot.version)) {
       throw new Error("Arquivo de orçamento inválido.");
     }
 
@@ -1035,7 +1147,8 @@
     updateModelPanels();
     if (isEventPackageMode()) syncEventStageLinesWithTeam(false);
     else if (eventStageLines.length) renderEventStageLines();
-    if (customLines.length) renderCustomLines();
+    if (customLines.length && elements.model.value === "sob-medida") syncCustomLinesWithTeam(false);
+    else if (customLines.length) renderCustomLines();
     updatePackageScope();
     refresh();
   };
@@ -1317,6 +1430,8 @@
         const row = event.target.closest("[data-line-index]");
         const professional = getProfessional(event.target.value);
         row.querySelector(".line-rate").value = core.roundMoney(professional.valorHora);
+        readCustomLines();
+        renderCustomLines();
       }
       if (event.target.matches(".line-insalubridade-level")) {
         const row = event.target.closest("[data-line-index]");
@@ -1341,6 +1456,7 @@
       input.addEventListener("change", () => {
         updateFormats();
         if (isEventPackageMode()) syncEventStageLinesWithTeam();
+        if (elements.model.value === "sob-medida") syncCustomLinesWithTeam();
         manualServiceValue = false;
         refresh();
       });
@@ -1349,6 +1465,7 @@
     form.querySelectorAll(".service-format-quantity").forEach((input) => {
       input.addEventListener("input", () => {
         if (isEventPackageMode()) syncEventStageLinesWithTeam();
+        if (elements.model.value === "sob-medida") syncCustomLinesWithTeam();
         manualServiceValue = false;
         refresh();
       });
