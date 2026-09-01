@@ -1,0 +1,70 @@
+{
+  "cliente": {
+    "nome": "Hellen Marina",
+    "slug": "hellen-marina",
+    "nicho": "Hellen Marina Academy",
+    "status": "Ativo",
+    "fotoPerfil": "assets/img/Clientes/Hellen Marina/hellen-marina-perfil.png",
+    "fotoPerfilAlt": "Foto de perfil de Hellen Marina",
+    "fotoPerfilRatio": "3 / 4",
+    "ultimaAtualizacao": "2026-09-01",
+    "entregasFundoEscuro": true,
+    "resumo": "Fotos e vídeos dos 3 anos da Hellen Marina Academy, organizados para acesso e download.",
+    "formatoPrincipal": "Evento",
+    "notaRodape": "Arquivos hospedados no Google Drive.",
+    "metricas": [
+      {
+        "label": "Evento",
+        "value": "03 Anos"
+      },
+      {
+        "label": "Status",
+        "value": "Entregue"
+      },
+      {
+        "label": "Materiais",
+        "value": "Fotos e vídeos"
+      }
+    ],
+    "instagramPopup": {
+      "url": "https://www.instagram.com/sparkfilmes/",
+      "eyebrow": "Acompanhe a SparkFilmes",
+      "titulo": "Seu apoio faz toda a diferença!",
+      "texto": "Seguir nossas redes sociais fortalece o trabalho da SparkFilmes e ajuda mais pessoas a conhecerem nossas produções. Não leva nem 1 minuto e significa muito para a gente.",
+      "botao": "Seguir no Instagram",
+      "fechar": "Agora não"
+    }
+  },
+  "trabalhos": [
+    {
+      "id": "job-001",
+      "titulo": "03 Anos Hellen Marina Academy",
+      "statusEntrega": "Entregue",
+      "formato": "Evento",
+      "volume": "Fotos e vídeos",
+      "observacao": "Materiais disponíveis para acesso e download.",
+      "hideCountdown": true,
+      "capa": "assets/img/Clientes/Hellen Marina/hellen-marina-perfil.png",
+      "coverRatio": "3 / 4",
+      "meta": [
+        {
+          "label": "Formato",
+          "value": "Evento"
+        },
+        {
+          "label": "Materiais",
+          "value": "Fotos e vídeos"
+        }
+      ],
+      "linkPasta": "https://drive.google.com/drive/folders/1CRfSkg7SiwQKeuOYQMFb3q-xdbsbkD1L?usp=sharing",
+      "linkPastaTexto": "Fotos",
+      "acoes": [
+        {
+          "label": "Vídeos",
+          "link": "https://drive.google.com/drive/folders/1mSSdZIWrHTKRuChvi8Dq6BeqxEAT8I8Y?usp=sharing",
+          "variant": "ghost"
+        }
+      ]
+    }
+  ]
+}
