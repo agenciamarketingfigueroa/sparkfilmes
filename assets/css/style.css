@@ -1829,6 +1829,108 @@ textarea.field {
   font-size: 0.84rem;
 }
 
+body.has-client-popup {
+  overflow: hidden;
+}
+
+.client-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(4, 4, 6, 0.78);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.client-popup-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.client-popup {
+  position: relative;
+  width: min(470px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(241, 240, 240, 0.2);
+  border-radius: var(--radius-lg);
+  padding: clamp(1.45rem, 5vw, 2.2rem);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 44, 88, 0.28), transparent 38%),
+    linear-gradient(155deg, #17171e, #0a0a0e);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62);
+  text-align: center;
+  transform: translateY(14px) scale(0.98);
+  transition: transform 180ms ease;
+}
+
+.client-popup-overlay.is-visible .client-popup {
+  transform: translateY(0) scale(1);
+}
+
+.client-popup-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid rgba(241, 240, 240, 0.18);
+  border-radius: 999px;
+  background: rgba(8, 8, 10, 0.6);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1.45rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.client-popup-icon {
+  display: grid;
+  width: 3.4rem;
+  height: 3.4rem;
+  margin: 0 auto 1rem;
+  place-items: center;
+  border-radius: 1rem;
+  background: linear-gradient(140deg, var(--color-primary), #8f35d5);
+  color: #fff;
+  font-family: "Sora", sans-serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+  box-shadow: 0 14px 30px rgba(255, 44, 88, 0.3);
+}
+
+.client-popup h2 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.55rem, 6vw, 2.2rem);
+  line-height: 1.1;
+}
+
+.client-popup-description {
+  max-width: 38ch;
+  margin: 0.8rem auto 0;
+  color: var(--color-muted);
+}
+
+.client-popup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.3rem;
+}
+
+@media (max-width: 520px) {
+  .client-popup-actions .btn {
+    width: 100%;
+  }
+}
+
 .loading-state,
 .empty-state {
   margin: 0;

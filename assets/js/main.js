@@ -560,7 +560,9 @@ const initMaterialSearch = async () => {
   }
 
   let pendingProtectedSlug = "";
+  let internalPassword = "";
   const getAccessKey = (slug) => `client-access:${slug}`;
+  const getInternalAccessKey = () => "client-access:internal-master";
 
   const resetPasswordPrompt = () => {
     pendingProtectedSlug = "";
@@ -585,6 +587,7 @@ const initMaterialSearch = async () => {
 
     const data = await response.json();
     clients = Array.isArray(data.clientes) ? data.clientes : [];
+    internalPassword = String(data.senhaInternaPadrao || "").trim();
   } catch (error) {
     console.error(error);
     setFeedback("Não foi possível carregar a lista de clientes.");
@@ -652,7 +655,11 @@ const initMaterialSearch = async () => {
 
         pendingProtectedSlug = selectedClient.slug || "";
 
-        if (!passwordInput || passwordInput.value !== protectedPassword) {
+        const enteredPassword = String(passwordInput?.value || "");
+        const matchesClientPassword = enteredPassword === protectedPassword;
+        const matchesInternalPassword = Boolean(internalPassword) && enteredPassword === internalPassword;
+
+        if (!passwordInput || (!matchesClientPassword && !matchesInternalPassword)) {
           setFeedback("Digite a senha do cliente para acessar o material.");
 
           if (passwordInput) {
@@ -667,7 +674,11 @@ const initMaterialSearch = async () => {
         }
 
         try {
-          sessionStorage.setItem(getAccessKey(selectedClient.slug || ""), "ok");
+          if (matchesInternalPassword) {
+            sessionStorage.setItem(getInternalAccessKey(), "ok");
+          } else {
+            sessionStorage.setItem(getAccessKey(selectedClient.slug || ""), "ok");
+          }
         } catch (error) {
           console.error(error);
         }

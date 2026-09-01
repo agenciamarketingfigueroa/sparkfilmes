@@ -11,6 +11,8 @@ if (clientRoot) {
   const deliveriesHeadEl = deliveriesContainerEl ? deliveriesContainerEl.querySelector(".section-head") : null;
   const filtersEl = document.getElementById("cliente-filtros");
   const noteEl = document.getElementById("cliente-note");
+  let instagramPopupEl = null;
+  let instagramPopupTimer = null;
 
   const formatDatePtBr = (isoDate) => {
     if (!isoDate) return "--";
@@ -139,6 +141,127 @@ if (clientRoot) {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const getInstagramPopupKey = (slug) => `client-instagram-popup:${slug}`;
+
+  const hasSeenInstagramPopup = (slug) => {
+    if (!slug) return true;
+
+    try {
+      return sessionStorage.getItem(getInstagramPopupKey(slug)) === "seen";
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
+  const markInstagramPopupAsSeen = (slug) => {
+    if (!slug) return;
+
+    try {
+      sessionStorage.setItem(getInstagramPopupKey(slug), "seen");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const closeInstagramPopup = () => {
+    if (!instagramPopupEl) return;
+
+    window.clearTimeout(instagramPopupTimer);
+    instagramPopupEl.classList.remove("is-visible");
+    document.body.classList.remove("has-client-popup");
+
+    const popupToRemove = instagramPopupEl;
+    instagramPopupEl = null;
+    window.setTimeout(() => popupToRemove.remove(), 180);
+  };
+
+  const renderInstagramPopup = (cliente) => {
+    const config = cliente?.instagramPopup;
+    const instagramUrl = String(config?.url || "").trim();
+    const slug = String(cliente?.slug || getClientSlug()).trim();
+
+    if (!instagramUrl || hasSeenInstagramPopup(slug)) return;
+
+    closeInstagramPopup();
+    markInstagramPopupAsSeen(slug);
+
+    const overlay = document.createElement("div");
+    overlay.className = "client-popup-overlay";
+    overlay.setAttribute("role", "presentation");
+
+    const dialog = document.createElement("section");
+    dialog.className = "client-popup";
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-modal", "true");
+    dialog.setAttribute("aria-labelledby", "client-instagram-popup-title");
+    dialog.setAttribute("aria-describedby", "client-instagram-popup-description");
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "client-popup-close";
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Fechar convite");
+    closeButton.textContent = "×";
+
+    const icon = document.createElement("span");
+    icon.className = "client-popup-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "@";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = config.eyebrow || "Acompanhe a SparkFilmes";
+
+    const title = document.createElement("h2");
+    title.id = "client-instagram-popup-title";
+    title.textContent = config.titulo || "Gostou desses registros?";
+
+    const description = document.createElement("p");
+    description.id = "client-instagram-popup-description";
+    description.className = "client-popup-description";
+    description.textContent =
+      config.texto || "Siga nosso perfil no Instagram para conhecer mais eventos, bastidores e produções.";
+
+    const actions = document.createElement("div");
+    actions.className = "client-popup-actions";
+
+    const instagramButton = document.createElement("a");
+    instagramButton.className = "btn btn-primary";
+    instagramButton.href = instagramUrl;
+    instagramButton.target = "_blank";
+    instagramButton.rel = "noreferrer";
+    instagramButton.textContent = config.botao || "Seguir no Instagram";
+
+    const dismissButton = document.createElement("button");
+    dismissButton.className = "btn btn-ghost";
+    dismissButton.type = "button";
+    dismissButton.textContent = config.fechar || "Agora não";
+
+    actions.append(instagramButton, dismissButton);
+    dialog.append(closeButton, icon, eyebrow, title, description, actions);
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+    instagramPopupEl = overlay;
+
+    const handleClose = () => closeInstagramPopup();
+    closeButton.addEventListener("click", handleClose);
+    dismissButton.addEventListener("click", handleClose);
+    instagramButton.addEventListener("click", handleClose);
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) handleClose();
+    });
+    overlay.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") handleClose();
+    });
+
+    instagramPopupTimer = window.setTimeout(() => {
+      if (instagramPopupEl !== overlay) return;
+      overlay.classList.add("is-visible");
+      document.body.classList.add("has-client-popup");
+      instagramButton.focus();
+    }, 2000);
   };
 
   const getClientAccessConfig = async () => {
@@ -1189,6 +1312,7 @@ if (clientRoot) {
       renderHeader(cliente);
       renderMetrics(cliente, trabalhos);
       updateDeliveryResults();
+      renderInstagramPopup(cliente);
 
       if (noteEl) {
         noteEl.textContent =
