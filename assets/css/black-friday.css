@@ -244,6 +244,14 @@ h3 {
   font-size: 0.72rem;
 }
 
+.bf-hero-points .bf-urgency-item {
+  color: var(--bf-pink-dark);
+}
+
+.bf-hero-points .bf-urgency-item::before {
+  content: "!";
+}
+
 .bf-button {
   display: inline-flex;
   gap: 0.55rem;
@@ -506,9 +514,9 @@ select:focus-visible {
 
 .bf-video-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
-  max-width: 900px;
+  max-width: 1000px;
   margin-inline: auto;
 }
 
@@ -598,6 +606,26 @@ select:focus-visible {
   line-height: 1.5;
 }
 
+.bf-form-offer .bf-form-urgency {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.45rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ff9eb2;
+  font-weight: 800;
+}
+
+.bf-form-urgency i {
+  width: 0.55rem;
+  height: 0.55rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--bf-pink);
+  box-shadow: 0 0 0 4px rgba(255, 44, 88, 0.18);
+}
+
 .bf-form {
   display: grid;
   gap: 1rem;
@@ -617,6 +645,12 @@ select:focus-visible {
 
 .bf-form label b {
   color: var(--bf-pink);
+}
+
+.bf-field-label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
 }
 
 .bf-form input,
@@ -735,10 +769,62 @@ select:focus-visible {
 
   .bf-hero-copy h1 {
     max-width: 11ch;
+    margin-inline: auto;
+  }
+
+  .bf-hero-copy {
+    text-align: center;
+  }
+
+  .bf-hero-lead {
+    margin-inline: auto;
   }
 
   .bf-offer-line {
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 420px);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .bf-offer-line span {
+    text-align: center;
+  }
+
+  .bf-hero-points {
+    justify-content: center;
+  }
+
+  .bf-hero-points li {
+    justify-content: center;
+  }
+
+  .bf-benefit-card {
+    text-align: center;
+  }
+
+  .bf-benefit-icon {
+    margin-inline: auto;
+  }
+
+  .bf-rule-card-featured p {
+    width: 100%;
+    max-width: none;
+  }
+
+  .bf-form-copy {
+    text-align: center;
+  }
+
+  .bf-form-copy > p:not(.bf-eyebrow) {
+    margin-inline: auto;
+  }
+
+  .bf-form-offer {
+    justify-items: center;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .bf-button {
@@ -746,29 +832,78 @@ select:focus-visible {
   }
 
   .bf-video-grid {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(255px, 78vw);
-    justify-content: start;
-    margin-right: -0.62rem;
-    padding: 0 0.62rem 1rem 0;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scroll-snap-type: inline mandatory;
-    scrollbar-width: thin;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
+    gap: 0.65rem;
+    margin-inline: auto;
+    padding: 0;
+    overflow: visible;
   }
 
   .bf-video-card {
-    scroll-snap-align: start;
+    position: relative;
+    border-radius: 15px;
+  }
+
+  .bf-video-frame {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .bf-video-frame iframe {
+    width: 140%;
+    height: 140%;
+    transform: scale(0.7143);
+    transform-origin: top left;
+  }
+
+  .bf-video-meta {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 0;
+    padding: 2.7rem 0.72rem 0.72rem;
+    background: linear-gradient(180deg, transparent, rgba(8, 8, 10, 0.94));
+    pointer-events: none;
+  }
+
+  .bf-video-meta strong {
+    font-size: clamp(0.72rem, 3.3vw, 0.9rem);
+    line-height: 1.25;
+  }
+
+  .bf-video-meta span {
+    display: none;
+  }
+
+  .bf-portfolio {
+    padding-block: 3.4rem;
+  }
+
+  .bf-portfolio .bf-section-head {
+    margin-bottom: 1.5rem;
+  }
+
+  .bf-portfolio .bf-section-head h2 {
+    font-size: clamp(1.72rem, 7.4vw, 2.2rem);
   }
 
   .bf-footer .bf-container {
     display: grid;
+    align-items: center;
+    justify-content: center;
     justify-items: center;
+    text-align: center;
+  }
+
+  .bf-footer img {
+    margin-inline: auto;
   }
 
   .bf-footer p {
     max-width: 42ch;
+    margin-inline: auto;
     text-align: center;
   }
 }

@@ -76,7 +76,7 @@
 
             <ul class="bf-hero-points" aria-label="Destaques da promoção">
               <li>Entrega dos conteúdos em até 3 dias</li>
-              <li>Agenda promocional limitada</li>
+              <li class="bf-urgency-item">Restam poucos horários para as diárias com 50% OFF</li>
             </ul>
 
             <a class="bf-button bf-button-primary" href="#quero-produzir">Quero aproveitar os 50% OFF <span aria-hidden="true">→</span></a>
@@ -231,6 +231,19 @@
               </div>
               <div class="bf-video-meta"><strong>Publicidade para Garnier</strong><span>Lançamento de produto apresentado com atenção aos detalhes.</span></div>
             </article>
+
+            <article class="bf-video-card">
+              <div class="bf-video-frame">
+                <iframe
+                  src="https://www.youtube.com/embed/I_5HfarbMXk?rel=0&amp;playsinline=1"
+                  title="Aftermovie dos três anos do Metrô BH produzido pela SparkFilmes"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="bf-video-meta"><strong>Metrô BH — 3 anos</strong><span>Aftermovie da cobertura audiovisual dos três anos do Metrô BH.</span></div>
+            </article>
           </div>
         </div>
       </section>
@@ -246,23 +259,24 @@
               <span>Oferta Black Friday</span>
               <strong>50% de desconto na diária</strong>
               <small>Entrega dos conteúdos em até 3 dias após a gravação.</small>
+              <small class="bf-form-urgency"><i aria-hidden="true"></i> Poucos horários disponíveis para esta condição especial.</small>
             </div>
           </div>
 
           <form class="bf-form" data-bf-form>
-            <label for="bf-nome">Nome <b>*</b>
+            <label for="bf-nome"><span class="bf-field-label">Nome <b aria-hidden="true">*</b></span>
               <input id="bf-nome" name="nome" type="text" autocomplete="name" required />
             </label>
 
-            <label for="bf-loja">Nome da loja <b>*</b>
+            <label for="bf-loja"><span class="bf-field-label">Nome da loja <b aria-hidden="true">*</b></span>
               <input id="bf-loja" name="loja" type="text" autocomplete="organization" required />
             </label>
 
-            <label for="bf-bairro">Bairro <b>*</b>
+            <label for="bf-bairro"><span class="bf-field-label">Bairro <b aria-hidden="true">*</b></span>
               <input id="bf-bairro" name="bairro" type="text" autocomplete="address-level3" required />
             </label>
 
-            <label for="bf-modelo">Diária ou mensal <b>*</b>
+            <label for="bf-modelo"><span class="bf-field-label">Diária ou mensal <b aria-hidden="true">*</b></span>
               <select id="bf-modelo" name="modelo" required>
                 <option value="">Selecione uma opção</option>
                 <option value="Diária — promoção de 50% OFF">Diária — promoção de 50% OFF</option>
@@ -270,11 +284,11 @@
               </select>
             </label>
 
-            <label for="bf-prazo">Para quando precisa dos conteúdos? <b>*</b>
+            <label for="bf-prazo"><span class="bf-field-label">Para quando precisa dos conteúdos? <b aria-hidden="true">*</b></span>
               <input id="bf-prazo" name="prazo" type="date" required />
             </label>
 
-            <button class="bf-button bf-button-primary" type="submit">Enviar resumo pelo WhatsApp <span aria-hidden="true">→</span></button>
+            <button class="bf-button bf-button-primary" type="submit">Quero garantir 50% OFF <span aria-hidden="true">→</span></button>
             <p class="bf-form-feedback" data-bf-feedback aria-live="polite"></p>
             <small class="bf-privacy">Seus dados serão usados somente para responder sobre esta produção.</small>
           </form>
