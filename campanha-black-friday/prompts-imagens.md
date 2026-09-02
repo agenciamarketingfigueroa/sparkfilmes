@@ -33,3 +33,4 @@ Direção compartilhada: fotografia publicitária fotorrealista com fundo branco
 18. Profissional brasileira da saúde em consultório branco e acolhedor, comunicando confiança e proximidade.
 19. Artesã brasileira com uma peça de cerâmica autoral em ateliê claro e organizado.
 20. Natureza-morta minimalista com câmera, calendário sem inscrições e luz rosa sutil, sugerindo prazo e planejamento.
+21. Empreendedora brasileira e profissional audiovisual revisando uma campanha já gravada em monitor rosa sem inscrições, com câmera profissional pronta e amplo espaço negativo claro à esquerda.

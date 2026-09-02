@@ -43,7 +43,8 @@ $ads = @(
   @{ File='17-clean-gastronomia.png'; Slug='17-antes-do-clique'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('ANTES DO CLIQUE,','VEM A','VONTADE.'); Pink=@(2); Sub='Produção de conteúdo para transformar seu produto em desejo.'; Cta='GRAVE SUA OFERTA'; Focus=.56 },
   @{ File='18-clean-saude.png'; Slug='18-confianca-em-video'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('CONFIANÇA TAMBÉM','SE CONSTRÓI','EM VÍDEO.'); Pink=@(2); Sub='Conteúdo profissional para explicar, orientar e gerar presença.'; Cta='FORTALEÇA SUA MARCA'; Focus=.56 },
   @{ File='19-clean-artesa.png'; Slug='19-grandes-campanhas'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('PEQUENAS MARCAS','TAMBÉM FAZEM','GRANDES CAMPANHAS.'); Pink=@(2); Sub='Produção de conteúdo para valorizar o que torna seu negócio único.'; Cta='CONTE SUA HISTÓRIA'; Focus=.56 },
-  @{ File='20-clean-prazo.png'; Slug='20-conteudo-pronto'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('A DATA CHEGA.','SEU CONTEÚDO','ESTÁ PRONTO?'); Pink=@(1,2); Sub='Planeje, grave e edite antes da correria da Black Friday.'; Cta='RESERVE SUA DATA'; Focus=.50 }
+  @{ File='20-clean-prazo.png'; Slug='20-conteudo-pronto'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('A DATA CHEGA.','SEU CONTEÚDO','ESTÁ PRONTO?'); Pink=@(1,2); Sub='Planeje, grave e edite antes da correria da Black Friday.'; Cta='RESERVE SUA DATA'; Focus=.50 },
+  @{ File='21-clean-campanha-pronta.png'; Slug='21-campanha-ja-deveria-estar-pronta'; Theme='light'; Badge='50% OFF | BLACK FRIDAY'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('QUANDO TODO MUNDO','COMEÇAR A FALAR DE','BLACK FRIDAY,','A SUA CAMPANHA JÁ','DEVERIA ESTAR PRONTA.'); Pink=@(2,4); Sub='Antecipe sua produção de conteúdo e chegue à data com tudo pronto para anunciar.'; Cta='GARANTA 50% OFF'; Focus=.50 }
 )
 
 function New-RoundedPath {
@@ -175,7 +176,11 @@ function Draw-Creative {
   $officialLogo = [System.Drawing.Image]::FromFile($officialLogoPath)
   $graphics.DrawImage($officialLogo, $margin + 16, $top + 8, $logoW - 32, $logoH - 16)
 
-  $badgeW = if ($Format -eq 'feed') { 250 } else { 280 }
+  $badgeW = if ($Ad.Badge) {
+    if ($Format -eq 'feed') { 320 } else { 350 }
+  } else {
+    if ($Format -eq 'feed') { 250 } else { 280 }
+  }
   $badgeH = if ($Format -eq 'feed') { 54 } else { 60 }
   $badgeX = $width - $margin - $badgeW
   $badgeY = $top + [int](($logoH - $badgeH)/2)
@@ -188,7 +193,9 @@ function Draw-Creative {
   $badgeFormat = New-Object System.Drawing.StringFormat
   $badgeFormat.Alignment = [System.Drawing.StringAlignment]::Center
   $badgeFormat.LineAlignment = [System.Drawing.StringAlignment]::Center
-  $graphics.DrawString('BLACK  FRIDAY', $badgeFont, $paperBrushSolid, (New-Object System.Drawing.RectangleF($badgeX,$badgeY,$badgeW,$badgeH)), $badgeFormat)
+  $badgeText = if ($Ad.Badge) { $Ad.Badge } else { 'BLACK  FRIDAY' }
+  $badgeTextW = if ($Ad.Badge) { $badgeW - 42 } else { $badgeW }
+  $graphics.DrawString($badgeText, $badgeFont, $paperBrushSolid, (New-Object System.Drawing.RectangleF($badgeX,$badgeY,$badgeTextW,$badgeH)), $badgeFormat)
   $graphics.FillEllipse($pinkBrushSolid, $badgeX + $badgeW - 31, $badgeY + 22, 9, 9)
 
   $kickerY = $contentTop
