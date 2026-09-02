@@ -23,6 +23,16 @@
     feedback.classList.toggle("is-error", isError);
   };
 
+  const trackWhatsAppContact = (serviceType) => {
+    if (typeof window.fbq !== "function") return;
+
+    window.fbq("track", "Contact", {
+      content_name: "WhatsApp — Landing Page Black Friday",
+      content_category: "Produção de conteúdo",
+      service_type: serviceType
+    });
+  };
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -51,6 +61,8 @@
       "",
       "Podemos conversar sobre a disponibilidade?"
     ].join("\n");
+
+    trackWhatsAppContact(String(data.get("modelo") || "Não informado"));
 
     const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     const whatsappWindow = window.open(url, "_blank", "noopener,noreferrer");
