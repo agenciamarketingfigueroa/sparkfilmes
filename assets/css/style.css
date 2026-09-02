@@ -2227,25 +2227,25 @@ body.has-client-popup {
 .home-hero-copy {
   max-width: 700px;
   margin-inline: auto;
-  text-align: left;
+  text-align: center;
 }
 
 .home-hero-copy h1 {
   max-width: 12ch;
-  margin: 0.7rem 0 1rem;
+  margin: 0.7rem auto 1rem;
   font-size: clamp(2.35rem, 6.8vw, 4.5rem);
   line-height: 1.01;
 }
 
 .home-hero-lead {
   max-width: 60ch;
-  margin: 0;
+  margin-inline: auto;
   color: var(--color-muted);
   font-size: clamp(1rem, 2vw, 1.12rem);
 }
 
 .home-hero-copy .hero-actions {
-  justify-content: flex-start;
+  justify-content: center;
   margin-top: 1.55rem;
 }
 
@@ -2253,6 +2253,7 @@ body.has-client-popup {
   display: flex;
   gap: 0.45rem;
   align-items: center;
+  justify-content: center;
   margin: 1.35rem 0 0;
   color: var(--color-muted);
   font-size: 0.9rem;
@@ -2519,7 +2520,7 @@ body.has-client-popup {
   }
 
   .home-hero-copy {
-    margin-inline: 0;
+    margin-inline: auto;
   }
 
   .home-about-grid {
