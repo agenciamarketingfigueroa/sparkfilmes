@@ -9,10 +9,14 @@ $repoRoot = Split-Path -Parent $scriptRoot
 $sourceDir = Join-Path $scriptRoot 'fontes'
 $feedDir = Join-Path $scriptRoot 'feed'
 $storyDir = Join-Path $scriptRoot 'stories'
+$feedCleanDir = Join-Path $scriptRoot 'feed-clean'
+$storyCleanDir = Join-Path $scriptRoot 'stories-clean'
 $officialLogoPath = Join-Path $scriptRoot 'logo-oficial-horizontal.png'
 
 [System.IO.Directory]::CreateDirectory($feedDir) | Out-Null
 [System.IO.Directory]::CreateDirectory($storyDir) | Out-Null
+[System.IO.Directory]::CreateDirectory($feedCleanDir) | Out-Null
+[System.IO.Directory]::CreateDirectory($storyCleanDir) | Out-Null
 
 $pink = [System.Drawing.Color]::FromArgb(255, 44, 88)
 $paper = [System.Drawing.Color]::FromArgb(241, 240, 240)
@@ -29,7 +33,17 @@ $ads = @(
   @{ File='07-urgencia.png'; Slug='07-urgencia'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('NÃO DEIXE PARA','GRAVAR','NA ÚLTIMA HORA.'); Pink=@(2); Sub='Planejamento, captação e edição precisam de tempo.'; Cta='RESERVE SUA DATA'; Focus=.68 },
   @{ File='08-bastidores.png'; Slug='08-bastidores'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('QUEM GRAVA','ANTES, ANUNCIA','MELHOR.'); Pink=@(1,2); Sub='Produza sua campanha com tempo para testar seus criativos.'; Cta='COMECE AGORA'; Focus=.56 },
   @{ File='09-gastronomia.png'; Slug='09-gastronomia'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('BLACK FRIDAY É','OPORTUNIDADE','DE APARECER.'); Pink=@(1,2); Sub='Conteúdo audiovisual para colocar sua oferta diante do cliente.'; Cta='COLOQUE SUA MARCA EM CENA'; Focus=.61 },
-  @{ File='10-marca-em-cena.png'; Slug='10-marca-em-cena'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('A OPORTUNIDADE','PASSA.','O CONTEÚDO FICA.'); Pink=@(1,2); Sub='Produza agora e use seus vídeos durante toda a campanha.'; Cta='PEÇA UM ORÇAMENTO'; Focus=.65 }
+  @{ File='10-marca-em-cena.png'; Slug='10-marca-em-cena'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('A OPORTUNIDADE','PASSA.','O CONTEÚDO FICA.'); Pink=@(1,2); Sub='Produza agora e use seus vídeos durante toda a campanha.'; Cta='PEÇA UM ORÇAMENTO'; Focus=.65 },
+  @{ File='11-clean-consultora.png'; Slug='11-sua-oferta-vai-aparecer'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('SUA OFERTA VAI','APARECER OU','PASSAR BATIDA?'); Pink=@(2); Sub='Produção de conteúdo para disputar atenção no momento certo.'; Cta='COLOQUE SUA MARCA EM CENA'; Focus=.56 },
+  @{ File='12-clean-profissional.png'; Slug='12-prepare-antes'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('QUEM SE PREPARA','ANTES, VENDE','COM MAIS CALMA.'); Pink=@(1,2); Sub='Grave seus conteúdos antes da correria da Black Friday.'; Cta='AGENDE SUA GRAVAÇÃO'; Focus=.56 },
+  @{ File='13-clean-beleza.png'; Slug='13-nao-espere'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('NÃO ESPERE A','BLACK FRIDAY','PARA COMEÇAR.'); Pink=@(1); Sub='Antecipe sua produção de conteúdo e chegue pronta para anunciar.'; Cta='COMECE SUA PRODUÇÃO'; Focus=.56 },
+  @{ File='14-clean-comercio.png'; Slug='14-produto-precisa-ser-visto'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('SEU PRODUTO','PRECISA SER','VISTO.'); Pink=@(2); Sub='Conteúdo profissional para valorizar sua oferta no feed.'; Cta='PRODUZA SUA CAMPANHA'; Focus=.56 },
+  @{ File='15-clean-arquiteto.png'; Slug='15-autoridade-em-imagem'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('SUA AUTORIDADE','TAMBÉM PRECISA','DE IMAGEM.'); Pink=@(2); Sub='Produção de conteúdo para profissionais que querem ser lembrados.'; Cta='GRAVE COM A SPARK'; Focus=.56 },
+  @{ File='16-clean-fitness.png'; Slug='16-servico-merece-atencao'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('SEU SERVIÇO','MERECE MAIS','ATENÇÃO.'); Pink=@(2); Sub='Vídeos profissionais para mostrar valor antes de falar em preço.'; Cta='APRESENTE SEU VALOR'; Focus=.56 },
+  @{ File='17-clean-gastronomia.png'; Slug='17-antes-do-clique'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('ANTES DO CLIQUE,','VEM A','VONTADE.'); Pink=@(2); Sub='Produção de conteúdo para transformar seu produto em desejo.'; Cta='GRAVE SUA OFERTA'; Focus=.56 },
+  @{ File='18-clean-saude.png'; Slug='18-confianca-em-video'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('CONFIANÇA TAMBÉM','SE CONSTRÓI','EM VÍDEO.'); Pink=@(2); Sub='Conteúdo profissional para explicar, orientar e gerar presença.'; Cta='FORTALEÇA SUA MARCA'; Focus=.56 },
+  @{ File='19-clean-artesa.png'; Slug='19-grandes-campanhas'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('PEQUENAS MARCAS','TAMBÉM FAZEM','GRANDES CAMPANHAS.'); Pink=@(2); Sub='Produção de conteúdo para valorizar o que torna seu negócio único.'; Cta='CONTE SUA HISTÓRIA'; Focus=.56 },
+  @{ File='20-clean-prazo.png'; Slug='20-conteudo-pronto'; Theme='light'; Kicker='PRODUÇÃO DE CONTEÚDO | BLACK FRIDAY'; Lines=@('A DATA CHEGA.','SEU CONTEÚDO','ESTÁ PRONTO?'); Pink=@(1,2); Sub='Planeje, grave e edite antes da correria da Black Friday.'; Cta='RESERVE SUA DATA'; Focus=.50 }
 )
 
 function New-RoundedPath {
@@ -81,6 +95,7 @@ function Draw-Creative {
   $textWidth = if ($Format -eq 'feed') { 760 } else { 860 }
   $footerBottom = if ($Format -eq 'feed') { 58 } else { 112 }
   $safeBottom = $height - $footerBottom
+  $isClean = $Ad.Theme -eq 'light'
 
   $bitmap = New-Object System.Drawing.Bitmap($width, $height, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
   $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
@@ -95,28 +110,47 @@ function Draw-Creative {
   $blackBrushSolid = New-Object System.Drawing.SolidBrush($black)
   $whiteBrushSolid = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
   $mutedBrushSolid = New-Object System.Drawing.SolidBrush($muted)
+  $darkMutedBrushSolid = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(66, 66, 72))
 
   $source = [System.Drawing.Image]::FromFile((Join-Path $sourceDir $Ad.File))
   Draw-CoverImage $graphics $source $width $height $Ad.Focus
 
-  $leftGradient = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-    (New-Object System.Drawing.Point(0, 0)),
-    (New-Object System.Drawing.Point([int]($width * .86), 0)),
-    [System.Drawing.Color]::FromArgb(246, 5, 5, 7),
-    [System.Drawing.Color]::FromArgb(20, 5, 5, 7)
-  )
+  $leftGradient = if ($isClean) {
+    New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+      (New-Object System.Drawing.Point(0, 0)),
+      (New-Object System.Drawing.Point([int]($width * .82), 0)),
+      [System.Drawing.Color]::FromArgb(248, 250, 248, 245),
+      [System.Drawing.Color]::FromArgb(115, 250, 248, 245)
+    )
+  } else {
+    New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+      (New-Object System.Drawing.Point(0, 0)),
+      (New-Object System.Drawing.Point([int]($width * .86), 0)),
+      [System.Drawing.Color]::FromArgb(246, 5, 5, 7),
+      [System.Drawing.Color]::FromArgb(20, 5, 5, 7)
+    )
+  }
   $graphics.FillRectangle($leftGradient, 0, 0, $width, $height)
 
-  $bottomGradient = New-Object System.Drawing.Drawing2D.LinearGradientBrush(
-    (New-Object System.Drawing.Point(0, [int]($height * .48))),
-    (New-Object System.Drawing.Point(0, $height)),
-    [System.Drawing.Color]::FromArgb(0, 5, 5, 7),
-    [System.Drawing.Color]::FromArgb(242, 5, 5, 7)
-  )
+  $bottomGradient = if ($isClean) {
+    New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+      (New-Object System.Drawing.Point(0, [int]($height * .48))),
+      (New-Object System.Drawing.Point(0, $height)),
+      [System.Drawing.Color]::FromArgb(0, 250, 248, 245),
+      [System.Drawing.Color]::FromArgb(220, 250, 248, 245)
+    )
+  } else {
+    New-Object System.Drawing.Drawing2D.LinearGradientBrush(
+      (New-Object System.Drawing.Point(0, [int]($height * .48))),
+      (New-Object System.Drawing.Point(0, $height)),
+      [System.Drawing.Color]::FromArgb(0, 5, 5, 7),
+      [System.Drawing.Color]::FromArgb(242, 5, 5, 7)
+    )
+  }
   $graphics.FillRectangle($bottomGradient, 0, [int]($height * .48), $width, [int]($height * .52))
 
   for ($i=0; $i -lt 5; $i++) {
-    $alpha = 16 - ($i * 2)
+    $alpha = if ($isClean) { 7 - $i } else { 16 - ($i * 2) }
     $glowBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($alpha, 255, 44, 88))
     $growth = $i * 55
     $graphics.FillEllipse($glowBrush, -260-$growth, $height-360-$growth, 760+($growth*2), 480+($growth*2))
@@ -124,7 +158,8 @@ function Draw-Creative {
   }
 
   $framePath = New-RoundedPath 34 34 ($width-68) ($height-68) 26
-  $framePen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(55, 241, 240, 240), 2)
+  $frameColor = if ($isClean) { [System.Drawing.Color]::FromArgb(46, 8, 8, 10) } else { [System.Drawing.Color]::FromArgb(55, 241, 240, 240) }
+  $framePen = New-Object System.Drawing.Pen($frameColor, 2)
   $graphics.DrawPath($framePen, $framePath)
   $accentPen = New-Object System.Drawing.Pen($pink, 7)
   $accentPen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
@@ -169,7 +204,7 @@ function Draw-Creative {
   }
   foreach ($lineIndex in 0..($Ad.Lines.Count-1)) {
     $font = $lineFonts[$lineIndex]
-    $brushColor = if ($Ad.Pink -contains $lineIndex) { $pink } else { $paper }
+    $brushColor = if ($Ad.Pink -contains $lineIndex) { $pink } elseif ($isClean) { $black } else { $paper }
     $lineBrush = New-Object System.Drawing.SolidBrush($brushColor)
     $graphics.DrawString($Ad.Lines[$lineIndex], $font, $lineBrush, $margin, $headlineY, [System.Drawing.StringFormat]::GenericTypographic)
     $headlineY += [int]($font.Size * $lineHeightFactor)
@@ -181,7 +216,8 @@ function Draw-Creative {
   $subFormat = New-Object System.Drawing.StringFormat
   $subFormat.Trimming = [System.Drawing.StringTrimming]::Word
   $subRect = New-Object System.Drawing.RectangleF($margin, $subY, $(if($Format -eq 'feed'){680}else{760}), 155)
-  $graphics.DrawString($Ad.Sub, $subFont, $paperBrushSolid, $subRect, $subFormat)
+  $subBrush = if ($isClean) { $blackBrushSolid } else { $paperBrushSolid }
+  $graphics.DrawString($Ad.Sub, $subFont, $subBrush, $subRect, $subFormat)
 
   $ctaFont = New-Object System.Drawing.Font('Segoe UI', $(if($Format -eq 'feed'){18}else{21}), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $ctaMeasure = $graphics.MeasureString($Ad.Cta + '  →', $ctaFont)
@@ -198,16 +234,21 @@ function Draw-Creative {
   $siteFont = New-Object System.Drawing.Font('Segoe UI', $(if($Format -eq 'feed'){18}else{21}), [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $siteText = 'sparkfilmes.com.br'
   $siteMeasure = $graphics.MeasureString($siteText, $siteFont)
-  $graphics.DrawString($siteText, $siteFont, $mutedBrushSolid, $width - $margin - $siteMeasure.Width, $ctaY + (($ctaH - $siteMeasure.Height)/2))
+  $siteBrush = if ($isClean) { $darkMutedBrushSolid } else { $mutedBrushSolid }
+  $graphics.DrawString($siteText, $siteFont, $siteBrush, $width - $margin - $siteMeasure.Width, $ctaY + (($ctaH - $siteMeasure.Height)/2))
 
-  $outDir = if ($Format -eq 'feed') { $feedDir } else { $storyDir }
+  $outDir = if ($isClean) {
+    if ($Format -eq 'feed') { $feedCleanDir } else { $storyCleanDir }
+  } else {
+    if ($Format -eq 'feed') { $feedDir } else { $storyDir }
+  }
   $suffix = if ($Format -eq 'feed') { 'feed-1080x1080' } else { 'stories-1080x1920' }
   $output = Join-Path $outDir ($Ad.Slug + '-' + $suffix + '.png')
   $bitmap.Save($output, [System.Drawing.Imaging.ImageFormat]::Png)
 
   foreach ($font in $lineFonts) { $font.Dispose() }
   $source.Dispose(); $officialLogo.Dispose(); $graphics.Dispose(); $bitmap.Dispose()
-  $pinkBrushSolid.Dispose(); $paperBrushSolid.Dispose(); $blackBrushSolid.Dispose(); $whiteBrushSolid.Dispose(); $mutedBrushSolid.Dispose()
+  $pinkBrushSolid.Dispose(); $paperBrushSolid.Dispose(); $blackBrushSolid.Dispose(); $whiteBrushSolid.Dispose(); $mutedBrushSolid.Dispose(); $darkMutedBrushSolid.Dispose()
   $leftGradient.Dispose(); $bottomGradient.Dispose(); $framePath.Dispose(); $framePen.Dispose(); $accentPen.Dispose()
   $logoPathShape.Dispose(); $logoBrush.Dispose(); $badgePath.Dispose(); $badgeBrush.Dispose(); $badgePen.Dispose(); $badgeFont.Dispose()
   $kickerFont.Dispose(); $subFont.Dispose(); $ctaFont.Dispose(); $ctaPath.Dispose(); $siteFont.Dispose()

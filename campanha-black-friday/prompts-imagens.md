@@ -18,3 +18,18 @@ Fotografia publicitária premium e fotorrealista para campanha de Meta Ads da Sp
 8. Pequena equipe audiovisual brasileira dirigindo uma empreendedora em um estúdio compacto, com câmera, boom, monitor e softboxes.
 9. Chef brasileiro acompanhando a filmagem profissional de um prato cuidadosamente montado em restaurante contemporâneo.
 10. Empresário brasileiro satisfeito ao ver sua campanha pronta em um celular com tela rosa vazia, ainda dentro do estúdio profissional.
+
+## Série clean — variações 11 a 20
+
+Direção compartilhada: fotografia publicitária fotorrealista com fundo branco quente, creme ou cinza muito claro; composição minimalista; pessoa ou produto concentrado à direita; amplo espaço negativo uniforme à esquerda para a mensagem; luz suave de estúdio; pequenos acentos rosa `#ff2c58`; enquadramento seguro para 9:16 e 1:1. Sem palavras, letras, números, logotipos, marcas, interfaces, marca-d'água ou excesso de objetos.
+
+11. Consultora brasileira confiante em um escritório minimalista claro, olhando para a câmera e segurando um tablet sem inscrições.
+12. Profissional liberal brasileiro em ambiente cinza-claro clean, ao lado de uma câmera compacta pronta para gravação.
+13. Profissional brasileira de beleza em estúdio creme, com postura elegante e poucos elementos de trabalho ao fundo.
+14. Produto de varejo premium — bolsa rosa sem marca — em pedestal claro, com lojista brasileira ajustando a composição.
+15. Arquiteto ou corretor afro-brasileiro em escritório minimalista, com plantas e amostras discretas.
+16. Personal trainer brasileira em estúdio fitness claro, com equipamento reduzido e postura confiante.
+17. Chef brasileiro finalizando um prato em bancada clara, com fundo gastronômico limpo e sofisticado.
+18. Profissional brasileira da saúde em consultório branco e acolhedor, comunicando confiança e proximidade.
+19. Artesã brasileira com uma peça de cerâmica autoral em ateliê claro e organizado.
+20. Natureza-morta minimalista com câmera, calendário sem inscrições e luz rosa sutil, sugerindo prazo e planejamento.
