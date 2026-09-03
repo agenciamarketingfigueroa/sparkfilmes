@@ -2349,11 +2349,6 @@ body.has-client-popup {
   margin-top: 1.55rem;
 }
 
-.home-hero-copy .hero-actions .btn {
-  min-width: 200px;
-  padding-inline: 1.6rem;
-}
-
 .home-hero-proof {
   display: flex;
   gap: 0.45rem;
@@ -2692,7 +2687,11 @@ body.has-client-popup {
 
 @media (max-width: 520px) {
   .home-hero-copy .hero-actions {
+    position: relative;
+    left: 50%;
     display: grid;
+    width: min(96vw, 440px);
+    transform: translateX(-50%);
   }
 
   .home-hero-copy .hero-actions .btn {
