@@ -2685,17 +2685,38 @@ body.has-client-popup {
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 760px) {
+  .black-friday-hero-banner {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .black-friday-hero-badge {
+    margin-inline: auto;
+  }
+
+  .black-friday-hero-copy {
+    justify-items: center;
+    text-align: center;
+  }
+
   .home-hero-copy .hero-actions {
     position: relative;
     left: 50%;
-    display: grid;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.7rem;
     width: min(96vw, 440px);
     transform: translateX(-50%);
   }
 
   .home-hero-copy .hero-actions .btn {
-    width: 100%;
+    width: auto;
+    min-width: 0;
+    min-height: 54px;
+    flex: 1 1 0;
+    padding-inline: 0.8rem;
+    font-size: clamp(0.82rem, 3.8vw, 1rem);
   }
 
   .home-hero-proof {
