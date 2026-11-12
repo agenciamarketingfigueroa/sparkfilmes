@@ -37,6 +37,7 @@
     />
     <link rel="stylesheet" href="../assets/css/style.css" />
     <link rel="stylesheet" href="../assets/css/redesign.css?v=20261112" />
+    <link rel="stylesheet" href="../assets/css/portfolio.css?v=20261112" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -98,62 +99,60 @@
     </header>
 
     <main id="conteudo">
-      <section class="section page-hero">
-        <div class="container hero-shell portfolio-hero-shell page-intro-grid" data-reveal>
-          <div>
-          <p class="eyebrow">Portfólio SparkFilmes</p>
-          <h1>Portfólio de produção audiovisual: vídeos, reels, eventos e cursos online</h1>
-          <p class="text-muted">
-            Veja exemplos de vídeos produzidos para marcas, campanhas, eventos corporativos e produtos digitais, com direção, captação e edição profissional.
-          </p>
+      <section class="folio-intro" aria-labelledby="folio-title">
+        <div class="container">
+          <div class="folio-topline"><p>Portfólio / SparkFilmes</p><span>Direção. Captação. Edição.</span></div>
+          <div class="folio-heading">
+            <h1 id="folio-title">O nosso olhar.<br /><span>Em movimento.</span></h1>
+            <div class="folio-intro-note">
+              <p>Marcas, pessoas e histórias reais.<br />Conheça o que a gente coloca em cena.</p>
+              <a href="#filmes" class="folio-text-link">Explore os filmes <span aria-hidden="true">↓</span></a>
+            </div>
           </div>
-          <figure class="page-intro-image">
-            <img src="../assets/img/Portfolio/Cobertura de Evento/detalhe-humano.webp" alt="Fotografia de cobertura de evento produzida pela SparkFilmes" width="2000" height="1333" decoding="async" />
-          </figure>
-        </div>
-      </section>
-
-      <section class="section portfolio-reels-section">
-        <div class="container">
-          <header class="section-head" data-reveal>
-            <p class="eyebrow">Reels</p>
-            <h2 class="section-title">Vídeos verticais para redes sociais e anúncios.</h2>
-          </header>
-
-          <div class="video-grid video-grid-reels" data-portfolio-target data-portfolio-type="reels"></div>
-        </div>
-      </section>
-
-      <section class="section portfolio-courses-section">
-        <div class="container">
-          <header class="section-head" data-reveal>
-            <p class="eyebrow">Produções na horizontal</p>
-            <h2 class="section-title">Exemplos de trabalhos feitos na horizontal para cursos e YouTube.</h2>
-          </header>
-
-          <div class="video-grid video-grid-wide" data-portfolio-target data-portfolio-type="cursos"></div>
-        </div>
-      </section>
-
-      <section class="section section-soft">
-        <div class="container final-cta" data-reveal>
-          <p class="eyebrow">Case em destaque</p>
-          <h2>Cobertura audiovisual de evento corporativo</h2>
-          <p>Veja o registro em vídeo e fotografia dos três anos do Metrô BH, com coletiva de imprensa, ativações e presença de marca.</p>
-          <a class="btn btn-primary" href="../cobertura-eventos/index.html">Ver case de cobertura de evento</a>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container final-cta" data-reveal>
-          <h2>Quer esse nível no seu próximo projeto?</h2>
-          <p>Receba proposta personalizada para sua rotina de conteúdo.</p>
-          <a class="btn btn-primary js-wa-link" href="#" data-wa-message="Oi, vi o portfólio e quero um orçamento personalizado.">
-            Solicitar proposta
+          <a class="folio-feature" href="../cobertura-eventos/index.html" aria-label="Ver o case completo: três anos do Metrô BH">
+            <img src="../assets/img/Portfolio/Cobertura de Evento/imprensa.webp" alt="Coletiva de imprensa no evento de três anos do Metrô BH" width="2000" height="1465" fetchpriority="high" decoding="async" />
+            <div class="folio-feature-top"><span>Projeto em destaque</span><span>Foto + vídeo</span></div>
+            <div class="folio-feature-bottom">
+              <div><p>Cobertura de evento corporativo</p><h2>03 anos.<br />Muitas histórias.</h2><span>Metrô BH</span></div>
+              <span class="folio-feature-cta">Explore o case <span class="folio-arrow" aria-hidden="true">↗</span></span>
+            </div>
           </a>
         </div>
       </section>
+
+      <section class="folio-work" id="filmes" aria-labelledby="filmes-title">
+        <div class="container">
+          <div class="folio-work-heading"><h2 id="filmes-title">Feito pela Spark<span>.</span></h2><p>Do primeiro frame à última impressão.</p></div>
+          <div class="folio-toolbar">
+            <div class="folio-filters" role="group" aria-label="Filtrar trabalhos por formato">
+              <button type="button" data-film-filter="all" aria-pressed="true" aria-controls="film-grid">Todos <span data-film-count="all"></span></button>
+              <button type="button" data-film-filter="reels" aria-pressed="false" aria-controls="film-grid">Verticais <span data-film-count="reels"></span></button>
+              <button type="button" data-film-filter="cursos" aria-pressed="false" aria-controls="film-grid">Horizontais <span data-film-count="cursos"></span></button>
+            </div>
+            <p class="folio-counter" data-film-status role="status">Carregando filmes…</p>
+          </div>
+          <div class="film-grid" id="film-grid" aria-busy="true"></div>
+          <div class="folio-load"><button class="folio-more" type="button" data-film-more hidden>Mais trabalhos <span aria-hidden="true">↓</span></button></div>
+          <p class="folio-error" data-film-error hidden>Não foi possível carregar os filmes. <button type="button" data-film-retry>Tentar novamente</button></p>
+          <noscript><p>Ative o JavaScript para explorar os vídeos. Você também pode <a href="../cobertura-eventos/index.html">conhecer o case de cobertura do Metrô BH</a>.</p></noscript>
+        </div>
+      </section>
+
+      <section class="folio-contact" aria-labelledby="folio-contact-title">
+        <div class="container folio-contact-grid">
+          <div><p class="eyebrow">O próximo projeto pode ser o seu</p><h2 id="folio-contact-title">Vamos colocar sua<br />ideia em cena?</h2></div>
+          <a class="folio-contact-link js-wa-link" href="https://wa.me/5531999427901" data-wa-message="Oi, vi o portfólio e quero um orçamento personalizado.">Conte seu projeto <span class="folio-arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </section>
     </main>
+
+    <dialog class="film-dialog" aria-labelledby="film-dialog-title" aria-describedby="film-dialog-description">
+      <div class="film-dialog-shell">
+        <div class="film-dialog-top"><span data-film-dialog-category></span><button type="button" class="film-close" aria-label="Fechar vídeo" autofocus>Fechar <span aria-hidden="true">×</span></button></div>
+        <div class="film-screen" data-film-screen></div>
+        <div class="film-dialog-info"><div><h2 id="film-dialog-title"></h2><p id="film-dialog-description"></p></div><a class="film-source" data-film-source target="_blank" rel="noopener noreferrer">Abrir original ↗</a></div>
+      </div>
+    </dialog>
 
     <footer class="site-footer">
       <div class="container footer-brand"><a href="../index.html" aria-label="SparkFilmes — início"><img src="../assets/img/logo-home.svg" alt="SparkFilmes" width="174" loading="lazy" /></a></div>
@@ -165,6 +164,7 @@
     </footer>
 
     <script src="../assets/js/main.js" defer></script>
+    <script src="../assets/js/portfolio.js?v=20261112-v2" defer></script>
   </body>
 </html>
 
