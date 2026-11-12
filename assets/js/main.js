@@ -59,6 +59,16 @@ const initNavigation = () => {
 
   if (!navToggleEl || !navEl) return;
 
+  const closeNavigation = ({ restoreFocus = false } = {}) => {
+    navEl.classList.remove("is-open");
+    navToggleEl.setAttribute("aria-expanded", "false");
+    if (restoreFocus) navToggleEl.focus();
+  };
+
+  navEl.querySelectorAll("a.is-active").forEach((link) => {
+    link.setAttribute("aria-current", "page");
+  });
+
   navToggleEl.addEventListener("click", () => {
     const isOpen = navEl.classList.toggle("is-open");
     navToggleEl.setAttribute("aria-expanded", String(isOpen));
@@ -66,17 +76,29 @@ const initNavigation = () => {
 
   navEl.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
-      navEl.classList.remove("is-open");
-      navToggleEl.setAttribute("aria-expanded", "false");
+      closeNavigation();
     });
   });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && navEl.classList.contains("is-open")) {
+      closeNavigation({ restoreFocus: true });
+    }
+  });
+  document.addEventListener("click", (event) => {
+    if (!navEl.contains(event.target) && !navToggleEl.contains(event.target)) closeNavigation();
+  });
+  document.addEventListener("focusin", (event) => {
+    if (!navEl.contains(event.target) && !navToggleEl.contains(event.target)) closeNavigation();
+  });
+  window.matchMedia("(min-width: 1040px)").addEventListener("change", () => closeNavigation());
 };
 
 const initReveal = () => {
   const revealElements = document.querySelectorAll("[data-reveal]");
   if (revealElements.length === 0) return;
 
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || !("IntersectionObserver" in window)) {
     revealElements.forEach((el) => el.classList.add("is-visible"));
     return;
   }
@@ -91,6 +113,8 @@ const initReveal = () => {
     },
     { threshold: 0.12 }
   );
+
+  document.documentElement.classList.add("reveal-ready");
 
   revealElements.forEach((el) => {
     if (el.classList.contains("is-visible")) return;

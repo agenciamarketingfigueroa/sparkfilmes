@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
@@ -40,6 +40,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/style.css?v=20260902-hero-mobile-v2" />
+    <link rel="stylesheet" href="assets/css/redesign.css?v=20261112" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -138,7 +139,7 @@
           <div class="home-hero-grid">
             <div class="hero-copy home-hero-copy" data-reveal>
               <p class="eyebrow">Cinema aplicado ao marketing</p>
-              <h1>Vídeos profissionais para valorizar sua empresa e vender mais.</h1>
+              <h1>Vídeos profissionais para <span>valorizar sua empresa</span> e vender mais.</h1>
               <p class="home-hero-lead">
                 Planejamento, captação e edição para redes sociais, cursos e eventos — com um processo próximo, claro e sem complicar sua rotina.
               </p>
@@ -150,6 +151,7 @@
             </div>
 
             <figure class="home-hero-media" data-reveal>
+              <span class="hero-frame-label">Em cena / SparkFilmes</span>
               <img
                 src="assets/img/Portfolio/Cobertura de Evento/imprensa.webp"
                 alt="Coletiva de imprensa dos três anos do Metrô BH fotografada pela SparkFilmes"
@@ -160,7 +162,7 @@
               />
               <figcaption>
                 <span>Trabalho SparkFilmes</span>
-                <strong>03 anos do Metrô BH em foto e vídeo</strong>
+                <a class="case-link" href="cobertura-eventos/index.html"><strong>03 anos do Metrô BH em foto e vídeo</strong></a>
               </figcaption>
             </figure>
           </div>
@@ -201,16 +203,19 @@
             <article class="home-service-card" data-reveal>
               <h3>Conteúdo para marcas</h3>
               <p>Reels, anúncios e captações recorrentes para apresentar seus produtos e serviços.</p>
+              <a class="service-link" href="servicos/index.html" aria-label="Conhecer serviços de conteúdo para marcas">↗</a>
             </article>
 
             <article class="home-service-card" data-reveal>
               <h3>Cursos e entrevistas</h3>
               <p>Aulas, conteúdos longos e YouTube com direção, áudio limpo e iluminação profissional.</p>
+              <a class="service-link" href="servicos/index.html" aria-label="Conhecer produção de cursos e entrevistas">↗</a>
             </article>
 
             <article class="home-service-card" data-reveal>
               <h3>Eventos</h3>
               <p>Foto, vídeo, aftermovie e storymaker para registrar e divulgar cada momento.</p>
+              <a class="service-link" href="cobertura-eventos/index.html" aria-label="Conhecer cobertura de eventos">↗</a>
             </article>
           </div>
         </div>
@@ -220,12 +225,13 @@
         <div class="container home-about-grid">
           <figure class="home-about-brand" data-reveal>
             <img
-              src="assets/img/logo-quadrada.svg"
-              alt="SparkFilmes"
+              src="assets/img/Portfolio/Cobertura de Evento/equipe-em-acao.webp"
+              alt="Ação com participantes do evento do Metrô BH fotografada pela SparkFilmes"
               loading="lazy"
-              width="1500"
-              height="1500"
+              width="2000"
+              height="1333"
             />
+            <figcaption>Registro SparkFilmes / Metrô BH</figcaption>
           </figure>
 
           <div class="home-about-copy" data-reveal>
@@ -291,6 +297,7 @@
     </main>
 
     <footer class="site-footer">
+      <div class="container footer-brand"><a href="index.html" aria-label="SparkFilmes — início"><img src="assets/img/logo-home.svg" alt="SparkFilmes" width="174" loading="lazy" /></a></div>
       <div class="container footer-wrap">
         <div>
           <p>&copy; <span data-current-year></span> SparkFilmes. Todos os direitos reservados.</p>
