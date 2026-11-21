@@ -47,8 +47,7 @@ async function runPage(file, href, storage = "[]", failFetch = false) {
 }
 const publicPage = await runPage("evento.html", "https://sparkfilmes.com.br/agenda/evento.html?id=" + seed.id);
 assert(publicPage.document.body.textContent.includes("18:30"), publicPage.document.body.textContent);
-assert(publicPage.document.body.textContent.includes("Delliz e Edi"));
-assert(publicPage.document.body.textContent.includes("Felipe e Bruno"));
+assert.deepEqual(Array.from(publicPage.document.querySelectorAll(".team-member h3"), heading => heading.textContent), ["Delliz", "Edi", "Felipe", "Bruno"]);
 assert(publicPage.document.body.textContent.includes("não irá até as 22h"));
 assert.equal(publicPage.document.querySelectorAll(".venue-photo-grid img").length, 3);
 assert.equal(publicPage.document.querySelector(".venue-instagram").getAttribute("href"), "https://www.instagram.com/bretaskids2/");

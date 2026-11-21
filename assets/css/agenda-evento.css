@@ -48,6 +48,15 @@
 .event-body .team-grid .role-symbol { margin-bottom: 24px; }
 .event-body .team-grid h3 { font-size: 1.3rem; line-height: 1.4; }
 .event-body .team-grid article > span:not(.role-symbol) { font-size: .875rem; }
+.team-role { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+.team-members { display: grid; gap: 20px; }
+.team-member { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.event-body .team-member h3 { margin: 0; font-size: 1.125rem; overflow-wrap: anywhere; }
+.team-portrait { display: flex; align-items: center; justify-content: center; width: 88px; height: 88px; flex-shrink: 0; overflow: hidden; border-radius: 50%; background: #e8e4e7; color: #a7193b; }
+.team-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.team-portrait-delliz img { transform: scale(1.2); transform-origin: 65% 30%; }
+.team-portrait-edi img { transform: scale(1.7); transform-origin: 50% 0%; }
+.team-portrait-bruno img { transform: scale(1.8); transform-origin: 25% 25%; }
 .event-body .reference-note { font-size: .875rem; line-height: 1.8; }
 .venue-gallery { margin: 0 0 60px; padding-bottom: 36px; border-bottom: 1px solid #ffffff20; }
 .venue-gallery-heading { display: flex; justify-content: space-between; align-items: center; gap: 28px; margin-bottom: 26px; }
@@ -182,7 +191,7 @@
   .orientation-message li + li { border-top: 1px solid #dcd8db; padding-top: 12px; }
   .orientation-card blockquote { padding: 16px; }
   .event-body .team-grid { grid-template-columns: minmax(0, 1fr); }
-  .event-body .team-grid article { padding-left: 76px; min-height: 108px; }
+  .event-body .team-grid article { padding: 24px; }
   .event-body .team-grid .role-symbol { position: absolute; left: 24px; top: 30px; margin: 0; }
   .event-body .location-panel { display: block; }
   .location-illustration { padding: 26px; border-right: 0; border-bottom: 1px solid #d8d0d6; }

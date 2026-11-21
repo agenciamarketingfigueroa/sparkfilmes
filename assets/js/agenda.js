@@ -24,6 +24,21 @@
     spark: '<path d="m12 2 2.7 7.3L22 12l-7.3 2.7L12 22l-2.7-7.3L2 12l7.3-2.7Z"/>'
   };
   const icon = name => `<svg class="agenda-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icons[name] || icons.spark}</svg>`;
+  const teamPhotos = {
+    delliz: { src: "../assets/img/Equipe/Delliz (Fotógrafa).png", crop: "delliz" },
+    edi: { src: "../assets/img/Equipe/Edi (Fotógrafo).jpg", crop: "edi" },
+    felipe: { src: "../assets/img/perfil-spark.svg", crop: "felipe" },
+    bruno: { src: "../assets/img/Equipe/Burno Ocelli (Videomaker).png", crop: "bruno" },
+    "bruno ocelli": { src: "../assets/img/Equipe/Burno Ocelli (Videomaker).png", crop: "bruno" }
+  };
+  function teamCard(names, role, symbol) {
+    const members = (names || "A definir").split(/\s+e\s+|[,;\n]+/i).map(name => name.trim()).filter(Boolean);
+    return `<article><span class="team-role">${icon(symbol)}${role}</span><div class="team-members">${members.map(name => {
+      const key = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+      const photo = teamPhotos[key];
+      return `<div class="team-member"><span class="team-portrait${photo ? " team-portrait-" + photo.crop : ""}">${photo ? `<img src="${escape(photo.src)}" alt="Foto de ${escape(name)}" width="88" height="88" loading="lazy" decoding="async"/>` : icon(symbol)}</span><h3>${escape(name)}</h3></div>`;
+    }).join("")}</div></article>`;
+  }
   function orientationCards(notes) {
     const sections = [];
     let section;
@@ -105,7 +120,7 @@
       ${venueGallery}
       <div class="briefing-layout"><div class="briefing-main">
         <section class="briefing-section"><header class="briefing-heading"><p class="kicker">Leitura rápida / produção tranquila</p><h2>Nosso roteiro<span>.</span></h2></header><div class="arrival-reminder">${icon("clock")}<p>Todo mundo no local às <strong>${arrival.time}</strong>${arrival.date !== event.date ? " em " + dateLabel(arrival.date) : ""}.<span>São ${event.arrivalMinutes} minutos para chegar antes do início.</span></p></div>${event.notes ? `<div class="orientation-grid">${orientationCards(event.notes)}</div>` : ""}</section>
-        <section class="briefing-section"><header class="briefing-heading"><p class="kicker">Quem faz acontecer</p><h2>O time do dia<span>.</span></h2></header><div class="team-grid"><article><span class="role-symbol">${icon("camera")}</span><span>Fotografia</span><h3>${escape(event.photography || "A definir")}</h3></article><article><span class="role-symbol">${icon("video")}</span><span>Vídeo</span><h3>${escape(event.video || "A definir")}</h3></article></div></section>
+        <section class="briefing-section"><header class="briefing-heading"><p class="kicker">Quem faz acontecer</p><h2>O time do dia<span>.</span></h2></header><div class="team-grid">${teamCard(event.photography, "Fotografia", "camera")}${teamCard(event.video, "Vídeo", "video")}</div></section>
       </div><aside class="location-panel"><div class="location-illustration" aria-hidden="true">${icon("pin")}<span>A gente se encontra aqui.</span></div><div class="location-content"><p class="kicker">O ponto de encontro</p><h2>${escape(event.venue)}</h2><address>${escape(event.address)}</address><div class="location-actions">${external(maps.google, "Abrir no Google Maps", "button primary full")}${external(maps.waze, "Ir com o Waze", "button secondary full")}</div><p class="location-caption">Confira o endereço e a entrada antes de iniciar a rota.</p>${event.locationNote ? `<details><summary>Referência do endereço</summary><p>${escape(event.locationNote)}</p></details>` : ""}<hr><h3>Conheça o espaço</h3><p>Uma olhada no ambiente antes de chegar.</p><div class="location-actions">${event.instagram ? external(event.instagram, "Instagram do espaço", "button secondary full") : ""}${event.gallery ? external(event.gallery, "Ver galeria de referência", "button secondary full") : ""}${external(maps.google, "Ver local e fotos no Google", "text-action")}</div>${event.gallery.includes("insettefotografia") ? '<p class="photo-credit">Galeria externa: Insette Fotografia · Espaço Bretas 2. Fotos de outro evento; a decoração pode mudar.</p>' : ""}</div></aside></div>
       <div class="event-bottom"><p>Informações alinhadas, equipe pronta.</p><button class="button secondary" id="share-bottom">Copiar link do evento</button><button class="text-action" id="print-event">Imprimir informações</button></div>`;
     $("#share-event").onclick = $("#share-bottom").onclick = () => copy(link);
