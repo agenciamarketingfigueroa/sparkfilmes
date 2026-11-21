@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#f1f0f0" />
+  <title>Agenda da equipe | SparkFilmes</title>
+  <link rel="icon" href="../assets/img/logo-favicon-spark.svg" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Sora:wght@600;700;800&amp;display=swap" />
+  <link rel="stylesheet" href="../assets/css/interno.css" />
+  <link rel="stylesheet" href="../assets/css/redesign.css?v=20261112" />
+  <link rel="stylesheet" href="../assets/css/agenda.css" />
+</head>
+<body class="internal-body agenda-body" data-requires-auth="true">
+  <header class="internal-header">
+    <a class="internal-brand" href="../area-interna/"><img src="../assets/img/logo-home.svg" alt="SparkFilmes" /></a>
+    <nav aria-label="Navegação interna"><a href="../area-interna/">Área interna</a><a href="./" aria-current="page">Agenda</a><button type="button" data-logout>Sair</button></nav>
+  </header>
+  <main class="agenda-shell">
+    <header class="agenda-intro"><div><p class="kicker">Produções / equipe Spark</p><h1>Agenda da equipe<span>.</span></h1><p>Cada evento, todos os detalhes. Tudo pronto para a equipe chegar e produzir.</p></div><button class="button primary" id="new-event" disabled>+ Novo evento</button></header>
+    <p id="load-status" role="status">Carregando agenda…</p>
+    <div class="agenda-layout" id="agenda-content" hidden>
+      <section class="calendar-panel" aria-label="Calendário de eventos">
+        <header class="calendar-header"><h2 id="month-label"></h2><div class="month-controls"><button id="prev-month" aria-label="Mês anterior">‹</button><button id="today">Hoje</button><button id="next-month" aria-label="Próximo mês">›</button></div></header>
+        <div class="weekdays" aria-hidden="true"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+        <div id="calendar" class="calendar-grid"></div>
+        <footer class="calendar-footer"><span class="event-marker"></span> Dia com produção <span>Selecione uma data para ver os eventos.</span></footer>
+      </section>
+      <aside class="day-panel"><p class="kicker">Programação do dia</p><h2 id="selected-label"></h2><div id="day-events"></div><button class="button secondary full" id="add-on-date">Adicionar nesta data</button></aside>
+    </div>
+    <p class="storage-note">Eventos novos e alterações ficam salvos neste navegador. O link compartilhado leva uma cópia das informações; após editar, copie e envie o novo link.</p>
+  </main>
+  <dialog id="event-editor" aria-labelledby="editor-title">
+    <form id="event-form">
+      <header class="dialog-header"><div><p class="kicker">Agenda Spark</p><h2 id="editor-title">Novo evento</h2></div><button type="button" class="icon-button" id="close-editor" aria-label="Fechar formulário">×</button></header>
+      <input name="id" type="hidden" />
+      <div class="editor-fields">
+        <label class="wide">Nome do evento<input name="title" maxlength="120" required /></label>
+        <label>Data<input name="date" type="date" required /></label><label>Início<input name="time" type="time" required /></label>
+        <label>Antecedência em minutos<input name="arrivalMinutes" type="number" min="30" max="1440" value="30" required /></label><label>Quantidade de alunos<input name="students" type="number" min="0" /></label>
+        <label class="wide">Nome do espaço<input name="venue" maxlength="160" required /></label><label class="wide">Endereço completo<input name="address" maxlength="400" required placeholder="Rua, número, bairro, cidade e estado" /></label>
+        <label>Fotografia<input name="photography" maxlength="300" placeholder="Nomes da equipe" /></label><label>Vídeo<input name="video" maxlength="300" placeholder="Nomes da equipe" /></label>
+        <label class="wide">Orientações da equipe<textarea name="notes" rows="8" maxlength="4000" aria-describedby="notes-help"></textarea><small id="notes-help">Use um título em MAIÚSCULAS para cada card e uma orientação por linha. “Exemplo:” destaca uma fala; “Contexto:” adiciona uma explicação opcional.</small></label>
+        <label class="wide">Link do Google Maps<input name="googleMaps" type="url" maxlength="600" placeholder="https://maps.app.goo.gl/…" /></label>
+        <label class="wide">Instagram do espaço<input name="instagram" type="url" maxlength="600" placeholder="https://www.instagram.com/perfil/" /></label>
+        <label class="wide">Link de fotos do local<input name="gallery" type="url" maxlength="600" placeholder="https://…" /></label>
+        <label class="wide">Observações sobre o local<textarea name="locationNote" rows="2" maxlength="600"></textarea></label>
+      </div>
+      <p id="form-status" role="alert"></p>
+      <footer class="dialog-footer"><button type="button" class="button secondary" id="cancel-editor">Cancelar</button><button type="submit" class="button primary">Salvar evento</button></footer>
+    </form>
+  </dialog>
+  <dialog id="copy-dialog" aria-labelledby="copy-title"><h2 id="copy-title">Copiar link do evento</h2><p>Selecione e copie o link abaixo.</p><textarea id="copy-value" rows="4" readonly aria-label="Link do evento"></textarea><form method="dialog"><button class="button primary">Fechar</button></form></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="agenda-shell">Ative o JavaScript para usar a agenda.</p></noscript>
+  <script src="../assets/js/internal-auth.js"></script><script src="../assets/js/agenda-core.js"></script><script src="../assets/js/agenda.js?v=20261121-3"></script>
+</body>
+</html>

@@ -3,6 +3,8 @@ Allow: /
 Disallow: /area-interna/
 Disallow: /orcamentos/
 Disallow: /contratos/
+Disallow: /agenda/
+Disallow: /data/agenda.json
 Disallow: /data/clientes/
 Disallow: /data/servicos.json
 

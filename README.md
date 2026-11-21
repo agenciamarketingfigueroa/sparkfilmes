@@ -60,6 +60,40 @@ publicado, e os orçamentos não são armazenados. Para validar os cálculos com
 deno run --allow-read tests/orcamentos-core.test.js
 ```
 
+## Agenda da equipe
+
+Acesse `http://localhost:8080/agenda/` pela área interna. O calendário permite
+selecionar datas, cadastrar e editar eventos e copiar uma página para a equipe.
+O evento inicial está em `data/agenda.json`: Formatura IEMAB, em 22/11/2026,
+às 19h, com chegada às 18h30. A colação tem duração estimada de 40 minutos,
+com previsão de terminar até as 20h, seguida de um breve registro das crianças
+brincando. A página compartilhável é
+`/agenda/evento.html?id=formatura-iemab-22-novembro`.
+
+As orientações aparecem em cards com ícones. No campo de edição, escreva um título
+em MAIÚSCULAS para iniciar cada card e uma orientação por linha. `Exemplo:` destaca
+uma fala de atendimento; `Contexto:` cria uma explicação que pode ser expandida.
+
+O catálogo publicado é compartilhado por todos. Novos eventos e alterações são
+salvos no `localStorage` do navegador. Para esses registros, o botão Copiar link
+inclui uma cópia dos dados no fragmento da URL, que funciona em outro dispositivo
+sem depender do armazenamento de quem criou. Alterações posteriores exigem enviar
+um novo link; não existe sincronização entre navegadores. Para atualizar o catálogo
+comum e manter links curtos, edite `data/agenda.json` e publique o site normalmente.
+
+A agenda usa o acesso existente da área interna. As páginas de evento abrem sem
+senha para a equipe com o link, e têm `noindex, nofollow`; isso não é controle de
+acesso. Não cadastre dados sigilosos. O formulário não envia dados a serviços externos.
+
+Localização conforme o convite, preservando o número 346. A produção confirmou
+o [link da Unidade 2](https://share.google/IQVIEFLTdwTL0nHnp) e o
+[Instagram @bretaskids2](https://www.instagram.com/bretaskids2/).
+Três fotos de referência da [Insette Fotografia](https://www.insettefotografia.com.br/portfolio/festas-infantis/1404666-aniversario-de-3-anos-do-francisco-espaco-bretas-2)
+aparecem na página, com crédito e indicação de que mostram outro evento.
+As imagens estão em `assets/img/agenda/`, com suas fontes no README da pasta.
+
+Validação: `deno run --allow-read tests/agenda.test.js`.
+
 ## Editor de vídeo local
 
 Depois de entrar na área interna, acesse:

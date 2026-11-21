@@ -1,0 +1,27 @@
+{
+  "events": [
+    {
+      "id": "formatura-iemab-22-novembro",
+      "title": "Formatura IEMAB",
+      "date": "2026-11-22",
+      "time": "19:00",
+      "arrivalMinutes": 30,
+      "venue": "Espaço Bretas — Unidade 2",
+      "address": "Avenida Alterosa, 346, São Joaquim, Contagem - MG, Brasil",
+      "photography": "Delliz e Edi",
+      "video": "Felipe e Bruno",
+      "students": "12",
+      "notes": "COLAÇÃO · CERCA DE 40 MIN\nInício às 19h. A previsão é terminar por volta de 19h40, já finalizada até as 20h.\nOs horários de término são estimados.\n\nFOTOS COM AS FAMÍLIAS\nGeralmente acontecem antes da cerimônia.\nDelliz e Edi fazem as fotos. Nesse momento, não é necessário vídeo.\n\nCRIANÇAS BRINCANDO\nApós a cerimônia, registrar um pouco dos meninos brincando.\nEsse breve registro completa a cobertura.\n\nLIBERAÇÃO DA EQUIPE\nA formatura não irá até as 22h. Costumamos sair mais cedo, especialmente com apenas 12 alunos.\nFelipe libera a equipe assim que identificar a possibilidade de sair.\nAguardem a liberação: o fim da cerimônia não é saída automática.\n\nATENDIMENTO ÀS FAMÍLIAS\nAcolha o pedido e explique sua função.\nIndique o responsável pelo nome e aponte quem é: fotografia com Delliz ou Edi; vídeo com Felipe ou Bruno.\nSe pedirem uma foto ao videomaker, encaminhe a família ao fotógrafo. Não responda apenas que está fazendo vídeo.\nExemplo: “Estou no vídeo. A Delliz e o Edi estão nas fotos. Vou mostrar quem pode atender vocês.”\nContexto: Uma mãe interpretou a explicação de um videomaker como recusa de fotografar e reclamou à diretora. O encaminhamento claro evita mal-entendidos e resguarda a equipe.",
+      "reference": "",
+      "instagram": "https://www.instagram.com/bretaskids2/",
+      "googleMaps": "https://share.google/IQVIEFLTdwTL0nHnp",
+      "photos": [
+        { "src": "/assets/img/agenda/bretas2-salao.jpg", "alt": "Salão do Espaço Bretas 2, com mesas, cadeiras e área de circulação durante uma festa", "caption": "Salão e circulação" },
+        { "src": "/assets/img/agenda/bretas2-brinquedos.jpg", "alt": "Brinquedo de avião e estrutura de recreação do Espaço Bretas 2 durante uma festa infantil", "caption": "Área de brinquedos" },
+        { "src": "/assets/img/agenda/bretas2-celebracao.jpg", "alt": "Área de celebração do Espaço Bretas 2 com decoração do Homem-Aranha de um evento anterior", "caption": "Área de celebração" }
+      ],
+      "gallery": "https://www.insettefotografia.com.br/portfolio/festas-infantis/1404666-aniversario-de-3-anos-do-francisco-espaco-bretas-2",
+      "locationNote": "Unidade 2. Link do Google e Instagram informados pela produção. Endereço escrito conforme o convite: Avenida Alterosa, 346. Confira a entrada pelo número informado."
+    }
+  ]
+}
